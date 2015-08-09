@@ -1,0 +1,277 @@
+Elm.Graph = Elm.Graph || {};
+Elm.Graph.make = function (_elm) {
+   "use strict";
+   _elm.Graph = _elm.Graph || {};
+   if (_elm.Graph.values)
+   return _elm.Graph.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graph",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var roundTo = F2(function (gap,
+   x) {
+      return gap * $Basics.toFloat($Basics.round(x / gap));
+   });
+   var gapSize = function (x) {
+      return function () {
+         var powerOfTen = Math.pow(10,
+         $Basics.toFloat($Basics.floor(A2($Basics.logBase,
+         10,
+         x))));
+         return _U.cmp(5 * powerOfTen,
+         x) < 0 ? 5 * powerOfTen : _U.cmp(2 * powerOfTen,
+         x) < 0 ? 2 * powerOfTen : powerOfTen;
+      }();
+   };
+   var labelPositions = F2(function (lo,
+   hi) {
+      return function () {
+         var gap = gapSize((hi - lo) / 2);
+         return A2($List._op["::"],
+         lo,
+         A2($List._op["::"],
+         hi,
+         A2($List.map,
+         function ($) {
+            return F2(function (x,y) {
+               return x * y;
+            })(gap)($Basics.toFloat($));
+         },
+         _L.range($Basics.ceiling(lo / gap + 0.2),
+         $Basics.floor(hi / gap - 0.2)))));
+      }();
+   });
+   var drawGraph = F3(function (w,
+   h,
+   g) {
+      return function () {
+         var axisStyle = _U.replace([["width"
+                                     ,2]],
+         $Graphics$Collage.defaultLine);
+         var color_cycle = _L.fromArray([$Color.red
+                                        ,$Color.green
+                                        ,$Color.blue
+                                        ,$Color.purple
+                                        ,$Color.orange]);
+         var colors = $List.concat(A2($List.repeat,
+         ($List.length(g.points) / $List.length(color_cycle) | 0) + 1,
+         color_cycle));
+         var graphOffsetY = 20;
+         var graphH = $Basics.toFloat(h) - 2 * graphOffsetY;
+         var graphOffsetX = 40;
+         var graphW = $Basics.toFloat(w) - 2 * graphOffsetX;
+         var maxY = function () {
+            var _v0 = g.yRange;
+            switch (_v0.ctor)
+            {case "Just":
+               switch (_v0._0.ctor)
+                 {case "_Tuple2":
+                    return _v0._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 58 and 61");
+         }();
+         var minY = function () {
+            var _v4 = g.yRange;
+            switch (_v4.ctor)
+            {case "Just":
+               switch (_v4._0.ctor)
+                 {case "_Tuple2":
+                    return _v4._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 55 and 58");
+         }();
+         var pixelY = function (y) {
+            return (y - minY) / (maxY - minY) * graphH - graphH / 2;
+         };
+         var yLabelPositions = A2(labelPositions,
+         minY,
+         maxY);
+         var maxX = function () {
+            var _v8 = g.xRange;
+            switch (_v8.ctor)
+            {case "Just":
+               switch (_v8._0.ctor)
+                 {case "_Tuple2":
+                    return _v8._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 52 and 55");
+         }();
+         var minX = function () {
+            var _v12 = g.xRange;
+            switch (_v12.ctor)
+            {case "Just":
+               switch (_v12._0.ctor)
+                 {case "_Tuple2":
+                    return _v12._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 49 and 52");
+         }();
+         var pixelX = function (x) {
+            return (x - minX) / (maxX - minX) * graphW - graphW / 2;
+         };
+         var pixelCoordinates = F2(function (x,
+         y) {
+            return {ctor: "_Tuple2"
+                   ,_0: pixelX(x)
+                   ,_1: pixelY(y)};
+         });
+         var yAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,0,minY),
+         A2(pixelCoordinates,0,maxY)));
+         var xLabel = function (x) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: 0
+                                          ,_1: -10})($Graphics$Collage.move(A2(pixelCoordinates,
+            x,
+            0))($Graphics$Collage.text($Text.fromString($Basics.toString(x)))));
+         };
+         var xLabelLine = function (x) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,x,minY),
+            A2(pixelCoordinates,x,maxY)));
+         };
+         var yLabel = function (y) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: -20
+                                          ,_1: 0})($Graphics$Collage.move(A2(pixelCoordinates,
+            0,
+            y))($Graphics$Collage.text($Text.fromString($Basics.toString(y)))));
+         };
+         var pointForm = F2(function (color,
+         _v16) {
+            return function () {
+               switch (_v16.ctor)
+               {case "_Tuple2":
+                  return A2($Graphics$Collage.move,
+                    {ctor: "_Tuple2"
+                    ,_0: pixelX(_v16._0)
+                    ,_1: pixelY(_v16._1)},
+                    A2($Graphics$Collage.filled,
+                    color,
+                    A2($Graphics$Collage.oval,
+                    1,
+                    1)));}
+               _U.badCase($moduleName,
+               "on line 70, column 34 to 83");
+            }();
+         });
+         var seriesForm = F2(function (color,
+         points) {
+            return A2($List.map,
+            pointForm(color),
+            points);
+         });
+         var xAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,minX,0),
+         A2(pixelCoordinates,maxX,0)));
+         var yLabelLine = function (y) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,minX,y),
+            A2(pixelCoordinates,maxX,y)));
+         };
+         var xLabelPositions = A2(labelPositions,
+         minX,
+         maxX);
+         var forms = $List.concat(_L.fromArray([$List.concat(A3($List.map2,
+                                               seriesForm,
+                                               colors,
+                                               g.points))
+                                               ,A2($List.map,
+                                               xLabel,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               xLabelLine,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               yLabel,
+                                               yLabelPositions)
+                                               ,A2($List.map,
+                                               yLabelLine,
+                                               yLabelPositions)
+                                               ,_L.fromArray([xAxis,yAxis])]));
+         return A3($Graphics$Collage.collage,
+         w,
+         h,
+         forms);
+      }();
+   });
+   var addSeries = F2(function (series,
+   g) {
+      return _U.replace([["points"
+                         ,A2($List._op["::"],
+                         series,
+                         g.points)]],
+      g);
+   });
+   var graph = F3(function (xRange,
+   yRange,
+   points) {
+      return {_: {}
+             ,points: points
+             ,xRange: xRange
+             ,yRange: yRange};
+   });
+   var Graph = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,points: c
+             ,xRange: a
+             ,yRange: b};
+   });
+   _elm.Graph.values = {_op: _op
+                       ,Graph: Graph
+                       ,graph: graph
+                       ,addSeries: addSeries
+                       ,gapSize: gapSize
+                       ,roundTo: roundTo
+                       ,labelPositions: labelPositions
+                       ,drawGraph: drawGraph};
+   return _elm.Graph.values;
+};
