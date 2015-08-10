@@ -1,11 +1,35 @@
 module Pokemon where
 
+import Dict exposing (Dict)
+
 type alias Species =
     { indexNumber : Int
     , pokedexNumber : Int
     , name : String
     }
 
+speciesByIndex : Dict Int Species
+speciesByIndex =
+    speciesList
+        |> List.map (\species -> (species.indexNumber, species))
+        |> Dict.fromList
+
+speciesByPokedex : Dict Int Species
+speciesByPokedex =
+    speciesList
+        |> List.map (\species -> (species.pokedexNumber, species))
+        |> Dict.fromList
+
+speciesByName : Dict String Species
+speciesByName =
+    speciesList
+        |> List.map (\species -> (species.name, species))
+        |> Dict.fromList
+
+noSpecies : Species
+noSpecies = { indexNumber = 0, pokedexNumber = 0, name = "" }
+
+speciesList : List Species
 speciesList =
     [ { indexNumber = 1, pokedexNumber = 112, name = "Rhydon" }
     , { indexNumber = 2, pokedexNumber = 115, name = "Kangaskhan" }
