@@ -11,10 +11,11 @@ import String exposing (toInt)
 import Text exposing (fromString)
 import Trampoline exposing (..)
 
-import RNG exposing (..)
-import Graph exposing (..)
 import Dist
 import DSum exposing (..)
+import Graph exposing (..)
+import RNG exposing (..)
+import Strategy exposing (..)
 
 dsumLow : Signal.Mailbox Content
 dsumLow = Signal.mailbox noContent
@@ -110,17 +111,23 @@ combine = List.foldr (Signal.map2 (::)) (Signal.constant [])
 dsumGraph : Signal Graph
 dsumGraph = graph (Just (0, 1000)) (Just (0, 255)) << List.map (dsumPath 1000 0) <~ Signal.sampleOn calculateBox.signal initialRNGStates
 
-buildSuccessGraph : Int -> Int -> DSumState -> Graph
-buildSuccessGraph low high state =
+buildSuccessProbabilities : Int -> Int -> DSumState -> List Float
+buildSuccessProbabilities low high state =
     state
     |> filterDSum (\x -> (x - low) % 256 < (high - low) % 256)
     |> successProbabilities 25 [2, 4] 1000 0
-    |> toPath
-    |> (\x -> [x])
-    |> graph (Just (0, 1000)) (Just (0, 1))
+
+successProbabilitiesSignal : Signal (List Float)
+successProbabilitiesSignal = buildSuccessProbabilities <~ dsumLowSignal ~ dsumHighSignal ~ Signal.constant initialRNGMix
 
 successGraph : Signal Graph
-successGraph = buildSuccessGraph <~ dsumLowSignal ~ dsumHighSignal ~ Signal.constant initialRNGMix
+successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
+
+buildStrategy : List Float -> Strategy
+buildStrategy = simplify 15 << frameStrategy << List.map (\x -> x > 0.3)
+
+strategy : Signal Strategy
+strategy = buildStrategy <~ successProbabilitiesSignal
 
 main : Signal Element
 main = flow down <~ combine
@@ -130,4 +137,5 @@ main = flow down <~ combine
     -- , output
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
+    , Signal.map show strategy
     ]

@@ -3891,8 +3891,14 @@ Elm.Main.make = function (_elm) {
    $RNG = Elm.RNG.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Strategy = Elm.Strategy.make(_elm),
    $String = Elm.String.make(_elm),
    $Trampoline = Elm.Trampoline.make(_elm);
+   var buildStrategy = function ($) {
+      return $Strategy.simplify(15)($Strategy.frameStrategy($List.map(function (x) {
+         return _U.cmp(x,0.3) > 0;
+      })($)));
+   };
    var combine = A2($List.foldr,
    $Signal.map2(F2(function (x,y) {
       return A2($List._op["::"],
@@ -3922,7 +3928,7 @@ Elm.Main.make = function (_elm) {
                       ,_0: $Basics.toFloat(_v0._0)
                       ,_1: $Basics.toFloat(_v0._1)};}
             _U.badCase($moduleName,
-            "on line 100, column 47 to 67");
+            "on line 101, column 47 to 67");
          }();
       })(A2($List.map2,
       F2(function (v0,v1) {
@@ -3948,7 +3954,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 95 and 97");
+         "between lines 96 and 98");
       }();
    });
    var toPath = toPath$(0);
@@ -3981,18 +3987,10 @@ Elm.Main.make = function (_elm) {
       carry,
       state)));
    });
-   var buildSuccessGraph = F3(function (low,
+   var buildSuccessProbabilities = F3(function (low,
    high,
    state) {
-      return A2($Graph.graph,
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1000}),
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1}))(function (x) {
-         return _L.fromArray([x]);
-      }(toPath(A4(successProbabilities,
+      return A4(successProbabilities,
       25,
       _L.fromArray([2,4]),
       1000,
@@ -4003,7 +4001,7 @@ Elm.Main.make = function (_elm) {
          A2($Basics._op["%"],
          high - low,
          256)) < 0;
-      })(state)))));
+      })(state));
    });
    var iterate$ = F3(function (n,
    f,
@@ -4018,7 +4016,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 65, column 37 to 58");
+            "on line 66, column 37 to 58");
          }();
       });
    });
@@ -4098,13 +4096,29 @@ Elm.Main.make = function (_elm) {
       return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
    },
    dsumLow.signal));
-   var successGraph = A2($Signal._op["~"],
+   var successProbabilitiesSignal = A2($Signal._op["~"],
    A2($Signal._op["~"],
    A2($Signal._op["<~"],
-   buildSuccessGraph,
+   buildSuccessProbabilities,
    dsumLowSignal),
    dsumHighSignal),
    $Signal.constant($DSum.initialRNGMix));
+   var successGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   successProbabilitiesSignal);
+   var strategy = A2($Signal._op["<~"],
+   buildStrategy,
+   successProbabilitiesSignal);
    var dsumLowField = A2($Signal._op["<~"],
    A3($Graphics$Input$Field.field,
    $Graphics$Input$Field.defaultStyle,
@@ -4118,7 +4132,10 @@ Elm.Main.make = function (_elm) {
                         ,$Signal.constant(calculateButton)
                         ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
-                        successGraph)])));
+                        successGraph)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        strategy)])));
    _elm.Main.values = {_op: _op
                       ,dsumLow: dsumLow
                       ,dsumLowSignal: dsumLowSignal
@@ -4141,8 +4158,11 @@ Elm.Main.make = function (_elm) {
                       ,dsums: dsums
                       ,combine: combine
                       ,dsumGraph: dsumGraph
-                      ,buildSuccessGraph: buildSuccessGraph
+                      ,buildSuccessProbabilities: buildSuccessProbabilities
+                      ,successProbabilitiesSignal: successProbabilitiesSignal
                       ,successGraph: successGraph
+                      ,buildStrategy: buildStrategy
+                      ,strategy: strategy
                       ,main: main};
    return _elm.Main.values;
 };
@@ -10523,6 +10543,105 @@ Elm.Signal.make = function (_elm) {
                         ,forwardTo: forwardTo
                         ,Mailbox: Mailbox};
    return _elm.Signal.values;
+};
+Elm.Strategy = Elm.Strategy || {};
+Elm.Strategy.make = function (_elm) {
+   "use strict";
+   _elm.Strategy = _elm.Strategy || {};
+   if (_elm.Strategy.values)
+   return _elm.Strategy.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Strategy",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var removeSmallSteps = F2(function (frameThreshold,
+   strat) {
+      return function () {
+         switch (strat.ctor)
+         {case "::":
+            switch (strat._1.ctor)
+              {case "::":
+                 return _U.cmp(strat._0.frames,
+                   frameThreshold) < 0 ? A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   {_: {}
+                   ,frames: strat._0.frames + strat._1._0.frames
+                   ,inGrass: strat._1._0.inGrass},
+                   strat._1._1)) : A2($List._op["::"],
+                   strat._0,
+                   A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   strat._1._0,
+                   strat._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   strat._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 21 and 26");
+      }();
+   });
+   var combineSteps = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::": switch (l._1.ctor)
+              {case "::":
+                 return _U.eq(l._0.inGrass,
+                   l._1._0.inGrass) ? combineSteps(A2($List._op["::"],
+                   {_: {}
+                   ,frames: l._0.frames + l._1._0.frames
+                   ,inGrass: l._0.inGrass},
+                   l._1._1)) : A2($List._op["::"],
+                   l._0,
+                   combineSteps(A2($List._op["::"],
+                   l._1._0,
+                   l._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   l._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 13 and 18");
+      }();
+   };
+   var simplify = F2(function (frameThreshold,
+   strat) {
+      return removeSmallSteps(frameThreshold)(combineSteps(strat));
+   });
+   var frameStrategy = function (l) {
+      return combineSteps($List.map(function (b) {
+         return {_: {}
+                ,frames: 1
+                ,inGrass: b};
+      })(l));
+   };
+   var StrategyStep = F2(function (a,
+   b) {
+      return {_: {}
+             ,frames: b
+             ,inGrass: a};
+   });
+   _elm.Strategy.values = {_op: _op
+                          ,StrategyStep: StrategyStep
+                          ,combineSteps: combineSteps
+                          ,removeSmallSteps: removeSmallSteps
+                          ,simplify: simplify
+                          ,frameStrategy: frameStrategy};
+   return _elm.Strategy.values;
 };
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {
