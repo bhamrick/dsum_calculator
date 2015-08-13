@@ -692,6 +692,82 @@ Elm.Color.make = function (_elm) {
                        ,darkGray: darkGray};
    return _elm.Color.values;
 };
+Elm.DSum = Elm.DSum || {};
+Elm.DSum.make = function (_elm) {
+   "use strict";
+   _elm.DSum = _elm.DSum || {};
+   if (_elm.DSum.values)
+   return _elm.DSum.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "DSum",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $Encounters = Elm.Encounters.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $RNG = Elm.RNG.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var dsumSlotDist = F2(function (rate,
+   dsum) {
+      return $Dist.map($Encounters.slotFromRand)($Dist.uniform($List.map(function (r1) {
+         return A2($Basics._op["%"],
+         dsum - r1,
+         256);
+      })(_L.range(0,rate - 1))));
+   });
+   var dsumStep = F2(function (carry,
+   dist) {
+      return A2($Dist.map,
+      $RNG.rngStep$(carry),
+      dist);
+   });
+   var dsumDist = $Dist.map($RNG.getDSum$);
+   var filterDSum = F2(function (f,
+   dist) {
+      return A2($Dist.filter,
+      function ($) {
+         return f($RNG.getDSum$($));
+      },
+      dist);
+   });
+   var initialRDiv = 17;
+   var initialRNGMix = $Dict.fromList($List.concat(_L.fromArray([A2($List.map,
+                                                                function (dsum) {
+                                                                   return {ctor: "_Tuple2"
+                                                                          ,_0: {ctor: "_Tuple4"
+                                                                               ,_0: initialRDiv
+                                                                               ,_1: 4
+                                                                               ,_2: dsum
+                                                                               ,_3: 0}
+                                                                          ,_1: 3 / 1024};
+                                                                },
+                                                                _L.range(0,255))
+                                                                ,A2($List.map,
+                                                                function (dsum) {
+                                                                   return {ctor: "_Tuple2"
+                                                                          ,_0: {ctor: "_Tuple4"
+                                                                               ,_0: initialRDiv
+                                                                               ,_1: 0
+                                                                               ,_2: dsum
+                                                                               ,_3: 0}
+                                                                          ,_1: 1 / 1024};
+                                                                },
+                                                                _L.range(0,
+                                                                255))])));
+   _elm.DSum.values = {_op: _op
+                      ,initialRDiv: initialRDiv
+                      ,initialRNGMix: initialRNGMix
+                      ,filterDSum: filterDSum
+                      ,dsumDist: dsumDist
+                      ,dsumStep: dsumStep
+                      ,dsumSlotDist: dsumSlotDist};
+   return _elm.DSum.values;
+};
 Elm.Debug = Elm.Debug || {};
 Elm.Debug.make = function (_elm) {
    "use strict";
@@ -717,6 +793,1410 @@ Elm.Debug.make = function (_elm) {
                        ,watchSummary: watchSummary
                        ,trace: trace};
    return _elm.Debug.values;
+};
+Elm.Dict = Elm.Dict || {};
+Elm.Dict.make = function (_elm) {
+   "use strict";
+   _elm.Dict = _elm.Dict || {};
+   if (_elm.Dict.values)
+   return _elm.Dict.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Dict",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Debug = Elm.Native.Debug.make(_elm),
+   $String = Elm.String.make(_elm);
+   var foldr = F3(function (f,
+   acc,
+   t) {
+      return function () {
+         switch (t.ctor)
+         {case "RBEmpty":
+            switch (t._0.ctor)
+              {case "LBlack": return acc;}
+              break;
+            case "RBNode": return A3(foldr,
+              f,
+              A3(f,
+              t._1,
+              t._2,
+              A3(foldr,f,acc,t._4)),
+              t._3);}
+         _U.badCase($moduleName,
+         "between lines 417 and 421");
+      }();
+   });
+   var keys = function (dict) {
+      return A3(foldr,
+      F3(function (key,
+      value,
+      keyList) {
+         return A2($List._op["::"],
+         key,
+         keyList);
+      }),
+      _L.fromArray([]),
+      dict);
+   };
+   var values = function (dict) {
+      return A3(foldr,
+      F3(function (key,
+      value,
+      valueList) {
+         return A2($List._op["::"],
+         value,
+         valueList);
+      }),
+      _L.fromArray([]),
+      dict);
+   };
+   var toList = function (dict) {
+      return A3(foldr,
+      F3(function (key,value,list) {
+         return A2($List._op["::"],
+         {ctor: "_Tuple2"
+         ,_0: key
+         ,_1: value},
+         list);
+      }),
+      _L.fromArray([]),
+      dict);
+   };
+   var foldl = F3(function (f,
+   acc,
+   dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBlack": return acc;}
+              break;
+            case "RBNode": return A3(foldl,
+              f,
+              A3(f,
+              dict._1,
+              dict._2,
+              A3(foldl,f,acc,dict._3)),
+              dict._4);}
+         _U.badCase($moduleName,
+         "between lines 406 and 410");
+      }();
+   });
+   var isBBlack = function (dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBBlack": return true;}
+              break;
+            case "RBNode":
+            switch (dict._0.ctor)
+              {case "BBlack": return true;}
+              break;}
+         return false;
+      }();
+   };
+   var showFlag = function (f) {
+      return function () {
+         switch (f.ctor)
+         {case "Insert": return "Insert";
+            case "Remove": return "Remove";
+            case "Same": return "Same";}
+         _U.badCase($moduleName,
+         "between lines 182 and 185");
+      }();
+   };
+   var Same = {ctor: "Same"};
+   var Remove = {ctor: "Remove"};
+   var Insert = {ctor: "Insert"};
+   var get = F2(function (targetKey,
+   dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBlack":
+                 return $Maybe.Nothing;}
+              break;
+            case "RBNode":
+            return function () {
+                 var _v29 = A2($Basics.compare,
+                 targetKey,
+                 dict._1);
+                 switch (_v29.ctor)
+                 {case "EQ":
+                    return $Maybe.Just(dict._2);
+                    case "GT": return A2(get,
+                      targetKey,
+                      dict._4);
+                    case "LT": return A2(get,
+                      targetKey,
+                      dict._3);}
+                 _U.badCase($moduleName,
+                 "between lines 129 and 132");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 124 and 132");
+      }();
+   });
+   var member = F2(function (key,
+   dict) {
+      return function () {
+         var _v30 = A2(get,key,dict);
+         switch (_v30.ctor)
+         {case "Just": return true;
+            case "Nothing": return false;}
+         _U.badCase($moduleName,
+         "between lines 138 and 140");
+      }();
+   });
+   var max = function (dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            return $Native$Debug.crash("(max Empty) is not defined");
+            case "RBNode":
+            switch (dict._4.ctor)
+              {case "RBEmpty":
+                 return {ctor: "_Tuple2"
+                        ,_0: dict._1
+                        ,_1: dict._2};}
+              return max(dict._4);}
+         _U.badCase($moduleName,
+         "between lines 100 and 108");
+      }();
+   };
+   var min = function (dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBlack":
+                 return $Native$Debug.crash("(min Empty) is not defined");}
+              break;
+            case "RBNode":
+            switch (dict._3.ctor)
+              {case "RBEmpty":
+                 switch (dict._3._0.ctor)
+                   {case "LBlack":
+                      return {ctor: "_Tuple2"
+                             ,_0: dict._1
+                             ,_1: dict._2};}
+                   break;}
+              return min(dict._3);}
+         _U.badCase($moduleName,
+         "between lines 87 and 95");
+      }();
+   };
+   var RBEmpty = function (a) {
+      return {ctor: "RBEmpty"
+             ,_0: a};
+   };
+   var RBNode = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {ctor: "RBNode"
+             ,_0: a
+             ,_1: b
+             ,_2: c
+             ,_3: d
+             ,_4: e};
+   });
+   var showLColor = function (color) {
+      return function () {
+         switch (color.ctor)
+         {case "LBBlack":
+            return "LBBlack";
+            case "LBlack": return "LBlack";}
+         _U.badCase($moduleName,
+         "between lines 70 and 72");
+      }();
+   };
+   var LBBlack = {ctor: "LBBlack"};
+   var LBlack = {ctor: "LBlack"};
+   var empty = RBEmpty(LBlack);
+   var isEmpty = function (dict) {
+      return _U.eq(dict,empty);
+   };
+   var map = F2(function (f,dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBlack":
+                 return RBEmpty(LBlack);}
+              break;
+            case "RBNode": return A5(RBNode,
+              dict._0,
+              dict._1,
+              A2(f,dict._1,dict._2),
+              A2(map,f,dict._3),
+              A2(map,f,dict._4));}
+         _U.badCase($moduleName,
+         "between lines 394 and 399");
+      }();
+   });
+   var showNColor = function (c) {
+      return function () {
+         switch (c.ctor)
+         {case "BBlack": return "BBlack";
+            case "Black": return "Black";
+            case "NBlack": return "NBlack";
+            case "Red": return "Red";}
+         _U.badCase($moduleName,
+         "between lines 56 and 60");
+      }();
+   };
+   var reportRemBug = F4(function (msg,
+   c,
+   lgot,
+   rgot) {
+      return $Native$Debug.crash($String.concat(_L.fromArray(["Internal red-black tree invariant violated, expected "
+                                                             ,msg
+                                                             ," and got "
+                                                             ,showNColor(c)
+                                                             ,"/"
+                                                             ,lgot
+                                                             ,"/"
+                                                             ,rgot
+                                                             ,"\nPlease report this bug to <https://github.com/elm-lang/Elm/issues>"])));
+   });
+   var NBlack = {ctor: "NBlack"};
+   var BBlack = {ctor: "BBlack"};
+   var Black = {ctor: "Black"};
+   var ensureBlackRoot = function (dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBlack": return dict;}
+              break;
+            case "RBNode":
+            switch (dict._0.ctor)
+              {case "Black": return dict;
+                 case "Red": return A5(RBNode,
+                   Black,
+                   dict._1,
+                   dict._2,
+                   dict._3,
+                   dict._4);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 154 and 162");
+      }();
+   };
+   var blackish = function (t) {
+      return function () {
+         switch (t.ctor)
+         {case "RBEmpty": return true;
+            case "RBNode":
+            return _U.eq(t._0,
+              Black) || _U.eq(t._0,BBlack);}
+         _U.badCase($moduleName,
+         "between lines 339 and 341");
+      }();
+   };
+   var blacken = function (t) {
+      return function () {
+         switch (t.ctor)
+         {case "RBEmpty":
+            return RBEmpty(LBlack);
+            case "RBNode": return A5(RBNode,
+              Black,
+              t._1,
+              t._2,
+              t._3,
+              t._4);}
+         _U.badCase($moduleName,
+         "between lines 378 and 380");
+      }();
+   };
+   var Red = {ctor: "Red"};
+   var moreBlack = function (color) {
+      return function () {
+         switch (color.ctor)
+         {case "BBlack":
+            return $Native$Debug.crash("Can\'t make a double black node more black!");
+            case "Black": return BBlack;
+            case "NBlack": return Red;
+            case "Red": return Black;}
+         _U.badCase($moduleName,
+         "between lines 244 and 248");
+      }();
+   };
+   var lessBlack = function (color) {
+      return function () {
+         switch (color.ctor)
+         {case "BBlack": return Black;
+            case "Black": return Red;
+            case "NBlack":
+            return $Native$Debug.crash("Can\'t make a negative black node less black!");
+            case "Red": return NBlack;}
+         _U.badCase($moduleName,
+         "between lines 253 and 257");
+      }();
+   };
+   var lessBlackTree = function (dict) {
+      return function () {
+         switch (dict.ctor)
+         {case "RBEmpty":
+            switch (dict._0.ctor)
+              {case "LBBlack":
+                 return RBEmpty(LBlack);}
+              break;
+            case "RBNode": return A5(RBNode,
+              lessBlack(dict._0),
+              dict._1,
+              dict._2,
+              dict._3,
+              dict._4);}
+         _U.badCase($moduleName,
+         "between lines 262 and 264");
+      }();
+   };
+   var redden = function (t) {
+      return function () {
+         switch (t.ctor)
+         {case "RBEmpty":
+            return $Native$Debug.crash("can\'t make a Leaf red");
+            case "RBNode": return A5(RBNode,
+              Red,
+              t._1,
+              t._2,
+              t._3,
+              t._4);}
+         _U.badCase($moduleName,
+         "between lines 386 and 388");
+      }();
+   };
+   var balance_node = function (t) {
+      return function () {
+         var assemble = function (col) {
+            return function (xk) {
+               return function (xv) {
+                  return function (yk) {
+                     return function (yv) {
+                        return function (zk) {
+                           return function (zv) {
+                              return function (a) {
+                                 return function (b) {
+                                    return function (c) {
+                                       return function (d) {
+                                          return A5(RBNode,
+                                          lessBlack(col),
+                                          yk,
+                                          yv,
+                                          A5(RBNode,Black,xk,xv,a,b),
+                                          A5(RBNode,Black,zk,zv,c,d));
+                                       };
+                                    };
+                                 };
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+         return blackish(t) ? function () {
+            switch (t.ctor)
+            {case "RBNode":
+               switch (t._3.ctor)
+                 {case "RBNode":
+                    switch (t._3._0.ctor)
+                      {case "Red":
+                         switch (t._3._3.ctor)
+                           {case "RBNode":
+                              switch (t._3._3._0.ctor)
+                                {case "Red":
+                                   return assemble(t._0)(t._3._3._1)(t._3._3._2)(t._3._1)(t._3._2)(t._1)(t._2)(t._3._3._3)(t._3._3._4)(t._3._4)(t._4);}
+                                break;}
+                           switch (t._3._4.ctor)
+                           {case "RBNode":
+                              switch (t._3._4._0.ctor)
+                                {case "Red":
+                                   return assemble(t._0)(t._3._1)(t._3._2)(t._3._4._1)(t._3._4._2)(t._1)(t._2)(t._3._3)(t._3._4._3)(t._3._4._4)(t._4);}
+                                break;}
+                           break;}
+                      break;}
+                 switch (t._4.ctor)
+                 {case "RBNode":
+                    switch (t._4._0.ctor)
+                      {case "Red":
+                         switch (t._4._3.ctor)
+                           {case "RBNode":
+                              switch (t._4._3._0.ctor)
+                                {case "Red":
+                                   return assemble(t._0)(t._1)(t._2)(t._4._3._1)(t._4._3._2)(t._4._1)(t._4._2)(t._3)(t._4._3._3)(t._4._3._4)(t._4._4);}
+                                break;}
+                           switch (t._4._4.ctor)
+                           {case "RBNode":
+                              switch (t._4._4._0.ctor)
+                                {case "Red":
+                                   return assemble(t._0)(t._1)(t._2)(t._4._1)(t._4._2)(t._4._4._1)(t._4._4._2)(t._3)(t._4._3)(t._4._4._3)(t._4._4._4);}
+                                break;}
+                           break;}
+                      break;}
+                 switch (t._0.ctor)
+                 {case "BBlack":
+                    switch (t._4.ctor)
+                      {case "RBNode":
+                         switch (t._4._0.ctor)
+                           {case "NBlack":
+                              switch (t._4._3.ctor)
+                                {case "RBNode":
+                                   switch (t._4._3._0.ctor)
+                                     {case "Black":
+                                        return function () {
+                                             switch (t._4._4.ctor)
+                                             {case "RBNode":
+                                                switch (t._4._4._0.ctor)
+                                                  {case "Black":
+                                                     return A5(RBNode,
+                                                       Black,
+                                                       t._4._3._1,
+                                                       t._4._3._2,
+                                                       A5(RBNode,
+                                                       Black,
+                                                       t._1,
+                                                       t._2,
+                                                       t._3,
+                                                       t._4._3._3),
+                                                       A5(balance,
+                                                       Black,
+                                                       t._4._1,
+                                                       t._4._2,
+                                                       t._4._3._4,
+                                                       redden(t._4._4)));}
+                                                  break;}
+                                             return t;
+                                          }();}
+                                     break;}
+                                break;}
+                           break;}
+                      switch (t._3.ctor)
+                      {case "RBNode":
+                         switch (t._3._0.ctor)
+                           {case "NBlack":
+                              switch (t._3._4.ctor)
+                                {case "RBNode":
+                                   switch (t._3._4._0.ctor)
+                                     {case "Black":
+                                        return function () {
+                                             switch (t._3._3.ctor)
+                                             {case "RBNode":
+                                                switch (t._3._3._0.ctor)
+                                                  {case "Black":
+                                                     return A5(RBNode,
+                                                       Black,
+                                                       t._3._4._1,
+                                                       t._3._4._2,
+                                                       A5(balance,
+                                                       Black,
+                                                       t._3._1,
+                                                       t._3._2,
+                                                       redden(t._3._3),
+                                                       t._3._4._3),
+                                                       A5(RBNode,
+                                                       Black,
+                                                       t._1,
+                                                       t._2,
+                                                       t._3._4._4,
+                                                       t._4));}
+                                                  break;}
+                                             return t;
+                                          }();}
+                                     break;}
+                                break;}
+                           break;}
+                      break;}
+                 break;}
+            return t;
+         }() : t;
+      }();
+   };
+   var balance = F5(function (c,
+   k,
+   v,
+   l,
+   r) {
+      return balance_node(A5(RBNode,
+      c,
+      k,
+      v,
+      l,
+      r));
+   });
+   var bubble = F5(function (c,
+   k,
+   v,
+   l,
+   r) {
+      return isBBlack(l) || isBBlack(r) ? A5(balance,
+      moreBlack(c),
+      k,
+      v,
+      lessBlackTree(l),
+      lessBlackTree(r)) : A5(RBNode,
+      c,
+      k,
+      v,
+      l,
+      r);
+   });
+   var remove_max = F5(function (c,
+   k,
+   v,
+   l,
+   r) {
+      return function () {
+         switch (r.ctor)
+         {case "RBEmpty": return A3(rem,
+              c,
+              l,
+              r);
+            case "RBNode": return A5(bubble,
+              c,
+              k,
+              v,
+              l,
+              A5(remove_max,
+              r._0,
+              r._1,
+              r._2,
+              r._3,
+              r._4));}
+         _U.badCase($moduleName,
+         "between lines 323 and 328");
+      }();
+   });
+   var rem = F3(function (c,l,r) {
+      return function () {
+         var _v169 = {ctor: "_Tuple2"
+                     ,_0: l
+                     ,_1: r};
+         switch (_v169.ctor)
+         {case "_Tuple2":
+            switch (_v169._0.ctor)
+              {case "RBEmpty":
+                 switch (_v169._1.ctor)
+                   {case "RBEmpty":
+                      return function () {
+                           switch (c.ctor)
+                           {case "Black":
+                              return RBEmpty(LBBlack);
+                              case "Red":
+                              return RBEmpty(LBlack);}
+                           _U.badCase($moduleName,
+                           "between lines 282 and 286");
+                        }();
+                      case "RBNode":
+                      return function () {
+                           var _v191 = {ctor: "_Tuple3"
+                                       ,_0: c
+                                       ,_1: _v169._0._0
+                                       ,_2: _v169._1._0};
+                           switch (_v191.ctor)
+                           {case "_Tuple3":
+                              switch (_v191._0.ctor)
+                                {case "Black":
+                                   switch (_v191._1.ctor)
+                                     {case "LBlack":
+                                        switch (_v191._2.ctor)
+                                          {case "Red": return A5(RBNode,
+                                               Black,
+                                               _v169._1._1,
+                                               _v169._1._2,
+                                               _v169._1._3,
+                                               _v169._1._4);}
+                                          break;}
+                                     break;}
+                                break;}
+                           return A4(reportRemBug,
+                           "Black/LBlack/Red",
+                           c,
+                           showLColor(_v169._0._0),
+                           showNColor(_v169._1._0));
+                        }();}
+                   break;
+                 case "RBNode":
+                 switch (_v169._1.ctor)
+                   {case "RBEmpty":
+                      return function () {
+                           var _v195 = {ctor: "_Tuple3"
+                                       ,_0: c
+                                       ,_1: _v169._0._0
+                                       ,_2: _v169._1._0};
+                           switch (_v195.ctor)
+                           {case "_Tuple3":
+                              switch (_v195._0.ctor)
+                                {case "Black":
+                                   switch (_v195._1.ctor)
+                                     {case "Red":
+                                        switch (_v195._2.ctor)
+                                          {case "LBlack":
+                                             return A5(RBNode,
+                                               Black,
+                                               _v169._0._1,
+                                               _v169._0._2,
+                                               _v169._0._3,
+                                               _v169._0._4);}
+                                          break;}
+                                     break;}
+                                break;}
+                           return A4(reportRemBug,
+                           "Black/Red/LBlack",
+                           c,
+                           showNColor(_v169._0._0),
+                           showLColor(_v169._1._0));
+                        }();
+                      case "RBNode":
+                      return function () {
+                           var l$ = A5(remove_max,
+                           _v169._0._0,
+                           _v169._0._1,
+                           _v169._0._2,
+                           _v169._0._3,
+                           _v169._0._4);
+                           var r = A5(RBNode,
+                           _v169._1._0,
+                           _v169._1._1,
+                           _v169._1._2,
+                           _v169._1._3,
+                           _v169._1._4);
+                           var l = A5(RBNode,
+                           _v169._0._0,
+                           _v169._0._1,
+                           _v169._0._2,
+                           _v169._0._3,
+                           _v169._0._4);
+                           var $ = max(l),
+                           k = $._0,
+                           v = $._1;
+                           return A5(bubble,c,k,v,l$,r);
+                        }();}
+                   break;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 280 and 309");
+      }();
+   });
+   var update = F3(function (k,
+   alter,
+   dict) {
+      return function () {
+         var up = function (dict) {
+            return function () {
+               switch (dict.ctor)
+               {case "RBEmpty":
+                  switch (dict._0.ctor)
+                    {case "LBlack":
+                       return function () {
+                            var _v206 = alter($Maybe.Nothing);
+                            switch (_v206.ctor)
+                            {case "Just":
+                               return {ctor: "_Tuple2"
+                                      ,_0: Insert
+                                      ,_1: A5(RBNode,
+                                      Red,
+                                      k,
+                                      _v206._0,
+                                      empty,
+                                      empty)};
+                               case "Nothing":
+                               return {ctor: "_Tuple2"
+                                      ,_0: Same
+                                      ,_1: empty};}
+                            _U.badCase($moduleName,
+                            "between lines 194 and 198");
+                         }();}
+                    break;
+                  case "RBNode":
+                  return function () {
+                       var _v208 = A2($Basics.compare,
+                       k,
+                       dict._1);
+                       switch (_v208.ctor)
+                       {case "EQ": return function () {
+                               var _v209 = alter($Maybe.Just(dict._2));
+                               switch (_v209.ctor)
+                               {case "Just":
+                                  return {ctor: "_Tuple2"
+                                         ,_0: Same
+                                         ,_1: A5(RBNode,
+                                         dict._0,
+                                         dict._1,
+                                         _v209._0,
+                                         dict._3,
+                                         dict._4)};
+                                  case "Nothing":
+                                  return {ctor: "_Tuple2"
+                                         ,_0: Remove
+                                         ,_1: A3(rem,
+                                         dict._0,
+                                         dict._3,
+                                         dict._4)};}
+                               _U.badCase($moduleName,
+                               "between lines 201 and 206");
+                            }();
+                          case "GT": return function () {
+                               var $ = up(dict._4),
+                               flag = $._0,
+                               newRight = $._1;
+                               return function () {
+                                  switch (flag.ctor)
+                                  {case "Insert":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Insert
+                                            ,_1: A5(balance,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            dict._3,
+                                            newRight)};
+                                     case "Remove":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Remove
+                                            ,_1: A5(bubble,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            dict._3,
+                                            newRight)};
+                                     case "Same":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Same
+                                            ,_1: A5(RBNode,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            dict._3,
+                                            newRight)};}
+                                  _U.badCase($moduleName,
+                                  "between lines 215 and 220");
+                               }();
+                            }();
+                          case "LT": return function () {
+                               var $ = up(dict._3),
+                               flag = $._0,
+                               newLeft = $._1;
+                               return function () {
+                                  switch (flag.ctor)
+                                  {case "Insert":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Insert
+                                            ,_1: A5(balance,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            newLeft,
+                                            dict._4)};
+                                     case "Remove":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Remove
+                                            ,_1: A5(bubble,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            newLeft,
+                                            dict._4)};
+                                     case "Same":
+                                     return {ctor: "_Tuple2"
+                                            ,_0: Same
+                                            ,_1: A5(RBNode,
+                                            dict._0,
+                                            dict._1,
+                                            dict._2,
+                                            newLeft,
+                                            dict._4)};}
+                                  _U.badCase($moduleName,
+                                  "between lines 208 and 213");
+                               }();
+                            }();}
+                       _U.badCase($moduleName,
+                       "between lines 199 and 220");
+                    }();}
+               _U.badCase($moduleName,
+               "between lines 192 and 220");
+            }();
+         };
+         var $ = up(dict),
+         flag = $._0,
+         updatedDict = $._1;
+         return function () {
+            switch (flag.ctor)
+            {case "Insert":
+               return ensureBlackRoot(updatedDict);
+               case "Remove":
+               return blacken(updatedDict);
+               case "Same":
+               return updatedDict;}
+            _U.badCase($moduleName,
+            "between lines 222 and 225");
+         }();
+      }();
+   });
+   var insert = F3(function (key,
+   value,
+   dict) {
+      return A3(update,
+      key,
+      $Basics.always($Maybe.Just(value)),
+      dict);
+   });
+   var singleton = F2(function (key,
+   value) {
+      return A3(insert,
+      key,
+      value,
+      empty);
+   });
+   var union = F2(function (t1,
+   t2) {
+      return A3(foldl,
+      insert,
+      t2,
+      t1);
+   });
+   var fromList = function (assocs) {
+      return A3($List.foldl,
+      F2(function (_v214,dict) {
+         return function () {
+            switch (_v214.ctor)
+            {case "_Tuple2":
+               return A3(insert,
+                 _v214._0,
+                 _v214._1,
+                 dict);}
+            _U.badCase($moduleName,
+            "on line 466, column 38 to 59");
+         }();
+      }),
+      empty,
+      assocs);
+   };
+   var filter = F2(function (predicate,
+   dictionary) {
+      return function () {
+         var add = F3(function (key,
+         value,
+         dict) {
+            return A2(predicate,
+            key,
+            value) ? A3(insert,
+            key,
+            value,
+            dict) : dict;
+         });
+         return A3(foldl,
+         add,
+         empty,
+         dictionary);
+      }();
+   });
+   var intersect = F2(function (t1,
+   t2) {
+      return A2(filter,
+      F2(function (k,_v218) {
+         return function () {
+            return A2(member,k,t2);
+         }();
+      }),
+      t1);
+   });
+   var partition = F2(function (predicate,
+   dict) {
+      return function () {
+         var add = F3(function (key,
+         value,
+         _v220) {
+            return function () {
+               switch (_v220.ctor)
+               {case "_Tuple2":
+                  return A2(predicate,
+                    key,
+                    value) ? {ctor: "_Tuple2"
+                             ,_0: A3(insert,
+                             key,
+                             value,
+                             _v220._0)
+                             ,_1: _v220._1} : {ctor: "_Tuple2"
+                                              ,_0: _v220._0
+                                              ,_1: A3(insert,
+                                              key,
+                                              value,
+                                              _v220._1)};}
+               _U.badCase($moduleName,
+               "between lines 487 and 489");
+            }();
+         });
+         return A3(foldl,
+         add,
+         {ctor: "_Tuple2"
+         ,_0: empty
+         ,_1: empty},
+         dict);
+      }();
+   });
+   var remove = F2(function (key,
+   dict) {
+      return A3(update,
+      key,
+      $Basics.always($Maybe.Nothing),
+      dict);
+   });
+   var diff = F2(function (t1,t2) {
+      return A3(foldl,
+      F3(function (k,v,t) {
+         return A2(remove,k,t);
+      }),
+      t1,
+      t2);
+   });
+   _elm.Dict.values = {_op: _op
+                      ,empty: empty
+                      ,singleton: singleton
+                      ,insert: insert
+                      ,update: update
+                      ,isEmpty: isEmpty
+                      ,get: get
+                      ,remove: remove
+                      ,member: member
+                      ,filter: filter
+                      ,partition: partition
+                      ,foldl: foldl
+                      ,foldr: foldr
+                      ,map: map
+                      ,union: union
+                      ,intersect: intersect
+                      ,diff: diff
+                      ,keys: keys
+                      ,values: values
+                      ,toList: toList
+                      ,fromList: fromList};
+   return _elm.Dict.values;
+};
+Elm.Dist = Elm.Dist || {};
+Elm.Dist.make = function (_elm) {
+   "use strict";
+   _elm.Dist = _elm.Dist || {};
+   if (_elm.Dist.values)
+   return _elm.Dist.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Dist",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var collapse$ = function (vals) {
+      return $List.concat(A2($List.map,
+      function (_v0) {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return A2($List.map,
+                 function (_v4) {
+                    return function () {
+                       switch (_v4.ctor)
+                       {case "_Tuple2":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _v4._0
+                                 ,_1: _v0._1 * _v4._1};}
+                       _U.badCase($moduleName,
+                       "on line 72, column 74 to 80");
+                    }();
+                 },
+                 _v0._0);}
+            _U.badCase($moduleName,
+            "on line 72, column 52 to 84");
+         }();
+      },
+      vals));
+   };
+   var uniform = function (l) {
+      return function () {
+         var n = $List.length(l);
+         return $Dict.fromList($List.map(function (x) {
+            return {ctor: "_Tuple2"
+                   ,_0: x
+                   ,_1: 1 / $Basics.toFloat(n)};
+         })(l));
+      }();
+   };
+   var product$ = F2(function (l1,
+   l2) {
+      return function () {
+         switch (l1.ctor)
+         {case "::": switch (l1._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var probs = A2($List.map,
+                      function (_v13) {
+                         return function () {
+                            switch (_v13.ctor)
+                            {case "_Tuple2":
+                               return {ctor: "_Tuple2"
+                                      ,_0: {ctor: "_Tuple2"
+                                           ,_0: l1._0._0
+                                           ,_1: _v13._0}
+                                      ,_1: l1._0._1 * _v13._1};}
+                            _U.badCase($moduleName,
+                            "on line 50, column 39 to 50");
+                         }();
+                      },
+                      l2);
+                      return A2($List.append,
+                      probs,
+                      A2(product$,l1._1,l2));
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 46 and 52");
+      }();
+   });
+   var product = F2(function (d1,
+   d2) {
+      return function () {
+         var probs2 = $Dict.toList(d2);
+         var probs1 = $Dict.toList(d1);
+         var productProbs = A2(product$,
+         probs1,
+         probs2);
+         return $Dict.fromList(productProbs);
+      }();
+   });
+   var normalize = function (probs) {
+      return function () {
+         var total = $List.sum(A2($List.map,
+         $Basics.snd,
+         probs));
+         return A2($List.map,
+         function (_v17) {
+            return function () {
+               switch (_v17.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: _v17._0
+                         ,_1: _v17._1 / total};}
+               _U.badCase($moduleName,
+               "on line 36, column 30 to 42");
+            }();
+         },
+         probs);
+      }();
+   };
+   var filter = F2(function (f,
+   dist) {
+      return $Dict.fromList(normalize($List.filter(function (_v21) {
+         return function () {
+            switch (_v21.ctor)
+            {case "_Tuple2":
+               return f(_v21._0);}
+            _U.badCase($moduleName,
+            "on line 41, column 32 to 35");
+         }();
+      })($Dict.toList(dist))));
+   });
+   var partitionPrefix = F2(function (f,
+   l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return f(l._0) ? function () {
+                 var $ = A2(partitionPrefix,
+                 f,
+                 l._1),
+                 matches = $._0,
+                 rest = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: A2($List._op["::"],
+                        l._0,
+                        matches)
+                        ,_1: rest};
+              }() : {ctor: "_Tuple2"
+                    ,_0: _L.fromArray([])
+                    ,_1: l};
+            case "[]":
+            return {ctor: "_Tuple2"
+                   ,_0: _L.fromArray([])
+                   ,_1: _L.fromArray([])};}
+         _U.badCase($moduleName,
+         "between lines 12 and 16");
+      }();
+   });
+   var combineProbs = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            switch (list._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var $ = A2(partitionPrefix,
+                      function ($) {
+                         return F2(function (x,y) {
+                            return _U.eq(x,y);
+                         })(list._0._0)($Basics.fst($));
+                      },
+                      list),
+                      matches = $._0,
+                      rest = $._1;
+                      return A2($List._op["::"],
+                      {ctor: "_Tuple2"
+                      ,_0: list._0._0
+                      ,_1: $List.sum($List.map($Basics.snd)(matches))},
+                      combineProbs(rest));
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 19 and 23");
+      }();
+   };
+   var map = F2(function (f,dist) {
+      return $Dict.fromList(combineProbs($List.sort($List.map(function (_v33) {
+         return function () {
+            switch (_v33.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: f(_v33._0)
+                      ,_1: _v33._1};}
+            _U.badCase($moduleName,
+            "on line 28, column 30 to 36");
+         }();
+      })($Dict.toList(dist)))));
+   });
+   var lift2 = F3(function (f,
+   d1,
+   d2) {
+      return A2(map,
+      $Basics.uncurry(f),
+      A2(product,d1,d2));
+   });
+   var collapseMap = F2(function (f,
+   dist) {
+      return function () {
+         var probs = $Dict.toList(dist);
+         var nestedProbs = A2($List.map,
+         function (_v37) {
+            return function () {
+               switch (_v37.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: $Dict.toList(f(_v37._0))
+                         ,_1: _v37._1};}
+               _U.badCase($moduleName,
+               "on line 78, column 41 to 61");
+            }();
+         },
+         probs);
+         var collapsedProbs = collapse$(nestedProbs);
+         return $Dict.fromList(combineProbs($List.sort(collapsedProbs)));
+      }();
+   });
+   var probability = F2(function (f,
+   dist) {
+      return A3($Dict.foldl,
+      F3(function (x,p,s) {
+         return f(x) ? s + p : s;
+      }),
+      0,
+      dist);
+   });
+   _elm.Dist.values = {_op: _op
+                      ,probability: probability
+                      ,partitionPrefix: partitionPrefix
+                      ,combineProbs: combineProbs
+                      ,map: map
+                      ,normalize: normalize
+                      ,filter: filter
+                      ,product$: product$
+                      ,product: product
+                      ,lift2: lift2
+                      ,uniform: uniform
+                      ,collapse$: collapse$
+                      ,collapseMap: collapseMap};
+   return _elm.Dist.values;
+};
+Elm.Encounters = Elm.Encounters || {};
+Elm.Encounters.make = function (_elm) {
+   "use strict";
+   _elm.Encounters = _elm.Encounters || {};
+   if (_elm.Encounters.values)
+   return _elm.Encounters.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Encounters",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Pokemon = Elm.Pokemon.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var noEncounter = {_: {}
+                     ,level: 0
+                     ,species: $Pokemon.noSpecies};
+   var encounter = F2(function (name,
+   level) {
+      return {_: {}
+             ,level: level
+             ,species: $Maybe.withDefault($Pokemon.noSpecies)($Dict.get(name)($Pokemon.speciesByName))};
+   });
+   var route22table = {_: {}
+                      ,name: "Route 22"
+                      ,rate: 25
+                      ,slot1: A2(encounter,
+                      "Rattata",
+                      3)
+                      ,slot10: A2(encounter,
+                      "Nidoran F",
+                      4)
+                      ,slot2: A2(encounter,
+                      "Nidoran M",
+                      3)
+                      ,slot3: A2(encounter,
+                      "Rattata",
+                      4)
+                      ,slot4: A2(encounter,
+                      "Nidoran M",
+                      4)
+                      ,slot5: A2(encounter,
+                      "Rattata",
+                      2)
+                      ,slot6: A2(encounter,
+                      "Nidoran M",
+                      2)
+                      ,slot7: A2(encounter,
+                      "Spearow",
+                      3)
+                      ,slot8: A2(encounter,
+                      "Spearow",
+                      5)
+                      ,slot9: A2(encounter,
+                      "Nidoran F",
+                      3)};
+   var EncounterTable = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return function (k) {
+                                    return function (l) {
+                                       return {_: {}
+                                              ,name: a
+                                              ,rate: b
+                                              ,slot1: c
+                                              ,slot10: l
+                                              ,slot2: d
+                                              ,slot3: e
+                                              ,slot4: f
+                                              ,slot5: g
+                                              ,slot6: h
+                                              ,slot7: i
+                                              ,slot8: j
+                                              ,slot9: k};
+                                    };
+                                 };
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
+   var slotFromRand = function (x) {
+      return function () {
+         var x$ = A2($Basics._op["%"],
+         x,
+         256);
+         return _U.cmp(x,
+         51) < 0 ? 1 : _U.cmp(x,
+         102) < 0 ? 2 : _U.cmp(x,
+         141) < 0 ? 3 : _U.cmp(x,
+         166) < 0 ? 4 : _U.cmp(x,
+         191) < 0 ? 5 : _U.cmp(x,
+         216) < 0 ? 6 : _U.cmp(x,
+         229) < 0 ? 7 : _U.cmp(x,
+         242) < 0 ? 8 : _U.cmp(x,
+         253) < 0 ? 9 : 10;
+      }();
+   };
+   var slots = _L.fromArray([{ctor: "_Tuple2"
+                             ,_0: 0
+                             ,_1: 51}
+                            ,{ctor: "_Tuple2",_0: 51,_1: 51}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 102
+                             ,_1: 39}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 141
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 166
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 191
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 216
+                             ,_1: 13}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 229
+                             ,_1: 13}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 242
+                             ,_1: 11}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 253
+                             ,_1: 3}]);
+   var slotStarts = A2($List.map,
+   $Basics.fst,
+   slots);
+   var slotWidths = A2($List.map,
+   $Basics.snd,
+   slots);
+   var Encounter = F2(function (a,
+   b) {
+      return {_: {}
+             ,level: b
+             ,species: a};
+   });
+   _elm.Encounters.values = {_op: _op
+                            ,Encounter: Encounter
+                            ,slots: slots
+                            ,slotStarts: slotStarts
+                            ,slotWidths: slotWidths
+                            ,slotFromRand: slotFromRand
+                            ,EncounterTable: EncounterTable
+                            ,encounter: encounter
+                            ,noEncounter: noEncounter
+                            ,route22table: route22table};
+   return _elm.Encounters.values;
 };
 Elm.Graph = Elm.Graph || {};
 Elm.Graph.make = function (_elm) {
@@ -779,7 +2259,7 @@ Elm.Graph.make = function (_elm) {
                                      ,2]],
          $Graphics$Collage.defaultLine);
          var color_cycle = _L.fromArray([$Color.red
-                                        ,$Color.green
+                                        ,$Color.darkGreen
                                         ,$Color.blue
                                         ,$Color.purple
                                         ,$Color.orange]);
@@ -1885,6 +3365,37 @@ Elm.Graphics.Element.make = function (_elm) {
 };
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   if (_elm.Graphics.Input.values)
+   return _elm.Graphics.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input",
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = $Native$Graphics$Input.clickable;
+   var hoverable = $Native$Graphics$Input.hoverable;
+   var dropDown = $Native$Graphics$Input.dropDown;
+   var checkbox = $Native$Graphics$Input.checkbox;
+   var customButton = $Native$Graphics$Input.customButton;
+   var button = $Native$Graphics$Input.button;
+   _elm.Graphics.Input.values = {_op: _op
+                                ,button: button
+                                ,customButton: customButton
+                                ,checkbox: checkbox
+                                ,dropDown: dropDown
+                                ,hoverable: hoverable
+                                ,clickable: clickable};
+   return _elm.Graphics.Input.values;
+};
+Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
 Elm.Graphics.Input.Field = Elm.Graphics.Input.Field || {};
 Elm.Graphics.Input.Field.make = function (_elm) {
    "use strict";
@@ -2369,8 +3880,11 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
+   $DSum = Elm.DSum.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
    $Graph = Elm.Graph.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
    $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -2408,7 +3922,7 @@ Elm.Main.make = function (_elm) {
                       ,_0: $Basics.toFloat(_v0._0)
                       ,_1: $Basics.toFloat(_v0._1)};}
             _U.badCase($moduleName,
-            "on line 71, column 47 to 67");
+            "on line 100, column 47 to 67");
          }();
       })(A2($List.map2,
       F2(function (v0,v1) {
@@ -2421,20 +3935,90 @@ Elm.Main.make = function (_elm) {
       carry,
       state)));
    });
+   var toPath$ = F2(function (n,
+   l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return A2($List._op["::"],
+              {ctor: "_Tuple2"
+              ,_0: n
+              ,_1: l._0},
+              A2(toPath$,n + 1,l._1));
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 95 and 97");
+      }();
+   });
+   var toPath = toPath$(0);
+   var successProbability = F3(function (rate,
+   slots,
+   state) {
+      return $Dist.probability(function (s) {
+         return A2($List.member,
+         s,
+         slots);
+      })($Dist.collapseMap($DSum.dsumSlotDist(rate))($DSum.dsumDist(state)));
+   });
+   var successProbabilities = F5(function (rate,
+   slots,
+   n,
+   carry,
+   state) {
+      return _U.cmp(n,
+      0) < 1 ? _L.fromArray([]) : A2($List._op["::"],
+      A3(successProbability,
+      rate,
+      slots,
+      state),
+      A5(successProbabilities,
+      rate,
+      slots,
+      n - 1,
+      carry,
+      A2($DSum.dsumStep,
+      carry,
+      state)));
+   });
+   var buildSuccessGraph = F3(function (low,
+   high,
+   state) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath(A4(successProbabilities,
+      25,
+      _L.fromArray([2,4]),
+      1000,
+      0)($DSum.filterDSum(function (x) {
+         return _U.cmp(A2($Basics._op["%"],
+         x - low,
+         256),
+         A2($Basics._op["%"],
+         high - low,
+         256)) < 0;
+      })(state)))));
+   });
    var iterate$ = F3(function (n,
    f,
    x) {
       return _U.eq(n,
-      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v4) {
+      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v7) {
          return function () {
-            switch (_v4.ctor)
+            switch (_v7.ctor)
             {case "_Tuple0":
                return A3(iterate$,
                  n - 1,
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 68, column 37 to 58");
+            "on line 65, column 37 to 58");
          }();
       });
    });
@@ -2449,115 +4033,116 @@ Elm.Main.make = function (_elm) {
    var contentString = function (content) {
       return content.string;
    };
-   var hRandomSubInput = $Signal.mailbox($Graphics$Input$Field.noContent);
-   var hRandomSubField = A2($Signal._op["<~"],
-   A3($Graphics$Input$Field.field,
-   $Graphics$Input$Field.defaultStyle,
-   $Signal.message(hRandomSubInput.address),
-   "hRandomSub"),
-   hRandomSubInput.signal);
-   var hRandomSubSignal = A2($Signal._op["<~"],
-   function ($) {
-      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
-   },
-   hRandomSubInput.signal);
-   var hRandomAddInput = $Signal.mailbox($Graphics$Input$Field.noContent);
-   var hRandomAddField = A2($Signal._op["<~"],
-   A3($Graphics$Input$Field.field,
-   $Graphics$Input$Field.defaultStyle,
-   $Signal.message(hRandomAddInput.address),
-   "hRandomAdd"),
-   hRandomAddInput.signal);
-   var hRandomAddSignal = A2($Signal._op["<~"],
-   function ($) {
-      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
-   },
-   hRandomAddInput.signal);
-   var cycleInput = $Signal.mailbox($Graphics$Input$Field.noContent);
-   var cycleField = A2($Signal._op["<~"],
-   A3($Graphics$Input$Field.field,
-   $Graphics$Input$Field.defaultStyle,
-   $Signal.message(cycleInput.address),
-   "cycle"),
-   cycleInput.signal);
-   var cycleSignal = A2($Signal._op["<~"],
-   function ($) {
-      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
-   },
-   cycleInput.signal);
-   var rDivInput = $Signal.mailbox($Graphics$Input$Field.noContent);
-   var rDivField = A2($Signal._op["<~"],
-   A3($Graphics$Input$Field.field,
-   $Graphics$Input$Field.defaultStyle,
-   $Signal.message(rDivInput.address),
-   "rDiv"),
-   rDivInput.signal);
-   var rDivSignal = A2($Signal._op["<~"],
-   function ($) {
-      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
-   },
-   rDivInput.signal);
-   var initialRNGState = A2($Signal._op["~"],
-   A2($Signal._op["~"],
-   A2($Signal._op["~"],
+   var initialRNGStates = A2($Signal._op["~"],
    A2($Signal._op["<~"],
-   $RNG.rngState,
-   rDivSignal),
-   cycleSignal),
-   hRandomAddSignal),
-   hRandomSubSignal);
-   var output = A2($Signal._op["<~"],
-   $Graphics$Element.show,
-   A2($Signal._op["<~"],
-   A2(iterate,
-   3000,
-   $RNG.rngStep(0)),
-   initialRNGState));
+   F2(function (hRandomAdd,
+   hRandomSub) {
+      return A2($List.concatMap,
+      function (rDiv) {
+         return A2($List.map,
+         function (cycle) {
+            return A4($RNG.rngState,
+            rDiv,
+            cycle,
+            hRandomAdd,
+            hRandomSub);
+         },
+         _L.fromArray([0,4]));
+      },
+      _L.fromArray([17]));
+   }),
+   $Signal.constant(0)),
+   $Signal.constant(0));
+   var desiredSlots = $Signal.constant(_L.fromArray([2
+                                                    ,4]));
+   var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
+   var calculateButton = A2($Graphics$Input.button,
+   A2($Signal.message,
+   calculateBox.address,
+   {ctor: "_Tuple0"}),
+   "Calculate");
    var dsumGraph = A2($Signal._op["<~"],
    function ($) {
       return A2($Graph.graph,
       $Maybe.Just({ctor: "_Tuple2"
                   ,_0: 0
-                  ,_1: 1500}),
+                  ,_1: 1000}),
       $Maybe.Just({ctor: "_Tuple2"
                   ,_0: 0
-                  ,_1: 255}))($List.repeat(1)(A2(dsumPath,
-      1500,
-      0)($)));
+                  ,_1: 255}))($List.map(A2(dsumPath,
+      1000,
+      0))($));
    },
-   initialRNGState);
+   A2($Signal.sampleOn,
+   calculateBox.signal,
+   initialRNGStates));
+   var dsumHigh = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var dsumHighSignal = A2($Signal.sampleOn,
+   calculateBox.signal,
+   A2($Signal._op["<~"],
+   function ($) {
+      return $Maybe.withDefault(25)($Result.toMaybe($String.toInt(contentString($))));
+   },
+   dsumHigh.signal));
+   var dsumHighField = A2($Signal._op["<~"],
+   A3($Graphics$Input$Field.field,
+   $Graphics$Input$Field.defaultStyle,
+   $Signal.message(dsumHigh.address),
+   "DSum upper bound"),
+   dsumHigh.signal);
+   var dsumLow = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var dsumLowSignal = A2($Signal.sampleOn,
+   calculateBox.signal,
+   A2($Signal._op["<~"],
+   function ($) {
+      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
+   },
+   dsumLow.signal));
+   var successGraph = A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   buildSuccessGraph,
+   dsumLowSignal),
+   dsumHighSignal),
+   $Signal.constant($DSum.initialRNGMix));
+   var dsumLowField = A2($Signal._op["<~"],
+   A3($Graphics$Input$Field.field,
+   $Graphics$Input$Field.defaultStyle,
+   $Signal.message(dsumLow.address),
+   "DSum lower bound"),
+   dsumLow.signal);
    var main = A2($Signal._op["<~"],
    $Graphics$Element.flow($Graphics$Element.down),
-   combine(_L.fromArray([rDivField
-                        ,cycleField
-                        ,hRandomAddField
-                        ,hRandomSubField
-                        ,output
+   combine(_L.fromArray([dsumLowField
+                        ,dsumHighField
+                        ,$Signal.constant(calculateButton)
                         ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
-                        dsumGraph)])));
+                        successGraph)])));
    _elm.Main.values = {_op: _op
-                      ,rDivInput: rDivInput
-                      ,rDivField: rDivField
-                      ,rDivSignal: rDivSignal
-                      ,cycleInput: cycleInput
-                      ,cycleField: cycleField
-                      ,cycleSignal: cycleSignal
-                      ,hRandomAddInput: hRandomAddInput
-                      ,hRandomAddField: hRandomAddField
-                      ,hRandomAddSignal: hRandomAddSignal
-                      ,hRandomSubInput: hRandomSubInput
-                      ,hRandomSubField: hRandomSubField
-                      ,hRandomSubSignal: hRandomSubSignal
-                      ,initialRNGState: initialRNGState
-                      ,output: output
+                      ,dsumLow: dsumLow
+                      ,dsumLowSignal: dsumLowSignal
+                      ,dsumLowField: dsumLowField
+                      ,dsumHigh: dsumHigh
+                      ,dsumHighSignal: dsumHighSignal
+                      ,dsumHighField: dsumHighField
+                      ,calculateBox: calculateBox
+                      ,desiredSlots: desiredSlots
+                      ,calculateButton: calculateButton
+                      ,initialRNGStates: initialRNGStates
                       ,contentString: contentString
                       ,iterate: iterate
                       ,iterate$: iterate$
+                      ,successProbability: successProbability
+                      ,successProbabilities: successProbabilities
+                      ,toPath: toPath
+                      ,toPath$: toPath$
                       ,dsumPath: dsumPath
                       ,dsums: dsums
                       ,combine: combine
                       ,dsumGraph: dsumGraph
+                      ,buildSuccessGraph: buildSuccessGraph
+                      ,successGraph: successGraph
                       ,main: main};
    return _elm.Main.values;
 };
@@ -7778,6 +9363,663 @@ Elm.Native.Utils.make = function(localRuntime) {
 	};
 };
 
+Elm.Pokemon = Elm.Pokemon || {};
+Elm.Pokemon.make = function (_elm) {
+   "use strict";
+   _elm.Pokemon = _elm.Pokemon || {};
+   if (_elm.Pokemon.values)
+   return _elm.Pokemon.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Pokemon",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var speciesList = _L.fromArray([{_: {}
+                                   ,indexNumber: 1
+                                   ,name: "Rhydon"
+                                   ,pokedexNumber: 112}
+                                  ,{_: {}
+                                   ,indexNumber: 2
+                                   ,name: "Kangaskhan"
+                                   ,pokedexNumber: 115}
+                                  ,{_: {}
+                                   ,indexNumber: 3
+                                   ,name: "Nidoran M"
+                                   ,pokedexNumber: 32}
+                                  ,{_: {}
+                                   ,indexNumber: 4
+                                   ,name: "Clefairy"
+                                   ,pokedexNumber: 35}
+                                  ,{_: {}
+                                   ,indexNumber: 5
+                                   ,name: "Spearow"
+                                   ,pokedexNumber: 21}
+                                  ,{_: {}
+                                   ,indexNumber: 6
+                                   ,name: "Voltorb"
+                                   ,pokedexNumber: 100}
+                                  ,{_: {}
+                                   ,indexNumber: 7
+                                   ,name: "Nidoking"
+                                   ,pokedexNumber: 34}
+                                  ,{_: {}
+                                   ,indexNumber: 8
+                                   ,name: "Slowbro"
+                                   ,pokedexNumber: 80}
+                                  ,{_: {}
+                                   ,indexNumber: 9
+                                   ,name: "Ivysaur"
+                                   ,pokedexNumber: 2}
+                                  ,{_: {}
+                                   ,indexNumber: 10
+                                   ,name: "Exeggutor"
+                                   ,pokedexNumber: 103}
+                                  ,{_: {}
+                                   ,indexNumber: 11
+                                   ,name: "Lickitung"
+                                   ,pokedexNumber: 108}
+                                  ,{_: {}
+                                   ,indexNumber: 12
+                                   ,name: "Exeggcute"
+                                   ,pokedexNumber: 102}
+                                  ,{_: {}
+                                   ,indexNumber: 13
+                                   ,name: "Grimer"
+                                   ,pokedexNumber: 88}
+                                  ,{_: {}
+                                   ,indexNumber: 14
+                                   ,name: "Gengar"
+                                   ,pokedexNumber: 94}
+                                  ,{_: {}
+                                   ,indexNumber: 15
+                                   ,name: "Nidoran F"
+                                   ,pokedexNumber: 29}
+                                  ,{_: {}
+                                   ,indexNumber: 16
+                                   ,name: "Nidoqueen"
+                                   ,pokedexNumber: 31}
+                                  ,{_: {}
+                                   ,indexNumber: 17
+                                   ,name: "Cubone"
+                                   ,pokedexNumber: 104}
+                                  ,{_: {}
+                                   ,indexNumber: 18
+                                   ,name: "Rhyhorn"
+                                   ,pokedexNumber: 111}
+                                  ,{_: {}
+                                   ,indexNumber: 19
+                                   ,name: "Lapras"
+                                   ,pokedexNumber: 131}
+                                  ,{_: {}
+                                   ,indexNumber: 20
+                                   ,name: "Arcanine"
+                                   ,pokedexNumber: 59}
+                                  ,{_: {}
+                                   ,indexNumber: 21
+                                   ,name: "Mew"
+                                   ,pokedexNumber: 151}
+                                  ,{_: {}
+                                   ,indexNumber: 22
+                                   ,name: "Gyarados"
+                                   ,pokedexNumber: 130}
+                                  ,{_: {}
+                                   ,indexNumber: 23
+                                   ,name: "Shellder"
+                                   ,pokedexNumber: 90}
+                                  ,{_: {}
+                                   ,indexNumber: 24
+                                   ,name: "Tentacool"
+                                   ,pokedexNumber: 72}
+                                  ,{_: {}
+                                   ,indexNumber: 25
+                                   ,name: "Gastly"
+                                   ,pokedexNumber: 92}
+                                  ,{_: {}
+                                   ,indexNumber: 26
+                                   ,name: "Scyther"
+                                   ,pokedexNumber: 123}
+                                  ,{_: {}
+                                   ,indexNumber: 27
+                                   ,name: "Staryu"
+                                   ,pokedexNumber: 120}
+                                  ,{_: {}
+                                   ,indexNumber: 28
+                                   ,name: "Blastoise"
+                                   ,pokedexNumber: 9}
+                                  ,{_: {}
+                                   ,indexNumber: 29
+                                   ,name: "Pinsir"
+                                   ,pokedexNumber: 127}
+                                  ,{_: {}
+                                   ,indexNumber: 30
+                                   ,name: "Tangela"
+                                   ,pokedexNumber: 114}
+                                  ,{_: {}
+                                   ,indexNumber: 33
+                                   ,name: "Growlithe"
+                                   ,pokedexNumber: 58}
+                                  ,{_: {}
+                                   ,indexNumber: 34
+                                   ,name: "Onix"
+                                   ,pokedexNumber: 95}
+                                  ,{_: {}
+                                   ,indexNumber: 35
+                                   ,name: "Fearow"
+                                   ,pokedexNumber: 22}
+                                  ,{_: {}
+                                   ,indexNumber: 36
+                                   ,name: "Pidgey"
+                                   ,pokedexNumber: 16}
+                                  ,{_: {}
+                                   ,indexNumber: 37
+                                   ,name: "Slowpoke"
+                                   ,pokedexNumber: 79}
+                                  ,{_: {}
+                                   ,indexNumber: 38
+                                   ,name: "Kadabra"
+                                   ,pokedexNumber: 64}
+                                  ,{_: {}
+                                   ,indexNumber: 39
+                                   ,name: "Graveler"
+                                   ,pokedexNumber: 75}
+                                  ,{_: {}
+                                   ,indexNumber: 40
+                                   ,name: "Chansey"
+                                   ,pokedexNumber: 113}
+                                  ,{_: {}
+                                   ,indexNumber: 41
+                                   ,name: "Machoke"
+                                   ,pokedexNumber: 67}
+                                  ,{_: {}
+                                   ,indexNumber: 42
+                                   ,name: "Mr. Mime"
+                                   ,pokedexNumber: 122}
+                                  ,{_: {}
+                                   ,indexNumber: 43
+                                   ,name: "Hitmonlee"
+                                   ,pokedexNumber: 106}
+                                  ,{_: {}
+                                   ,indexNumber: 44
+                                   ,name: "Hitmonchan"
+                                   ,pokedexNumber: 107}
+                                  ,{_: {}
+                                   ,indexNumber: 45
+                                   ,name: "Arbok"
+                                   ,pokedexNumber: 24}
+                                  ,{_: {}
+                                   ,indexNumber: 46
+                                   ,name: "Parasect"
+                                   ,pokedexNumber: 47}
+                                  ,{_: {}
+                                   ,indexNumber: 47
+                                   ,name: "Psyduck"
+                                   ,pokedexNumber: 54}
+                                  ,{_: {}
+                                   ,indexNumber: 48
+                                   ,name: "Drowzee"
+                                   ,pokedexNumber: 96}
+                                  ,{_: {}
+                                   ,indexNumber: 49
+                                   ,name: "Golem"
+                                   ,pokedexNumber: 76}
+                                  ,{_: {}
+                                   ,indexNumber: 51
+                                   ,name: "Magmar"
+                                   ,pokedexNumber: 126}
+                                  ,{_: {}
+                                   ,indexNumber: 53
+                                   ,name: "Electabuzz"
+                                   ,pokedexNumber: 125}
+                                  ,{_: {}
+                                   ,indexNumber: 54
+                                   ,name: "Magneton"
+                                   ,pokedexNumber: 82}
+                                  ,{_: {}
+                                   ,indexNumber: 55
+                                   ,name: "Koffing"
+                                   ,pokedexNumber: 109}
+                                  ,{_: {}
+                                   ,indexNumber: 57
+                                   ,name: "Mankey"
+                                   ,pokedexNumber: 56}
+                                  ,{_: {}
+                                   ,indexNumber: 58
+                                   ,name: "Seel"
+                                   ,pokedexNumber: 86}
+                                  ,{_: {}
+                                   ,indexNumber: 59
+                                   ,name: "Diglett"
+                                   ,pokedexNumber: 50}
+                                  ,{_: {}
+                                   ,indexNumber: 60
+                                   ,name: "Tauros"
+                                   ,pokedexNumber: 128}
+                                  ,{_: {}
+                                   ,indexNumber: 64
+                                   ,name: "Farfetch\'d"
+                                   ,pokedexNumber: 83}
+                                  ,{_: {}
+                                   ,indexNumber: 65
+                                   ,name: "Venonat"
+                                   ,pokedexNumber: 48}
+                                  ,{_: {}
+                                   ,indexNumber: 66
+                                   ,name: "Dragonite"
+                                   ,pokedexNumber: 149}
+                                  ,{_: {}
+                                   ,indexNumber: 70
+                                   ,name: "Doduo"
+                                   ,pokedexNumber: 84}
+                                  ,{_: {}
+                                   ,indexNumber: 71
+                                   ,name: "Poliwag"
+                                   ,pokedexNumber: 60}
+                                  ,{_: {}
+                                   ,indexNumber: 72
+                                   ,name: "Jynx"
+                                   ,pokedexNumber: 124}
+                                  ,{_: {}
+                                   ,indexNumber: 73
+                                   ,name: "Moltres"
+                                   ,pokedexNumber: 146}
+                                  ,{_: {}
+                                   ,indexNumber: 74
+                                   ,name: "Articuno"
+                                   ,pokedexNumber: 144}
+                                  ,{_: {}
+                                   ,indexNumber: 75
+                                   ,name: "Zapdos"
+                                   ,pokedexNumber: 145}
+                                  ,{_: {}
+                                   ,indexNumber: 76
+                                   ,name: "Ditto"
+                                   ,pokedexNumber: 132}
+                                  ,{_: {}
+                                   ,indexNumber: 77
+                                   ,name: "Meowth"
+                                   ,pokedexNumber: 52}
+                                  ,{_: {}
+                                   ,indexNumber: 78
+                                   ,name: "Krabby"
+                                   ,pokedexNumber: 98}
+                                  ,{_: {}
+                                   ,indexNumber: 82
+                                   ,name: "Vulpix"
+                                   ,pokedexNumber: 37}
+                                  ,{_: {}
+                                   ,indexNumber: 83
+                                   ,name: "Ninetales"
+                                   ,pokedexNumber: 38}
+                                  ,{_: {}
+                                   ,indexNumber: 84
+                                   ,name: "Pikachu"
+                                   ,pokedexNumber: 25}
+                                  ,{_: {}
+                                   ,indexNumber: 85
+                                   ,name: "Raichu"
+                                   ,pokedexNumber: 26}
+                                  ,{_: {}
+                                   ,indexNumber: 88
+                                   ,name: "Dratini"
+                                   ,pokedexNumber: 147}
+                                  ,{_: {}
+                                   ,indexNumber: 89
+                                   ,name: "Dragonair"
+                                   ,pokedexNumber: 148}
+                                  ,{_: {}
+                                   ,indexNumber: 90
+                                   ,name: "Kabuto"
+                                   ,pokedexNumber: 140}
+                                  ,{_: {}
+                                   ,indexNumber: 91
+                                   ,name: "Kabutops"
+                                   ,pokedexNumber: 141}
+                                  ,{_: {}
+                                   ,indexNumber: 92
+                                   ,name: "Horsea"
+                                   ,pokedexNumber: 116}
+                                  ,{_: {}
+                                   ,indexNumber: 93
+                                   ,name: "Seadra"
+                                   ,pokedexNumber: 117}
+                                  ,{_: {}
+                                   ,indexNumber: 96
+                                   ,name: "Sandshrew"
+                                   ,pokedexNumber: 27}
+                                  ,{_: {}
+                                   ,indexNumber: 97
+                                   ,name: "Sandslash"
+                                   ,pokedexNumber: 28}
+                                  ,{_: {}
+                                   ,indexNumber: 98
+                                   ,name: "Omanyte"
+                                   ,pokedexNumber: 138}
+                                  ,{_: {}
+                                   ,indexNumber: 99
+                                   ,name: "Omastar"
+                                   ,pokedexNumber: 139}
+                                  ,{_: {}
+                                   ,indexNumber: 100
+                                   ,name: "Jigglypuff"
+                                   ,pokedexNumber: 39}
+                                  ,{_: {}
+                                   ,indexNumber: 101
+                                   ,name: "Wigglytuff"
+                                   ,pokedexNumber: 40}
+                                  ,{_: {}
+                                   ,indexNumber: 102
+                                   ,name: "Eevee"
+                                   ,pokedexNumber: 133}
+                                  ,{_: {}
+                                   ,indexNumber: 103
+                                   ,name: "Flareon"
+                                   ,pokedexNumber: 136}
+                                  ,{_: {}
+                                   ,indexNumber: 104
+                                   ,name: "Jolteon"
+                                   ,pokedexNumber: 135}
+                                  ,{_: {}
+                                   ,indexNumber: 105
+                                   ,name: "Vaporeon"
+                                   ,pokedexNumber: 134}
+                                  ,{_: {}
+                                   ,indexNumber: 106
+                                   ,name: "Machop"
+                                   ,pokedexNumber: 66}
+                                  ,{_: {}
+                                   ,indexNumber: 107
+                                   ,name: "Zubat"
+                                   ,pokedexNumber: 41}
+                                  ,{_: {}
+                                   ,indexNumber: 108
+                                   ,name: "Ekans"
+                                   ,pokedexNumber: 23}
+                                  ,{_: {}
+                                   ,indexNumber: 109
+                                   ,name: "Paras"
+                                   ,pokedexNumber: 46}
+                                  ,{_: {}
+                                   ,indexNumber: 110
+                                   ,name: "Poliwhirl"
+                                   ,pokedexNumber: 61}
+                                  ,{_: {}
+                                   ,indexNumber: 111
+                                   ,name: "Poliwrath"
+                                   ,pokedexNumber: 62}
+                                  ,{_: {}
+                                   ,indexNumber: 112
+                                   ,name: "Weedle"
+                                   ,pokedexNumber: 13}
+                                  ,{_: {}
+                                   ,indexNumber: 113
+                                   ,name: "Kakuna"
+                                   ,pokedexNumber: 14}
+                                  ,{_: {}
+                                   ,indexNumber: 114
+                                   ,name: "Beedrill"
+                                   ,pokedexNumber: 15}
+                                  ,{_: {}
+                                   ,indexNumber: 116
+                                   ,name: "Dodrio"
+                                   ,pokedexNumber: 85}
+                                  ,{_: {}
+                                   ,indexNumber: 117
+                                   ,name: "Primeape"
+                                   ,pokedexNumber: 57}
+                                  ,{_: {}
+                                   ,indexNumber: 118
+                                   ,name: "Dugtrio"
+                                   ,pokedexNumber: 51}
+                                  ,{_: {}
+                                   ,indexNumber: 119
+                                   ,name: "Venomoth"
+                                   ,pokedexNumber: 49}
+                                  ,{_: {}
+                                   ,indexNumber: 120
+                                   ,name: "Dewgong"
+                                   ,pokedexNumber: 87}
+                                  ,{_: {}
+                                   ,indexNumber: 123
+                                   ,name: "Caterpie"
+                                   ,pokedexNumber: 10}
+                                  ,{_: {}
+                                   ,indexNumber: 124
+                                   ,name: "Metapod"
+                                   ,pokedexNumber: 11}
+                                  ,{_: {}
+                                   ,indexNumber: 125
+                                   ,name: "Butterfree"
+                                   ,pokedexNumber: 12}
+                                  ,{_: {}
+                                   ,indexNumber: 126
+                                   ,name: "Machamp"
+                                   ,pokedexNumber: 68}
+                                  ,{_: {}
+                                   ,indexNumber: 128
+                                   ,name: "Golduck"
+                                   ,pokedexNumber: 55}
+                                  ,{_: {}
+                                   ,indexNumber: 129
+                                   ,name: "Hypno"
+                                   ,pokedexNumber: 97}
+                                  ,{_: {}
+                                   ,indexNumber: 130
+                                   ,name: "Golbat"
+                                   ,pokedexNumber: 42}
+                                  ,{_: {}
+                                   ,indexNumber: 131
+                                   ,name: "Mewtwo"
+                                   ,pokedexNumber: 150}
+                                  ,{_: {}
+                                   ,indexNumber: 132
+                                   ,name: "Snorlax"
+                                   ,pokedexNumber: 143}
+                                  ,{_: {}
+                                   ,indexNumber: 133
+                                   ,name: "Magikarp"
+                                   ,pokedexNumber: 129}
+                                  ,{_: {}
+                                   ,indexNumber: 136
+                                   ,name: "Muk"
+                                   ,pokedexNumber: 89}
+                                  ,{_: {}
+                                   ,indexNumber: 138
+                                   ,name: "Kingler"
+                                   ,pokedexNumber: 99}
+                                  ,{_: {}
+                                   ,indexNumber: 139
+                                   ,name: "Cloyster"
+                                   ,pokedexNumber: 91}
+                                  ,{_: {}
+                                   ,indexNumber: 141
+                                   ,name: "Electrode"
+                                   ,pokedexNumber: 101}
+                                  ,{_: {}
+                                   ,indexNumber: 142
+                                   ,name: "Clefable"
+                                   ,pokedexNumber: 36}
+                                  ,{_: {}
+                                   ,indexNumber: 143
+                                   ,name: "Weezing"
+                                   ,pokedexNumber: 110}
+                                  ,{_: {}
+                                   ,indexNumber: 144
+                                   ,name: "Persian"
+                                   ,pokedexNumber: 53}
+                                  ,{_: {}
+                                   ,indexNumber: 145
+                                   ,name: "Marowak"
+                                   ,pokedexNumber: 105}
+                                  ,{_: {}
+                                   ,indexNumber: 147
+                                   ,name: "Haunter"
+                                   ,pokedexNumber: 93}
+                                  ,{_: {}
+                                   ,indexNumber: 148
+                                   ,name: "Abra"
+                                   ,pokedexNumber: 63}
+                                  ,{_: {}
+                                   ,indexNumber: 149
+                                   ,name: "Alakazam"
+                                   ,pokedexNumber: 65}
+                                  ,{_: {}
+                                   ,indexNumber: 150
+                                   ,name: "Pidgeotto"
+                                   ,pokedexNumber: 17}
+                                  ,{_: {}
+                                   ,indexNumber: 151
+                                   ,name: "Pidgeot"
+                                   ,pokedexNumber: 18}
+                                  ,{_: {}
+                                   ,indexNumber: 152
+                                   ,name: "Starmie"
+                                   ,pokedexNumber: 121}
+                                  ,{_: {}
+                                   ,indexNumber: 153
+                                   ,name: "Bulbasaur"
+                                   ,pokedexNumber: 1}
+                                  ,{_: {}
+                                   ,indexNumber: 154
+                                   ,name: "Venusaur"
+                                   ,pokedexNumber: 3}
+                                  ,{_: {}
+                                   ,indexNumber: 155
+                                   ,name: "Tentacruel"
+                                   ,pokedexNumber: 73}
+                                  ,{_: {}
+                                   ,indexNumber: 157
+                                   ,name: "Goldeen"
+                                   ,pokedexNumber: 118}
+                                  ,{_: {}
+                                   ,indexNumber: 158
+                                   ,name: "Seaking"
+                                   ,pokedexNumber: 119}
+                                  ,{_: {}
+                                   ,indexNumber: 163
+                                   ,name: "Ponyta"
+                                   ,pokedexNumber: 77}
+                                  ,{_: {}
+                                   ,indexNumber: 164
+                                   ,name: "Rapidash"
+                                   ,pokedexNumber: 78}
+                                  ,{_: {}
+                                   ,indexNumber: 165
+                                   ,name: "Rattata"
+                                   ,pokedexNumber: 19}
+                                  ,{_: {}
+                                   ,indexNumber: 166
+                                   ,name: "Raticate"
+                                   ,pokedexNumber: 20}
+                                  ,{_: {}
+                                   ,indexNumber: 167
+                                   ,name: "Nidorino"
+                                   ,pokedexNumber: 33}
+                                  ,{_: {}
+                                   ,indexNumber: 168
+                                   ,name: "Nidorina"
+                                   ,pokedexNumber: 30}
+                                  ,{_: {}
+                                   ,indexNumber: 169
+                                   ,name: "Geodude"
+                                   ,pokedexNumber: 74}
+                                  ,{_: {}
+                                   ,indexNumber: 170
+                                   ,name: "Porygon"
+                                   ,pokedexNumber: 77}
+                                  ,{_: {}
+                                   ,indexNumber: 171
+                                   ,name: "Aerodactyl"
+                                   ,pokedexNumber: 142}
+                                  ,{_: {}
+                                   ,indexNumber: 173
+                                   ,name: "Magnemite"
+                                   ,pokedexNumber: 81}
+                                  ,{_: {}
+                                   ,indexNumber: 176
+                                   ,name: "Charmander"
+                                   ,pokedexNumber: 4}
+                                  ,{_: {}
+                                   ,indexNumber: 177
+                                   ,name: "Squirtle"
+                                   ,pokedexNumber: 7}
+                                  ,{_: {}
+                                   ,indexNumber: 178
+                                   ,name: "Charmeleon"
+                                   ,pokedexNumber: 5}
+                                  ,{_: {}
+                                   ,indexNumber: 179
+                                   ,name: "Wartortle"
+                                   ,pokedexNumber: 8}
+                                  ,{_: {}
+                                   ,indexNumber: 180
+                                   ,name: "Charizard"
+                                   ,pokedexNumber: 6}
+                                  ,{_: {}
+                                   ,indexNumber: 185
+                                   ,name: "Oddish"
+                                   ,pokedexNumber: 43}
+                                  ,{_: {}
+                                   ,indexNumber: 186
+                                   ,name: "Gloom"
+                                   ,pokedexNumber: 44}
+                                  ,{_: {}
+                                   ,indexNumber: 187
+                                   ,name: "Vileplume"
+                                   ,pokedexNumber: 45}
+                                  ,{_: {}
+                                   ,indexNumber: 188
+                                   ,name: "Bellsprout"
+                                   ,pokedexNumber: 69}
+                                  ,{_: {}
+                                   ,indexNumber: 189
+                                   ,name: "Weepinbell"
+                                   ,pokedexNumber: 70}
+                                  ,{_: {}
+                                   ,indexNumber: 190
+                                   ,name: "Victreebel"
+                                   ,pokedexNumber: 71}]);
+   var noSpecies = {_: {}
+                   ,indexNumber: 0
+                   ,name: ""
+                   ,pokedexNumber: 0};
+   var speciesByName = $Dict.fromList($List.map(function (species) {
+      return {ctor: "_Tuple2"
+             ,_0: species.name
+             ,_1: species};
+   })(speciesList));
+   var speciesByPokedex = $Dict.fromList($List.map(function (species) {
+      return {ctor: "_Tuple2"
+             ,_0: species.pokedexNumber
+             ,_1: species};
+   })(speciesList));
+   var speciesByIndex = $Dict.fromList($List.map(function (species) {
+      return {ctor: "_Tuple2"
+             ,_0: species.indexNumber
+             ,_1: species};
+   })(speciesList));
+   var Species = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,indexNumber: a
+             ,name: c
+             ,pokedexNumber: b};
+   });
+   _elm.Pokemon.values = {_op: _op
+                         ,Species: Species
+                         ,speciesByIndex: speciesByIndex
+                         ,speciesByPokedex: speciesByPokedex
+                         ,speciesByName: speciesByName
+                         ,noSpecies: noSpecies
+                         ,speciesList: speciesList};
+   return _elm.Pokemon.values;
+};
 Elm.RNG = Elm.RNG || {};
 Elm.RNG.make = function (_elm) {
    "use strict";
@@ -7794,6 +10036,17 @@ Elm.RNG.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var getDSum$ = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple4":
+            return A2($Basics._op["%"],
+              _v0._2 + _v0._3,
+              256);}
+         _U.badCase($moduleName,
+         "on line 48, column 28 to 42");
+      }();
+   };
    var getDSum = function (s) {
       return A2($Basics._op["%"],
       s.hRandomAdd + s.hRandomSub,
@@ -7838,6 +10091,30 @@ Elm.RNG.make = function (_elm) {
              ,hRandomSub: s
              ,rDiv: r};
    });
+   var fromComparable = function (_v6) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple4":
+            return A4(rngState,
+              _v6._0,
+              _v6._1,
+              _v6._2,
+              _v6._3);}
+         _U.badCase($moduleName,
+         "on line 16, column 56 to 97");
+      }();
+   };
+   var toComparable = function (state) {
+      return {ctor: "_Tuple4"
+             ,_0: state.rDiv
+             ,_1: state.cycle
+             ,_2: state.hRandomAdd
+             ,_3: state.hRandomSub};
+   };
+   var rngStep$ = F2(function (carry,
+   s) {
+      return toComparable(rngStep(carry)(fromComparable(s)));
+   });
    var RNGState = F4(function (a,
    b,
    c,
@@ -7850,9 +10127,13 @@ Elm.RNG.make = function (_elm) {
    });
    _elm.RNG.values = {_op: _op
                      ,RNGState: RNGState
+                     ,toComparable: toComparable
+                     ,fromComparable: fromComparable
                      ,rngState: rngState
                      ,rngStep: rngStep
-                     ,getDSum: getDSum};
+                     ,rngStep$: rngStep$
+                     ,getDSum: getDSum
+                     ,getDSum$: getDSum$};
    return _elm.RNG.values;
 };
 Elm.Result = Elm.Result || {};

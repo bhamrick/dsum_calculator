@@ -3,6 +3,7 @@ module Encounters where
 import Dict
 import Maybe
 
+import Dist exposing (Dist)
 import Pokemon exposing (..)
 
 type alias Encounter =
@@ -10,7 +11,33 @@ type alias Encounter =
     , level : Int
     }
 
-slotWidths = [51, 51, 39, 25, 25, 25, 13, 13, 11, 3]
+slots =
+    [ (0, 51)
+    , (51, 51)
+    , (102, 39)
+    , (141, 25)
+    , (166, 25)
+    , (191, 25)
+    , (216, 13)
+    , (229, 13)
+    , (242, 11)
+    , (253, 3)
+    ]
+slotStarts = List.map fst slots
+slotWidths = List.map snd slots
+
+slotFromRand : Int -> Int
+slotFromRand x = let x' = x % 256 in if
+    | x < 51 -> 1
+    | x < 102 -> 2
+    | x < 141 -> 3
+    | x < 166 -> 4
+    | x < 191 -> 5
+    | x < 216 -> 6
+    | x < 229 -> 7
+    | x < 242 -> 8
+    | x < 253 -> 9
+    | otherwise -> 10
 
 type alias EncounterTable =
     { name : String
@@ -34,6 +61,9 @@ encounter name level =
         |> Maybe.withDefault noSpecies
     , level = level
     }
+
+noEncounter : Encounter
+noEncounter = { species = noSpecies, level = 0 }
 
 -- Encounter tables for red
 -- TODO: Add other tables

@@ -7,6 +7,14 @@ type alias RNGState =
     , hRandomSub : Int
     }
 
+type alias ComparableRNGState = (Int, Int, Int, Int)
+
+toComparable : RNGState -> ComparableRNGState
+toComparable state = (state.rDiv, state.cycle, state.hRandomAdd, state.hRandomSub)
+
+fromComparable : ComparableRNGState -> RNGState
+fromComparable (rDiv, cycle, hRandomAdd, hRandomSub) = rngState rDiv cycle hRandomAdd hRandomSub
+
 rngState : Int -> Int -> Int -> Int -> RNGState
 rngState r c a s = {rDiv = r, cycle = c, hRandomAdd = a, hRandomSub = s}
 
@@ -27,5 +35,14 @@ rngStep carry s =
     , hRandomSub = hRandomSub' % 256
     }
 
+rngStep' : Int -> ComparableRNGState -> ComparableRNGState
+rngStep' carry s = s
+    |> fromComparable
+    |> rngStep carry
+    |> toComparable
+
 getDSum : RNGState -> Int
 getDSum s = (s.hRandomAdd + s.hRandomSub) % 256
+
+getDSum' : ComparableRNGState -> Int
+getDSum' (_, _, r1, r2) = (r1 + r2) % 256
