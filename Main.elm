@@ -16,6 +16,7 @@ import DSum exposing (..)
 import Graph exposing (..)
 import RNG exposing (..)
 import Strategy exposing (..)
+import Worker exposing (..)
 
 dsumLow : Signal.Mailbox Content
 dsumLow = Signal.mailbox noContent
@@ -62,7 +63,7 @@ iterate n f x = trampoline (iterate' n f x)
 
 iterate' : Int -> (a -> a) -> a -> Trampoline a
 iterate' n f x = if
-    | n == 0 -> Done x
+    | n == 0 -> Trampoline.Done x
     | otherwise -> Continue (\() -> iterate' (n-1) f (f x))
 
 {-
@@ -115,10 +116,42 @@ buildSuccessProbabilities : Int -> Int -> DSumState -> List Float
 buildSuccessProbabilities low high state =
     state
     |> filterDSum (\x -> (x - low) % 256 < (high - low) % 256)
-    |> successProbabilities 25 [2, 4] 1000 0
+    |> successProbabilities 25 [2, 4] 1 0
+
+initialDSumState : Signal DSumState
+initialDSumState = (\low high mix ->
+    mix
+    |> filterDSum (\x -> (x - low) % 256 < (high - low) % 256)
+    ) <~ dsumLowSignal ~ dsumHighSignal ~ Signal.constant initialRNGMix
+
+successProbabilitiesWorker : Worker (Int, DSumState, List Float) (List Float)
+successProbabilitiesWorker =
+    let
+    initialState =
+        initialRNGMix
+        |> filterDSum (\x -> x >= 25 && x <= 50)
+    desiredSlots = [2, 4]
+    carry = 0
+    encounterRate = 25
+    workerStep (n, state, acc) =
+        if n == 0
+        then Worker.Done (List.reverse acc)
+        else Working
+            ( n-1
+            , dsumStep carry state
+            , successProbability encounterRate desiredSlots state :: acc
+            )
+    in
+    createWorker ((\x -> (1000, x, [])) <~ initialDSumState) workerStep
 
 successProbabilitiesSignal : Signal (List Float)
-successProbabilitiesSignal = buildSuccessProbabilities <~ dsumLowSignal ~ dsumHighSignal ~ Signal.constant initialRNGMix
+successProbabilitiesSignal = Signal.map (\state ->
+    case snd state of
+        Working (_, _, acc) -> List.reverse acc
+        Worker.Done probs -> probs
+        Unstarted -> []
+    ) successProbabilitiesWorker.state
+
 
 successGraph : Signal Graph
 successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
@@ -137,5 +170,7 @@ main = flow down <~ combine
     -- , output
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
-    , Signal.map show strategy
-    ]
+    -- , Signal.map show strategy
+    -- , Signal.map show initialDSumState
+    -- , Signal.map (snd >> show) successProbabilitiesWorker.state
+    
