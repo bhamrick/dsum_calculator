@@ -692,6 +692,82 @@ Elm.Color.make = function (_elm) {
                        ,darkGray: darkGray};
    return _elm.Color.values;
 };
+Elm.DSum = Elm.DSum || {};
+Elm.DSum.make = function (_elm) {
+   "use strict";
+   _elm.DSum = _elm.DSum || {};
+   if (_elm.DSum.values)
+   return _elm.DSum.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "DSum",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $Encounters = Elm.Encounters.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $RNG = Elm.RNG.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var dsumSlotDist = F2(function (rate,
+   dsum) {
+      return $Dist.map($Encounters.slotFromRand)($Dist.uniform($List.map(function (r1) {
+         return A2($Basics._op["%"],
+         dsum - r1,
+         256);
+      })(_L.range(0,rate - 1))));
+   });
+   var dsumStep = F2(function (carry,
+   dist) {
+      return A2($Dist.map,
+      $RNG.rngStep$(carry),
+      dist);
+   });
+   var dsumDist = $Dist.map($RNG.getDSum$);
+   var filterDSum = F2(function (f,
+   dist) {
+      return A2($Dist.filter,
+      function ($) {
+         return f($RNG.getDSum$($));
+      },
+      dist);
+   });
+   var initialRDiv = 17;
+   var initialRNGMix = $Dict.fromList($List.concat(_L.fromArray([A2($List.map,
+                                                                function (dsum) {
+                                                                   return {ctor: "_Tuple2"
+                                                                          ,_0: {ctor: "_Tuple4"
+                                                                               ,_0: initialRDiv
+                                                                               ,_1: 4
+                                                                               ,_2: dsum
+                                                                               ,_3: 0}
+                                                                          ,_1: 3 / 1024};
+                                                                },
+                                                                _L.range(0,255))
+                                                                ,A2($List.map,
+                                                                function (dsum) {
+                                                                   return {ctor: "_Tuple2"
+                                                                          ,_0: {ctor: "_Tuple4"
+                                                                               ,_0: initialRDiv
+                                                                               ,_1: 0
+                                                                               ,_2: dsum
+                                                                               ,_3: 0}
+                                                                          ,_1: 1 / 1024};
+                                                                },
+                                                                _L.range(0,
+                                                                255))])));
+   _elm.DSum.values = {_op: _op
+                      ,initialRDiv: initialRDiv
+                      ,initialRNGMix: initialRNGMix
+                      ,filterDSum: filterDSum
+                      ,dsumDist: dsumDist
+                      ,dsumStep: dsumStep
+                      ,dsumSlotDist: dsumSlotDist};
+   return _elm.DSum.values;
+};
 Elm.Debug = Elm.Debug || {};
 Elm.Debug.make = function (_elm) {
    "use strict";
@@ -1707,6 +1783,698 @@ Elm.Dict.make = function (_elm) {
                       ,fromList: fromList};
    return _elm.Dict.values;
 };
+Elm.Dist = Elm.Dist || {};
+Elm.Dist.make = function (_elm) {
+   "use strict";
+   _elm.Dist = _elm.Dist || {};
+   if (_elm.Dist.values)
+   return _elm.Dist.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Dist",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var collapse$ = function (vals) {
+      return $List.concat(A2($List.map,
+      function (_v0) {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return A2($List.map,
+                 function (_v4) {
+                    return function () {
+                       switch (_v4.ctor)
+                       {case "_Tuple2":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _v4._0
+                                 ,_1: _v0._1 * _v4._1};}
+                       _U.badCase($moduleName,
+                       "on line 72, column 74 to 80");
+                    }();
+                 },
+                 _v0._0);}
+            _U.badCase($moduleName,
+            "on line 72, column 52 to 84");
+         }();
+      },
+      vals));
+   };
+   var uniform = function (l) {
+      return function () {
+         var n = $List.length(l);
+         return $Dict.fromList($List.map(function (x) {
+            return {ctor: "_Tuple2"
+                   ,_0: x
+                   ,_1: 1 / $Basics.toFloat(n)};
+         })(l));
+      }();
+   };
+   var product$ = F2(function (l1,
+   l2) {
+      return function () {
+         switch (l1.ctor)
+         {case "::": switch (l1._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var probs = A2($List.map,
+                      function (_v13) {
+                         return function () {
+                            switch (_v13.ctor)
+                            {case "_Tuple2":
+                               return {ctor: "_Tuple2"
+                                      ,_0: {ctor: "_Tuple2"
+                                           ,_0: l1._0._0
+                                           ,_1: _v13._0}
+                                      ,_1: l1._0._1 * _v13._1};}
+                            _U.badCase($moduleName,
+                            "on line 50, column 39 to 50");
+                         }();
+                      },
+                      l2);
+                      return A2($List.append,
+                      probs,
+                      A2(product$,l1._1,l2));
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 46 and 52");
+      }();
+   });
+   var product = F2(function (d1,
+   d2) {
+      return function () {
+         var probs2 = $Dict.toList(d2);
+         var probs1 = $Dict.toList(d1);
+         var productProbs = A2(product$,
+         probs1,
+         probs2);
+         return $Dict.fromList(productProbs);
+      }();
+   });
+   var normalize = function (probs) {
+      return function () {
+         var total = $List.sum(A2($List.map,
+         $Basics.snd,
+         probs));
+         return A2($List.map,
+         function (_v17) {
+            return function () {
+               switch (_v17.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: _v17._0
+                         ,_1: _v17._1 / total};}
+               _U.badCase($moduleName,
+               "on line 36, column 30 to 42");
+            }();
+         },
+         probs);
+      }();
+   };
+   var filter = F2(function (f,
+   dist) {
+      return $Dict.fromList(normalize($List.filter(function (_v21) {
+         return function () {
+            switch (_v21.ctor)
+            {case "_Tuple2":
+               return f(_v21._0);}
+            _U.badCase($moduleName,
+            "on line 41, column 32 to 35");
+         }();
+      })($Dict.toList(dist))));
+   });
+   var partitionPrefix = F2(function (f,
+   l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return f(l._0) ? function () {
+                 var $ = A2(partitionPrefix,
+                 f,
+                 l._1),
+                 matches = $._0,
+                 rest = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: A2($List._op["::"],
+                        l._0,
+                        matches)
+                        ,_1: rest};
+              }() : {ctor: "_Tuple2"
+                    ,_0: _L.fromArray([])
+                    ,_1: l};
+            case "[]":
+            return {ctor: "_Tuple2"
+                   ,_0: _L.fromArray([])
+                   ,_1: _L.fromArray([])};}
+         _U.badCase($moduleName,
+         "between lines 12 and 16");
+      }();
+   });
+   var combineProbs = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            switch (list._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var $ = A2(partitionPrefix,
+                      function ($) {
+                         return F2(function (x,y) {
+                            return _U.eq(x,y);
+                         })(list._0._0)($Basics.fst($));
+                      },
+                      list),
+                      matches = $._0,
+                      rest = $._1;
+                      return A2($List._op["::"],
+                      {ctor: "_Tuple2"
+                      ,_0: list._0._0
+                      ,_1: $List.sum($List.map($Basics.snd)(matches))},
+                      combineProbs(rest));
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 19 and 23");
+      }();
+   };
+   var map = F2(function (f,dist) {
+      return $Dict.fromList(combineProbs($List.sort($List.map(function (_v33) {
+         return function () {
+            switch (_v33.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: f(_v33._0)
+                      ,_1: _v33._1};}
+            _U.badCase($moduleName,
+            "on line 28, column 30 to 36");
+         }();
+      })($Dict.toList(dist)))));
+   });
+   var lift2 = F3(function (f,
+   d1,
+   d2) {
+      return A2(map,
+      $Basics.uncurry(f),
+      A2(product,d1,d2));
+   });
+   var collapseMap = F2(function (f,
+   dist) {
+      return function () {
+         var probs = $Dict.toList(dist);
+         var nestedProbs = A2($List.map,
+         function (_v37) {
+            return function () {
+               switch (_v37.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: $Dict.toList(f(_v37._0))
+                         ,_1: _v37._1};}
+               _U.badCase($moduleName,
+               "on line 78, column 41 to 61");
+            }();
+         },
+         probs);
+         var collapsedProbs = collapse$(nestedProbs);
+         return $Dict.fromList(combineProbs($List.sort(collapsedProbs)));
+      }();
+   });
+   var probability = F2(function (f,
+   dist) {
+      return A3($Dict.foldl,
+      F3(function (x,p,s) {
+         return f(x) ? s + p : s;
+      }),
+      0,
+      dist);
+   });
+   _elm.Dist.values = {_op: _op
+                      ,probability: probability
+                      ,partitionPrefix: partitionPrefix
+                      ,combineProbs: combineProbs
+                      ,map: map
+                      ,normalize: normalize
+                      ,filter: filter
+                      ,product$: product$
+                      ,product: product
+                      ,lift2: lift2
+                      ,uniform: uniform
+                      ,collapse$: collapse$
+                      ,collapseMap: collapseMap};
+   return _elm.Dist.values;
+};
+Elm.Encounters = Elm.Encounters || {};
+Elm.Encounters.make = function (_elm) {
+   "use strict";
+   _elm.Encounters = _elm.Encounters || {};
+   if (_elm.Encounters.values)
+   return _elm.Encounters.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Encounters",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Pokemon = Elm.Pokemon.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var noEncounter = {_: {}
+                     ,level: 0
+                     ,species: $Pokemon.noSpecies};
+   var encounter = F2(function (name,
+   level) {
+      return {_: {}
+             ,level: level
+             ,species: $Maybe.withDefault($Pokemon.noSpecies)($Dict.get(name)($Pokemon.speciesByName))};
+   });
+   var route22table = {_: {}
+                      ,name: "Route 22"
+                      ,rate: 25
+                      ,slot1: A2(encounter,
+                      "Rattata",
+                      3)
+                      ,slot10: A2(encounter,
+                      "Nidoran F",
+                      4)
+                      ,slot2: A2(encounter,
+                      "Nidoran M",
+                      3)
+                      ,slot3: A2(encounter,
+                      "Rattata",
+                      4)
+                      ,slot4: A2(encounter,
+                      "Nidoran M",
+                      4)
+                      ,slot5: A2(encounter,
+                      "Rattata",
+                      2)
+                      ,slot6: A2(encounter,
+                      "Nidoran M",
+                      2)
+                      ,slot7: A2(encounter,
+                      "Spearow",
+                      3)
+                      ,slot8: A2(encounter,
+                      "Spearow",
+                      5)
+                      ,slot9: A2(encounter,
+                      "Nidoran F",
+                      3)};
+   var EncounterTable = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return function (k) {
+                                    return function (l) {
+                                       return {_: {}
+                                              ,name: a
+                                              ,rate: b
+                                              ,slot1: c
+                                              ,slot10: l
+                                              ,slot2: d
+                                              ,slot3: e
+                                              ,slot4: f
+                                              ,slot5: g
+                                              ,slot6: h
+                                              ,slot7: i
+                                              ,slot8: j
+                                              ,slot9: k};
+                                    };
+                                 };
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
+   var slotFromRand = function (x) {
+      return function () {
+         var x$ = A2($Basics._op["%"],
+         x,
+         256);
+         return _U.cmp(x,
+         51) < 0 ? 1 : _U.cmp(x,
+         102) < 0 ? 2 : _U.cmp(x,
+         141) < 0 ? 3 : _U.cmp(x,
+         166) < 0 ? 4 : _U.cmp(x,
+         191) < 0 ? 5 : _U.cmp(x,
+         216) < 0 ? 6 : _U.cmp(x,
+         229) < 0 ? 7 : _U.cmp(x,
+         242) < 0 ? 8 : _U.cmp(x,
+         253) < 0 ? 9 : 10;
+      }();
+   };
+   var slots = _L.fromArray([{ctor: "_Tuple2"
+                             ,_0: 0
+                             ,_1: 51}
+                            ,{ctor: "_Tuple2",_0: 51,_1: 51}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 102
+                             ,_1: 39}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 141
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 166
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 191
+                             ,_1: 25}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 216
+                             ,_1: 13}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 229
+                             ,_1: 13}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 242
+                             ,_1: 11}
+                            ,{ctor: "_Tuple2"
+                             ,_0: 253
+                             ,_1: 3}]);
+   var slotStarts = A2($List.map,
+   $Basics.fst,
+   slots);
+   var slotWidths = A2($List.map,
+   $Basics.snd,
+   slots);
+   var Encounter = F2(function (a,
+   b) {
+      return {_: {}
+             ,level: b
+             ,species: a};
+   });
+   _elm.Encounters.values = {_op: _op
+                            ,Encounter: Encounter
+                            ,slots: slots
+                            ,slotStarts: slotStarts
+                            ,slotWidths: slotWidths
+                            ,slotFromRand: slotFromRand
+                            ,EncounterTable: EncounterTable
+                            ,encounter: encounter
+                            ,noEncounter: noEncounter
+                            ,route22table: route22table};
+   return _elm.Encounters.values;
+};
+Elm.Graph = Elm.Graph || {};
+Elm.Graph.make = function (_elm) {
+   "use strict";
+   _elm.Graph = _elm.Graph || {};
+   if (_elm.Graph.values)
+   return _elm.Graph.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graph",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var roundTo = F2(function (gap,
+   x) {
+      return gap * $Basics.toFloat($Basics.round(x / gap));
+   });
+   var gapSize = function (x) {
+      return function () {
+         var powerOfTen = Math.pow(10,
+         $Basics.toFloat($Basics.floor(A2($Basics.logBase,
+         10,
+         x))));
+         return _U.cmp(5 * powerOfTen,
+         x) < 0 ? 5 * powerOfTen : _U.cmp(2 * powerOfTen,
+         x) < 0 ? 2 * powerOfTen : powerOfTen;
+      }();
+   };
+   var labelPositions = F2(function (lo,
+   hi) {
+      return function () {
+         var gap = gapSize((hi - lo) / 2);
+         return A2($List._op["::"],
+         lo,
+         A2($List._op["::"],
+         hi,
+         A2($List.map,
+         function ($) {
+            return F2(function (x,y) {
+               return x * y;
+            })(gap)($Basics.toFloat($));
+         },
+         _L.range($Basics.ceiling(lo / gap + 0.2),
+         $Basics.floor(hi / gap - 0.2)))));
+      }();
+   });
+   var drawGraph = F3(function (w,
+   h,
+   g) {
+      return function () {
+         var axisStyle = _U.replace([["width"
+                                     ,2]],
+         $Graphics$Collage.defaultLine);
+         var color_cycle = _L.fromArray([$Color.red
+                                        ,$Color.darkGreen
+                                        ,$Color.blue
+                                        ,$Color.purple
+                                        ,$Color.orange]);
+         var colors = $List.concat(A2($List.repeat,
+         ($List.length(g.points) / $List.length(color_cycle) | 0) + 1,
+         color_cycle));
+         var graphOffsetY = 20;
+         var graphH = $Basics.toFloat(h) - 2 * graphOffsetY;
+         var graphOffsetX = 40;
+         var graphW = $Basics.toFloat(w) - 2 * graphOffsetX;
+         var maxY = function () {
+            var _v0 = g.yRange;
+            switch (_v0.ctor)
+            {case "Just":
+               switch (_v0._0.ctor)
+                 {case "_Tuple2":
+                    return _v0._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 58 and 61");
+         }();
+         var minY = function () {
+            var _v4 = g.yRange;
+            switch (_v4.ctor)
+            {case "Just":
+               switch (_v4._0.ctor)
+                 {case "_Tuple2":
+                    return _v4._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 55 and 58");
+         }();
+         var pixelY = function (y) {
+            return (y - minY) / (maxY - minY) * graphH - graphH / 2;
+         };
+         var yLabelPositions = A2(labelPositions,
+         minY,
+         maxY);
+         var maxX = function () {
+            var _v8 = g.xRange;
+            switch (_v8.ctor)
+            {case "Just":
+               switch (_v8._0.ctor)
+                 {case "_Tuple2":
+                    return _v8._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 52 and 55");
+         }();
+         var minX = function () {
+            var _v12 = g.xRange;
+            switch (_v12.ctor)
+            {case "Just":
+               switch (_v12._0.ctor)
+                 {case "_Tuple2":
+                    return _v12._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 49 and 52");
+         }();
+         var pixelX = function (x) {
+            return (x - minX) / (maxX - minX) * graphW - graphW / 2;
+         };
+         var pixelCoordinates = F2(function (x,
+         y) {
+            return {ctor: "_Tuple2"
+                   ,_0: pixelX(x)
+                   ,_1: pixelY(y)};
+         });
+         var yAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,0,minY),
+         A2(pixelCoordinates,0,maxY)));
+         var xLabel = function (x) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: 0
+                                          ,_1: -10})($Graphics$Collage.move(A2(pixelCoordinates,
+            x,
+            0))($Graphics$Collage.text($Text.fromString($Basics.toString(x)))));
+         };
+         var xLabelLine = function (x) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,x,minY),
+            A2(pixelCoordinates,x,maxY)));
+         };
+         var yLabel = function (y) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: -20
+                                          ,_1: 0})($Graphics$Collage.move(A2(pixelCoordinates,
+            0,
+            y))($Graphics$Collage.text($Text.fromString($Basics.toString(y)))));
+         };
+         var pointForm = F2(function (color,
+         _v16) {
+            return function () {
+               switch (_v16.ctor)
+               {case "_Tuple2":
+                  return A2($Graphics$Collage.move,
+                    {ctor: "_Tuple2"
+                    ,_0: pixelX(_v16._0)
+                    ,_1: pixelY(_v16._1)},
+                    A2($Graphics$Collage.filled,
+                    color,
+                    A2($Graphics$Collage.oval,
+                    1,
+                    1)));}
+               _U.badCase($moduleName,
+               "on line 70, column 34 to 83");
+            }();
+         });
+         var seriesForm = F2(function (color,
+         points) {
+            return A2($List.map,
+            pointForm(color),
+            points);
+         });
+         var xAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,minX,0),
+         A2(pixelCoordinates,maxX,0)));
+         var yLabelLine = function (y) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,minX,y),
+            A2(pixelCoordinates,maxX,y)));
+         };
+         var xLabelPositions = A2(labelPositions,
+         minX,
+         maxX);
+         var forms = $List.concat(_L.fromArray([$List.concat(A3($List.map2,
+                                               seriesForm,
+                                               colors,
+                                               g.points))
+                                               ,A2($List.map,
+                                               xLabel,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               xLabelLine,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               yLabel,
+                                               yLabelPositions)
+                                               ,A2($List.map,
+                                               yLabelLine,
+                                               yLabelPositions)
+                                               ,_L.fromArray([xAxis,yAxis])]));
+         return A3($Graphics$Collage.collage,
+         w,
+         h,
+         forms);
+      }();
+   });
+   var addSeries = F2(function (series,
+   g) {
+      return _U.replace([["points"
+                         ,A2($List._op["::"],
+                         series,
+                         g.points)]],
+      g);
+   });
+   var graph = F3(function (xRange,
+   yRange,
+   points) {
+      return {_: {}
+             ,points: points
+             ,xRange: xRange
+             ,yRange: yRange};
+   });
+   var Graph = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,points: c
+             ,xRange: a
+             ,yRange: b};
+   });
+   _elm.Graph.values = {_op: _op
+                       ,Graph: Graph
+                       ,graph: graph
+                       ,addSeries: addSeries
+                       ,gapSize: gapSize
+                       ,roundTo: roundTo
+                       ,labelPositions: labelPositions
+                       ,drawGraph: drawGraph};
+   return _elm.Graph.values;
+};
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -2595,6 +3363,156 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
 };
+Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   if (_elm.Graphics.Input.values)
+   return _elm.Graphics.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input",
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = $Native$Graphics$Input.clickable;
+   var hoverable = $Native$Graphics$Input.hoverable;
+   var dropDown = $Native$Graphics$Input.dropDown;
+   var checkbox = $Native$Graphics$Input.checkbox;
+   var customButton = $Native$Graphics$Input.customButton;
+   var button = $Native$Graphics$Input.button;
+   _elm.Graphics.Input.values = {_op: _op
+                                ,button: button
+                                ,customButton: customButton
+                                ,checkbox: checkbox
+                                ,dropDown: dropDown
+                                ,hoverable: hoverable
+                                ,clickable: clickable};
+   return _elm.Graphics.Input.values;
+};
+Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.Field = Elm.Graphics.Input.Field || {};
+Elm.Graphics.Input.Field.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   _elm.Graphics.Input.Field = _elm.Graphics.Input.Field || {};
+   if (_elm.Graphics.Input.Field.values)
+   return _elm.Graphics.Input.Field.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input.Field",
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var email = $Native$Graphics$Input.email;
+   var password = $Native$Graphics$Input.password;
+   var field = $Native$Graphics$Input.field;
+   var Backward = {ctor: "Backward"};
+   var Forward = {ctor: "Forward"};
+   var Selection = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,direction: c
+             ,end: b
+             ,start: a};
+   });
+   var Content = F2(function (a,
+   b) {
+      return {_: {}
+             ,selection: b
+             ,string: a};
+   });
+   var noContent = A2(Content,
+   "",
+   A3(Selection,0,0,Forward));
+   var Style = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,highlight: c
+             ,outline: b
+             ,padding: a
+             ,style: d};
+   });
+   var Highlight = F2(function (a,
+   b) {
+      return {_: {}
+             ,color: a
+             ,width: b};
+   });
+   var noHighlight = A2(Highlight,
+   $Color.blue,
+   0);
+   var Outline = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,color: a
+             ,radius: c
+             ,width: b};
+   });
+   var Dimensions = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,bottom: d
+             ,left: a
+             ,right: b
+             ,top: c};
+   });
+   var uniformly = function (n) {
+      return A4(Dimensions,
+      n,
+      n,
+      n,
+      n);
+   };
+   var noOutline = A3(Outline,
+   $Color.grey,
+   uniformly(0),
+   0);
+   var defaultStyle = {_: {}
+                      ,highlight: A2(Highlight,
+                      $Color.blue,
+                      1)
+                      ,outline: A3(Outline,
+                      $Color.grey,
+                      uniformly(1),
+                      2)
+                      ,padding: uniformly(4)
+                      ,style: $Text.defaultStyle};
+   _elm.Graphics.Input.Field.values = {_op: _op
+                                      ,field: field
+                                      ,password: password
+                                      ,email: email
+                                      ,noContent: noContent
+                                      ,defaultStyle: defaultStyle
+                                      ,noOutline: noOutline
+                                      ,noHighlight: noHighlight
+                                      ,uniformly: uniformly
+                                      ,Content: Content
+                                      ,Selection: Selection
+                                      ,Style: Style
+                                      ,Outline: Outline
+                                      ,Highlight: Highlight
+                                      ,Dimensions: Dimensions
+                                      ,Forward: Forward
+                                      ,Backward: Backward};
+   return _elm.Graphics.Input.Field.values;
+};
 Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
    "use strict";
@@ -2949,6 +3867,371 @@ Elm.List.make = function (_elm) {
                       ,sortBy: sortBy
                       ,sortWith: sortWith};
    return _elm.List.values;
+};
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $DSum = Elm.DSum.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $Graph = Elm.Graph.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $RNG = Elm.RNG.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Strategy = Elm.Strategy.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Trampoline = Elm.Trampoline.make(_elm),
+   $Worker = Elm.Worker.make(_elm);
+   var buildStrategy = function ($) {
+      return $Strategy.simplify(15)($Strategy.frameStrategy($List.map(function (x) {
+         return _U.cmp(x,0.3) > 0;
+      })($)));
+   };
+   var combine = A2($List.foldr,
+   $Signal.map2(F2(function (x,y) {
+      return A2($List._op["::"],
+      x,
+      y);
+   })),
+   $Signal.constant(_L.fromArray([])));
+   var dsums = F3(function (n,
+   carry,
+   state) {
+      return _U.eq(n,
+      0) ? _L.fromArray([]) : A2($List._op["::"],
+      $RNG.getDSum(state),
+      A3(dsums,
+      n - 1,
+      carry,
+      A2($RNG.rngStep,carry,state)));
+   });
+   var dsumPath = F3(function (n,
+   carry,
+   state) {
+      return $List.map(function (_v0) {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: $Basics.toFloat(_v0._0)
+                      ,_1: $Basics.toFloat(_v0._1)};}
+            _U.badCase($moduleName,
+            "on line 102, column 47 to 67");
+         }();
+      })(A2($List.map2,
+      F2(function (v0,v1) {
+         return {ctor: "_Tuple2"
+                ,_0: v0
+                ,_1: v1};
+      }),
+      _L.range(0,n - 1))(A3(dsums,
+      n,
+      carry,
+      state)));
+   });
+   var toPath$ = F2(function (n,
+   l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return A2($List._op["::"],
+              {ctor: "_Tuple2"
+              ,_0: n
+              ,_1: l._0},
+              A2(toPath$,n + 1,l._1));
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 97 and 99");
+      }();
+   });
+   var toPath = toPath$(0);
+   var successProbability = F3(function (rate,
+   slots,
+   state) {
+      return $Dist.probability(function (s) {
+         return A2($List.member,
+         s,
+         slots);
+      })($Dist.collapseMap($DSum.dsumSlotDist(rate))($DSum.dsumDist(state)));
+   });
+   var successProbabilities = F5(function (rate,
+   slots,
+   n,
+   carry,
+   state) {
+      return _U.cmp(n,
+      0) < 1 ? _L.fromArray([]) : A2($List._op["::"],
+      A3(successProbability,
+      rate,
+      slots,
+      state),
+      A5(successProbabilities,
+      rate,
+      slots,
+      n - 1,
+      carry,
+      A2($DSum.dsumStep,
+      carry,
+      state)));
+   });
+   var buildSuccessProbabilities = F3(function (low,
+   high,
+   state) {
+      return A4(successProbabilities,
+      25,
+      _L.fromArray([2,4]),
+      1,
+      0)($DSum.filterDSum(function (x) {
+         return _U.cmp(A2($Basics._op["%"],
+         x - low,
+         256),
+         A2($Basics._op["%"],
+         high - low,
+         256)) < 0;
+      })(state));
+   });
+   var iterate$ = F3(function (n,
+   f,
+   x) {
+      return _U.eq(n,
+      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v7) {
+         return function () {
+            switch (_v7.ctor)
+            {case "_Tuple0":
+               return A3(iterate$,
+                 n - 1,
+                 f,
+                 f(x));}
+            _U.badCase($moduleName,
+            "on line 67, column 37 to 58");
+         }();
+      });
+   });
+   var iterate = F3(function (n,
+   f,
+   x) {
+      return $Trampoline.trampoline(A3(iterate$,
+      n,
+      f,
+      x));
+   });
+   var contentString = function (content) {
+      return content.string;
+   };
+   var initialRNGStates = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   F2(function (hRandomAdd,
+   hRandomSub) {
+      return A2($List.concatMap,
+      function (rDiv) {
+         return A2($List.map,
+         function (cycle) {
+            return A4($RNG.rngState,
+            rDiv,
+            cycle,
+            hRandomAdd,
+            hRandomSub);
+         },
+         _L.fromArray([0,4]));
+      },
+      _L.fromArray([17]));
+   }),
+   $Signal.constant(0)),
+   $Signal.constant(0));
+   var desiredSlots = $Signal.constant(_L.fromArray([2
+                                                    ,4]));
+   var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
+   var calculateButton = A2($Graphics$Input.button,
+   A2($Signal.message,
+   calculateBox.address,
+   {ctor: "_Tuple0"}),
+   "Calculate");
+   var dsumGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 255}))($List.map(A2(dsumPath,
+      1000,
+      0))($));
+   },
+   A2($Signal.sampleOn,
+   calculateBox.signal,
+   initialRNGStates));
+   var dsumHigh = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var dsumHighSignal = A2($Signal.sampleOn,
+   calculateBox.signal,
+   A2($Signal._op["<~"],
+   function ($) {
+      return $Maybe.withDefault(25)($Result.toMaybe($String.toInt(contentString($))));
+   },
+   dsumHigh.signal));
+   var dsumHighField = A2($Signal._op["<~"],
+   A3($Graphics$Input$Field.field,
+   $Graphics$Input$Field.defaultStyle,
+   $Signal.message(dsumHigh.address),
+   "DSum upper bound"),
+   dsumHigh.signal);
+   var dsumLow = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var dsumLowSignal = A2($Signal.sampleOn,
+   calculateBox.signal,
+   A2($Signal._op["<~"],
+   function ($) {
+      return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
+   },
+   dsumLow.signal));
+   var initialDSumState = A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   F3(function (low,high,mix) {
+      return $DSum.filterDSum(function (x) {
+         return _U.cmp(A2($Basics._op["%"],
+         x - low,
+         256),
+         A2($Basics._op["%"],
+         high - low,
+         256)) < 0;
+      })(mix);
+   }),
+   dsumLowSignal),
+   dsumHighSignal),
+   $Signal.constant($DSum.initialRNGMix));
+   var successProbabilitiesWorker = function () {
+      var encounterRate = 25;
+      var carry = 0;
+      var desiredSlots = _L.fromArray([2
+                                      ,4]);
+      var workerStep = function (_v9) {
+         return function () {
+            switch (_v9.ctor)
+            {case "_Tuple3":
+               return _U.eq(_v9._0,
+                 0) ? $Worker.Done($List.reverse(_v9._2)) : $Worker.Working({ctor: "_Tuple3"
+                                                                            ,_0: _v9._0 - 1
+                                                                            ,_1: A2($DSum.dsumStep,
+                                                                            carry,
+                                                                            _v9._1)
+                                                                            ,_2: A2($List._op["::"],
+                                                                            A3(successProbability,
+                                                                            encounterRate,
+                                                                            desiredSlots,
+                                                                            _v9._1),
+                                                                            _v9._2)});}
+            _U.badCase($moduleName,
+            "between lines 137 and 143");
+         }();
+      };
+      var initialState = $DSum.filterDSum(function (x) {
+         return _U.cmp(x,
+         25) > -1 && _U.cmp(x,50) < 1;
+      })($DSum.initialRNGMix);
+      return A2($Worker.createWorker,
+      A2($Signal._op["<~"],
+      function (x) {
+         return {ctor: "_Tuple3"
+                ,_0: 1000
+                ,_1: x
+                ,_2: _L.fromArray([])};
+      },
+      initialDSumState),
+      workerStep);
+   }();
+   var successProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v14 = $Basics.snd(state);
+         switch (_v14.ctor)
+         {case "Done": return _v14._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v14._0.ctor)
+              {case "_Tuple3":
+                 return $List.reverse(_v14._0._2);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 149 and 153");
+      }();
+   },
+   successProbabilitiesWorker.state);
+   var successGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   successProbabilitiesSignal);
+   var strategy = A2($Signal._op["<~"],
+   buildStrategy,
+   successProbabilitiesSignal);
+   var dsumLowField = A2($Signal._op["<~"],
+   A3($Graphics$Input$Field.field,
+   $Graphics$Input$Field.defaultStyle,
+   $Signal.message(dsumLow.address),
+   "DSum lower bound"),
+   dsumLow.signal);
+   var main = A2($Signal._op["<~"],
+   $Graphics$Element.flow($Graphics$Element.down),
+   combine(_L.fromArray([dsumLowField
+                        ,dsumHighField
+                        ,$Signal.constant(calculateButton)
+                        ,A2($Signal._op["<~"],
+                        A2($Graph.drawGraph,700,400),
+                        successGraph)])));
+   _elm.Main.values = {_op: _op
+                      ,dsumLow: dsumLow
+                      ,dsumLowSignal: dsumLowSignal
+                      ,dsumLowField: dsumLowField
+                      ,dsumHigh: dsumHigh
+                      ,dsumHighSignal: dsumHighSignal
+                      ,dsumHighField: dsumHighField
+                      ,calculateBox: calculateBox
+                      ,desiredSlots: desiredSlots
+                      ,calculateButton: calculateButton
+                      ,initialRNGStates: initialRNGStates
+                      ,contentString: contentString
+                      ,iterate: iterate
+                      ,iterate$: iterate$
+                      ,successProbability: successProbability
+                      ,successProbabilities: successProbabilities
+                      ,toPath: toPath
+                      ,toPath$: toPath$
+                      ,dsumPath: dsumPath
+                      ,dsums: dsums
+                      ,combine: combine
+                      ,dsumGraph: dsumGraph
+                      ,buildSuccessProbabilities: buildSuccessProbabilities
+                      ,initialDSumState: initialDSumState
+                      ,successProbabilitiesWorker: successProbabilitiesWorker
+                      ,successProbabilitiesSignal: successProbabilitiesSignal
+                      ,successGraph: successGraph
+                      ,buildStrategy: buildStrategy
+                      ,strategy: strategy
+                      ,main: main};
+   return _elm.Main.values;
 };
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
@@ -4663,6 +5946,479 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 		block: block,
 		markdown: markdown
+	};
+
+};
+
+// setup
+Elm.Native = Elm.Native || {};
+Elm.Native.Graphics = Elm.Native.Graphics || {};
+Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
+
+// definition
+Elm.Native.Graphics.Input.make = function(localRuntime) {
+	'use strict';
+
+	// attempt to short-circuit
+	if ('values' in Elm.Native.Graphics.Input) {
+		return Elm.Native.Graphics.Input.values;
+	}
+
+	var Color = Elm.Native.Color.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+	var Signal = Elm.Native.Signal.make(localRuntime);
+	var Text = Elm.Native.Text.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+	var Element = Elm.Native.Graphics.Element.make(localRuntime);
+
+
+	function renderDropDown(model)
+	{
+		var drop = Element.createNode('select');
+		drop.style.border = '0 solid';
+		drop.style.pointerEvents = 'auto';
+		drop.style.display = 'block';
+
+		drop.elm_values = List.toArray(model.values);
+		drop.elm_handler = model.handler;
+		var values = drop.elm_values;
+
+		for (var i = 0; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			drop.appendChild(option);
+		}
+		drop.addEventListener('change', function() {
+			Signal.sendMessage(drop.elm_handler(drop.elm_values[drop.selectedIndex]._1));
+		});
+
+		return drop;
+	}
+
+	function updateDropDown(node, oldModel, newModel)
+	{
+		node.elm_values = List.toArray(newModel.values);
+		node.elm_handler = newModel.handler;
+
+		var values = node.elm_values;
+		var kids = node.childNodes;
+		var kidsLength = kids.length;
+
+		var i = 0;
+		for (; i < kidsLength && i < values.length; ++i)
+		{
+			var option = kids[i];
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+		}
+		for (; i < kidsLength; ++i)
+		{
+			node.removeChild(node.lastChild);
+		}
+		for (; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			node.appendChild(option);
+		}
+		return node;
+	}
+
+	function dropDown(handler, values)
+	{
+		return A3(Element.newElement, 100, 24, {
+			ctor: 'Custom',
+			type: 'DropDown',
+			render: renderDropDown,
+			update: updateDropDown,
+			model: {
+				values: values,
+				handler: handler
+			}
+		});
+	}
+
+	function renderButton(model)
+	{
+		var node = Element.createNode('button');
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_message = model.message;
+		function click()
+		{
+			Signal.sendMessage(node.elm_message);
+		}
+		node.addEventListener('click', click);
+		node.innerHTML = model.text;
+		return node;
+	}
+
+	function updateButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+		var txt = newModel.text;
+		if (oldModel.text !== txt)
+		{
+			node.innerHTML = txt;
+		}
+		return node;
+	}
+
+	function button(message, text)
+	{
+		return A3(Element.newElement, 100, 40, {
+			ctor: 'Custom',
+			type: 'Button',
+			render: renderButton,
+			update: updateButton,
+			model: {
+				message: message,
+				text:text
+			}
+		});
+	}
+
+	function renderCustomButton(model)
+	{
+		var btn = Element.createNode('div');
+		btn.style.pointerEvents = 'auto';
+		btn.elm_message = model.message;
+
+		btn.elm_up    = Element.render(model.up);
+		btn.elm_hover = Element.render(model.hover);
+		btn.elm_down  = Element.render(model.down);
+
+		btn.elm_up.style.display = 'block';
+		btn.elm_hover.style.display = 'none';
+		btn.elm_down.style.display = 'none';
+
+		btn.appendChild(btn.elm_up);
+		btn.appendChild(btn.elm_hover);
+		btn.appendChild(btn.elm_down);
+
+		function swap(visibleNode, hiddenNode1, hiddenNode2)
+		{
+			visibleNode.style.display = 'block';
+			hiddenNode1.style.display = 'none';
+			hiddenNode2.style.display = 'none';
+		}
+
+		var overCount = 0;
+		function over(e)
+		{
+			if (overCount++ > 0) return;
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+		}
+		function out(e)
+		{
+			if (btn.contains(e.toElement || e.relatedTarget)) return;
+			overCount = 0;
+			swap(btn.elm_up, btn.elm_down, btn.elm_hover);
+		}
+		function up()
+		{
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+			Signal.sendMessage(btn.elm_message);
+		}
+		function down()
+		{
+			swap(btn.elm_down, btn.elm_hover, btn.elm_up);
+		}
+
+		btn.addEventListener('mouseover', over);
+		btn.addEventListener('mouseout' , out);
+		btn.addEventListener('mousedown', down);
+		btn.addEventListener('mouseup'  , up);
+
+		return btn;
+	}
+
+	function updateCustomButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+
+		var kids = node.childNodes;
+		var styleUp    = kids[0].style.display;
+		var styleHover = kids[1].style.display;
+		var styleDown  = kids[2].style.display;
+
+		Element.updateAndReplace(kids[0], oldModel.up, newModel.up);
+		Element.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
+		Element.updateAndReplace(kids[2], oldModel.down, newModel.down);
+
+		var kids = node.childNodes;
+		kids[0].style.display = styleUp;
+		kids[1].style.display = styleHover;
+		kids[2].style.display = styleDown;
+
+		return node;
+	}
+
+	function max3(a,b,c)
+	{
+		var ab = a > b ? a : b;
+		return ab > c ? ab : c;
+	}
+
+	function customButton(message, up, hover, down)
+	{
+		return A3(Element.newElement,
+				  max3(up.props.width, hover.props.width, down.props.width),
+				  max3(up.props.height, hover.props.height, down.props.height),
+				  { ctor: 'Custom',
+					type: 'CustomButton',
+					render: renderCustomButton,
+					update: updateCustomButton,
+					model: {
+						message: message,
+						up: up,
+						hover: hover,
+						down: down
+					}
+				  });
+	}
+
+	function renderCheckbox(model)
+	{
+		var node = Element.createNode('input');
+		node.type = 'checkbox';
+		node.checked = model.checked;
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_handler = model.handler;
+		function change()
+		{
+			Signal.sendMessage(node.elm_handler(node.checked));
+		}
+		node.addEventListener('change', change);
+		return node;
+	}
+
+	function updateCheckbox(node, oldModel, newModel)
+	{
+		node.elm_handler = newModel.handler;
+		node.checked = newModel.checked;
+		return node;
+	}
+
+	function checkbox(handler, checked)
+	{
+		return A3(Element.newElement, 13, 13, {
+			ctor: 'Custom',
+			type: 'CheckBox',
+			render: renderCheckbox,
+			update: updateCheckbox,
+			model: { handler:handler, checked:checked }
+		});
+	}
+
+	function setRange(node, start, end, dir)
+	{
+		if (node.parentNode)
+		{
+			node.setSelectionRange(start, end, dir);
+		}
+		else
+		{
+			setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
+		}
+	}
+
+	function updateIfNeeded(css, attribute, latestAttribute)
+	{
+		if (css[attribute] !== latestAttribute)
+		{
+			css[attribute] = latestAttribute;
+		}
+	}
+	function cssDimensions(dimensions)
+	{
+		return dimensions.top    + 'px ' +
+			   dimensions.right  + 'px ' +
+			   dimensions.bottom + 'px ' +
+			   dimensions.left   + 'px';
+	}
+	function updateFieldStyle(css, style)
+	{
+		updateIfNeeded(css, 'padding', cssDimensions(style.padding));
+
+		var outline = style.outline;
+		updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
+		updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
+		updateIfNeeded(css, 'border-radius', outline.radius + 'px');
+
+		var highlight = style.highlight;
+		if (highlight.width === 0)
+		{
+			css.outline = 'none';
+		}
+		else
+		{
+			updateIfNeeded(css, 'outline-width', highlight.width + 'px');
+			updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
+		}
+
+		var textStyle = style.style;
+		updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
+		if (textStyle.typeface.ctor !== '[]')
+		{
+			updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
+		}
+		if (textStyle.height.ctor !== "Nothing")
+		{
+			updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
+		}
+		updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
+		updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
+		if (textStyle.line.ctor !== 'Nothing')
+		{
+			updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
+		}
+	}
+
+	function renderField(model)
+	{
+		var field = Element.createNode('input');
+		updateFieldStyle(field.style, model.style);
+		field.style.borderStyle = 'solid';
+		field.style.pointerEvents = 'auto';
+
+		field.type = model.type;
+		field.placeholder = model.placeHolder;
+		field.value = model.content.string;
+
+		field.elm_handler = model.handler;
+		field.elm_old_value = field.value;
+
+		function inputUpdate(event)
+		{
+			var curr = field.elm_old_value;
+			var next = field.value;
+			if (curr === next)
+			{
+				return;
+			}
+
+			var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
+			var start = field.selectionStart;
+			var end = field.selectionEnd;
+			field.value = field.elm_old_value;
+
+			Signal.sendMessage(field.elm_handler({
+				_:{},
+				string: next,
+				selection: {
+					_:{},
+					start: start,
+					end: end,
+					direction: { ctor: direction }
+				}
+			}));
+		}
+
+		field.addEventListener('input', inputUpdate);
+		field.addEventListener('focus', function() {
+			field.elm_hasFocus = true;
+		});
+		field.addEventListener('blur', function() {
+			field.elm_hasFocus = false;
+		});
+
+		return field;
+	}
+
+	function updateField(field, oldModel, newModel)
+	{
+		if (oldModel.style !== newModel.style)
+		{
+			updateFieldStyle(field.style, newModel.style);
+		}
+		field.elm_handler = newModel.handler;
+
+		field.type = newModel.type;
+		field.placeholder = newModel.placeHolder;
+		var value = newModel.content.string;
+		field.value = value;
+		field.elm_old_value = value;
+		if (field.elm_hasFocus)
+		{
+			var selection = newModel.content.selection;
+			var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
+			setRange(field, selection.start, selection.end, direction);
+		}
+		return field;
+	}
+
+	function mkField(type)
+	{
+		function field(style, handler, placeHolder, content)
+		{
+			var padding = style.padding;
+			var outline = style.outline.width;
+			var adjustWidth = padding.left + padding.right + outline.left + outline.right;
+			var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
+			return A3(Element.newElement, 200, 30, {
+				ctor: 'Custom',
+				type: type + 'Field',
+				adjustWidth: adjustWidth,
+				adjustHeight: adjustHeight,
+				render: renderField,
+				update: updateField,
+				model: {
+					handler:handler,
+					placeHolder:placeHolder,
+					content:content,
+					style:style,
+					type:type
+				}
+			});
+		}
+		return F4(field);
+	}
+
+	function hoverable(handler, elem)
+	{
+		function onHover(bool)
+		{
+			Signal.sendMessage(handler(bool));
+		}
+		var props = Utils.replace([['hover',onHover]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	function clickable(message, elem)
+	{
+		function onClick()
+		{
+			Signal.sendMessage(message);
+		}
+		var props = Utils.replace([['click',onClick]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	return Elm.Native.Graphics.Input.values = {
+		button: F2(button),
+		customButton: F4(customButton),
+		checkbox: F2(checkbox),
+		dropDown: F2(dropDown),
+		field: mkField('text'),
+		email: mkField('email'),
+		password: mkField('password'),
+		hoverable: F2(hoverable),
+		clickable: F2(clickable)
 	};
 
 };
@@ -7186,6 +8942,149 @@ Elm.Native.Text.make = function(localRuntime) {
 	};
 };
 
+Elm.Native.Time = {};
+Elm.Native.Time.make = function(localRuntime)
+{
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Time = localRuntime.Native.Time || {};
+	if (localRuntime.Native.Time.values)
+	{
+		return localRuntime.Native.Time.values;
+	}
+
+	var NS = Elm.Native.Signal.make(localRuntime);
+	var Maybe = Elm.Maybe.make(localRuntime);
+
+
+	// FRAMES PER SECOND
+
+	function fpsWhen(desiredFPS, isOn)
+	{
+		var msPerFrame = 1000 / desiredFPS;
+		var ticker = NS.input('fps-' + desiredFPS, null);
+
+		function notifyTicker()
+		{
+			localRuntime.notify(ticker.id, null);
+		}
+
+		function firstArg(x, y)
+		{
+			return x;
+		}
+
+		// input fires either when isOn changes, or when ticker fires.
+		// Its value is a tuple with the current timestamp, and the state of isOn
+		var input = NS.timestamp(A3(NS.map2, F2(firstArg), NS.dropRepeats(isOn), ticker));
+
+		var initialState = {
+			isOn: false,
+			time: localRuntime.timer.programStart,
+			delta: 0
+		};
+
+		var timeoutId;
+
+		function update(input,state)
+		{
+			var currentTime = input._0;
+			var isOn = input._1;
+			var wasOn = state.isOn;
+			var previousTime = state.time;
+
+			if (isOn)
+			{
+				timeoutId = localRuntime.setTimeout(notifyTicker, msPerFrame);
+			}
+			else if (wasOn)
+			{
+				clearTimeout(timeoutId);
+			}
+
+			return {
+				isOn: isOn,
+				time: currentTime,
+				delta: (isOn && !wasOn) ? 0 : currentTime - previousTime
+			};
+		}
+
+		return A2(
+			NS.map,
+			function(state) { return state.delta; },
+			A3(NS.foldp, F2(update), update(input.value,initialState), input)
+		);
+	}
+
+
+	// EVERY
+
+	function every(t)
+	{
+		var ticker = NS.input('every-' + t, null);
+		function tellTime()
+		{
+			localRuntime.notify(ticker.id, null);
+		}
+		var clock = A2( NS.map, fst, NS.timestamp(ticker) );
+		setInterval(tellTime, t);
+		return clock;
+	}
+
+
+	function fst(pair)
+	{
+		return pair._0;
+	}
+
+
+	function read(s)
+	{
+		var t = Date.parse(s);
+		return isNaN(t) ? Maybe.Nothing : Maybe.Just(t);
+	}
+
+	return localRuntime.Native.Time.values = {
+		fpsWhen: F2(fpsWhen),
+		every: every,
+		toDate: function(t) { return new window.Date(t); },
+		read: read
+	};
+
+};
+
+Elm.Native.Trampoline = {};
+Elm.Native.Trampoline.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Trampoline = localRuntime.Native.Trampoline || {};
+	if (localRuntime.Native.Trampoline.values)
+	{
+		return localRuntime.Native.Trampoline.values;
+	}
+
+	// trampoline : Trampoline a -> a
+	function trampoline(t)
+	{
+		var tramp = t;
+		while(true)
+		{
+			switch(tramp.ctor)
+			{
+				case "Done":
+					return tramp._0;
+				case "Continue":
+					tramp = tramp._0({ ctor: "_Tuple0" });
+					continue;
+			}
+		}
+	}
+
+	return localRuntime.Native.Trampoline.values = {
+		trampoline: trampoline
+	};
+};
+
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -7680,610 +9579,762 @@ Elm.Pokemon.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var speciesList = _L.fromArray([{_: {}
+                                   ,cryDiff: 49
                                    ,indexNumber: 1
                                    ,name: "Rhydon"
                                    ,pokedexNumber: 112}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 2
                                    ,name: "Kangaskhan"
                                    ,pokedexNumber: 115}
                                   ,{_: {}
+                                   ,cryDiff: 16
                                    ,indexNumber: 3
                                    ,name: "Nidoran M"
                                    ,pokedexNumber: 32}
                                   ,{_: {}
+                                   ,cryDiff: 6
                                    ,indexNumber: 4
                                    ,name: "Clefairy"
                                    ,pokedexNumber: 35}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 5
                                    ,name: "Spearow"
                                    ,pokedexNumber: 21}
                                   ,{_: {}
+                                   ,cryDiff: 57
                                    ,indexNumber: 6
                                    ,name: "Voltorb"
                                    ,pokedexNumber: 100}
                                   ,{_: {}
+                                   ,cryDiff: 59
                                    ,indexNumber: 7
                                    ,name: "Nidoking"
                                    ,pokedexNumber: 34}
                                   ,{_: {}
+                                   ,cryDiff: 28
                                    ,indexNumber: 8
                                    ,name: "Slowbro"
                                    ,pokedexNumber: 80}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 9
                                    ,name: "Ivysaur"
                                    ,pokedexNumber: 2}
                                   ,{_: {}
+                                   ,cryDiff: 78
                                    ,indexNumber: 10
                                    ,name: "Exeggutor"
                                    ,pokedexNumber: 103}
                                   ,{_: {}
+                                   ,cryDiff: 34
                                    ,indexNumber: 11
                                    ,name: "Lickitung"
                                    ,pokedexNumber: 108}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 12
                                    ,name: "Exeggcute"
                                    ,pokedexNumber: 102}
                                   ,{_: {}
+                                   ,cryDiff: 18
                                    ,indexNumber: 13
                                    ,name: "Grimer"
                                    ,pokedexNumber: 88}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 14
                                    ,name: "Gengar"
                                    ,pokedexNumber: 94}
                                   ,{_: {}
+                                   ,cryDiff: 15
                                    ,indexNumber: 15
                                    ,name: "Nidoran F"
                                    ,pokedexNumber: 29}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 16
                                    ,name: "Nidoqueen"
                                    ,pokedexNumber: 31}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 17
                                    ,name: "Cubone"
                                    ,pokedexNumber: 104}
                                   ,{_: {}
+                                   ,cryDiff: 44
                                    ,indexNumber: 18
                                    ,name: "Rhyhorn"
                                    ,pokedexNumber: 111}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 19
                                    ,name: "Lapras"
                                    ,pokedexNumber: 131}
                                   ,{_: {}
+                                   ,cryDiff: 36
                                    ,indexNumber: 20
                                    ,name: "Arcanine"
                                    ,pokedexNumber: 59}
                                   ,{_: {}
+                                   ,cryDiff: 79
                                    ,indexNumber: 21
                                    ,name: "Mew"
                                    ,pokedexNumber: 151}
                                   ,{_: {}
+                                   ,cryDiff: 44
                                    ,indexNumber: 22
                                    ,name: "Gyarados"
                                    ,pokedexNumber: 130}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 23
                                    ,name: "Shellder"
                                    ,pokedexNumber: 90}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 24
                                    ,name: "Tentacool"
                                    ,pokedexNumber: 72}
                                   ,{_: {}
+                                   ,cryDiff: 52
                                    ,indexNumber: 25
                                    ,name: "Gastly"
                                    ,pokedexNumber: 92}
                                   ,{_: {}
+                                   ,cryDiff: 24
                                    ,indexNumber: 26
                                    ,name: "Scyther"
                                    ,pokedexNumber: 123}
                                   ,{_: {}
+                                   ,cryDiff: 44
                                    ,indexNumber: 27
                                    ,name: "Staryu"
                                    ,pokedexNumber: 120}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 28
                                    ,name: "Blastoise"
                                    ,pokedexNumber: 9}
                                   ,{_: {}
+                                   ,cryDiff: 22
                                    ,indexNumber: 29
                                    ,name: "Pinsir"
                                    ,pokedexNumber: 127}
                                   ,{_: {}
+                                   ,cryDiff: 29
                                    ,indexNumber: 30
                                    ,name: "Tangela"
                                    ,pokedexNumber: 114}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 33
                                    ,name: "Growlithe"
                                    ,pokedexNumber: 58}
                                   ,{_: {}
+                                   ,cryDiff: 59
                                    ,indexNumber: 34
                                    ,name: "Onix"
                                    ,pokedexNumber: 95}
                                   ,{_: {}
+                                   ,cryDiff: 35
                                    ,indexNumber: 35
                                    ,name: "Fearow"
                                    ,pokedexNumber: 22}
                                   ,{_: {}
+                                   ,cryDiff: 2
                                    ,indexNumber: 36
                                    ,name: "Pidgey"
                                    ,pokedexNumber: 16}
                                   ,{_: {}
+                                   ,cryDiff: 9
                                    ,indexNumber: 37
                                    ,name: "Slowpoke"
                                    ,pokedexNumber: 79}
                                   ,{_: {}
+                                   ,cryDiff: 67
                                    ,indexNumber: 38
                                    ,name: "Kadabra"
                                    ,pokedexNumber: 64}
                                   ,{_: {}
+                                   ,cryDiff: 66
                                    ,indexNumber: 39
                                    ,name: "Graveler"
                                    ,pokedexNumber: 75}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 40
                                    ,name: "Chansey"
                                    ,pokedexNumber: 113}
                                   ,{_: {}
+                                   ,cryDiff: 27
                                    ,indexNumber: 41
                                    ,name: "Machoke"
                                    ,pokedexNumber: 67}
                                   ,{_: {}
+                                   ,cryDiff: 39
                                    ,indexNumber: 42
                                    ,name: "Mr. Mime"
                                    ,pokedexNumber: 122}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 43
                                    ,name: "Hitmonlee"
                                    ,pokedexNumber: 106}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 44
                                    ,name: "Hitmonchan"
                                    ,pokedexNumber: 107}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 45
                                    ,name: "Arbok"
                                    ,pokedexNumber: 24}
                                   ,{_: {}
+                                   ,cryDiff: 81
                                    ,indexNumber: 46
                                    ,name: "Parasect"
                                    ,pokedexNumber: 47}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 47
                                    ,name: "Psyduck"
                                    ,pokedexNumber: 54}
                                   ,{_: {}
+                                   ,cryDiff: 70
                                    ,indexNumber: 48
                                    ,name: "Drowzee"
                                    ,pokedexNumber: 96}
                                   ,{_: {}
+                                   ,cryDiff: 28
                                    ,indexNumber: 49
                                    ,name: "Golem"
                                    ,pokedexNumber: 76}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 51
                                    ,name: "Magmar"
                                    ,pokedexNumber: 126}
                                   ,{_: {}
+                                   ,cryDiff: 93
                                    ,indexNumber: 53
                                    ,name: "Electabuzz"
                                    ,pokedexNumber: 125}
                                   ,{_: {}
+                                   ,cryDiff: 65
                                    ,indexNumber: 54
                                    ,name: "Magneton"
                                    ,pokedexNumber: 82}
                                   ,{_: {}
+                                   ,cryDiff: 47
                                    ,indexNumber: 55
                                    ,name: "Koffing"
                                    ,pokedexNumber: 109}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 57
                                    ,name: "Mankey"
                                    ,pokedexNumber: 56}
                                   ,{_: {}
+                                   ,cryDiff: 39
                                    ,indexNumber: 58
                                    ,name: "Seel"
                                    ,pokedexNumber: 86}
                                   ,{_: {}
+                                   ,cryDiff: 42
                                    ,indexNumber: 59
                                    ,name: "Diglett"
                                    ,pokedexNumber: 50}
                                   ,{_: {}
+                                   ,cryDiff: 38
                                    ,indexNumber: 60
                                    ,name: "Tauros"
                                    ,pokedexNumber: 128}
                                   ,{_: {}
+                                   ,cryDiff: 18
                                    ,indexNumber: 64
                                    ,name: "Farfetch\'d"
                                    ,pokedexNumber: 83}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 65
                                    ,name: "Venonat"
                                    ,pokedexNumber: 48}
                                   ,{_: {}
+                                   ,cryDiff: 44
                                    ,indexNumber: 66
                                    ,name: "Dragonite"
                                    ,pokedexNumber: 149}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 70
                                    ,name: "Doduo"
                                    ,pokedexNumber: 84}
                                   ,{_: {}
+                                   ,cryDiff: 18
                                    ,indexNumber: 71
                                    ,name: "Poliwag"
                                    ,pokedexNumber: 60}
                                   ,{_: {}
+                                   ,cryDiff: 121
                                    ,indexNumber: 72
                                    ,name: "Jynx"
                                    ,pokedexNumber: 124}
                                   ,{_: {}
+                                   ,cryDiff: 54
                                    ,indexNumber: 73
                                    ,name: "Moltres"
                                    ,pokedexNumber: 146}
                                   ,{_: {}
+                                   ,cryDiff: 53
                                    ,indexNumber: 74
                                    ,name: "Articuno"
                                    ,pokedexNumber: 144}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 75
                                    ,name: "Zapdos"
                                    ,pokedexNumber: 145}
                                   ,{_: {}
+                                   ,cryDiff: 20
                                    ,indexNumber: 76
                                    ,name: "Ditto"
                                    ,pokedexNumber: 132}
                                   ,{_: {}
+                                   ,cryDiff: 8
                                    ,indexNumber: 77
                                    ,name: "Meowth"
                                    ,pokedexNumber: 52}
                                   ,{_: {}
+                                   ,cryDiff: 56
                                    ,indexNumber: 78
                                    ,name: "Krabby"
                                    ,pokedexNumber: 98}
                                   ,{_: {}
+                                   ,cryDiff: 54
                                    ,indexNumber: 82
                                    ,name: "Vulpix"
                                    ,pokedexNumber: 37}
                                   ,{_: {}
+                                   ,cryDiff: 56
                                    ,indexNumber: 83
                                    ,name: "Ninetales"
                                    ,pokedexNumber: 38}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 84
                                    ,name: "Pikachu"
                                    ,pokedexNumber: 25}
                                   ,{_: {}
+                                   ,cryDiff: 55
                                    ,indexNumber: 85
                                    ,name: "Raichu"
                                    ,pokedexNumber: 26}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 88
                                    ,name: "Dratini"
                                    ,pokedexNumber: 147}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 89
                                    ,name: "Dragonair"
                                    ,pokedexNumber: 148}
                                   ,{_: {}
+                                   ,cryDiff: 21
                                    ,indexNumber: 90
                                    ,name: "Kabuto"
                                    ,pokedexNumber: 140}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 91
                                    ,name: "Kabutops"
                                    ,pokedexNumber: 141}
                                   ,{_: {}
+                                   ,cryDiff: 7
                                    ,indexNumber: 92
                                    ,name: "Horsea"
                                    ,pokedexNumber: 116}
                                   ,{_: {}
+                                   ,cryDiff: 6
                                    ,indexNumber: 93
                                    ,name: "Seadra"
                                    ,pokedexNumber: 117}
                                   ,{_: {}
+                                   ,cryDiff: 16
                                    ,indexNumber: 96
                                    ,name: "Sandshrew"
                                    ,pokedexNumber: 27}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 97
                                    ,name: "Sandslash"
                                    ,pokedexNumber: 28}
                                   ,{_: {}
+                                   ,cryDiff: 24
                                    ,indexNumber: 98
                                    ,name: "Omanyte"
                                    ,pokedexNumber: 138}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 99
                                    ,name: "Omastar"
                                    ,pokedexNumber: 139}
                                   ,{_: {}
+                                   ,cryDiff: 1
                                    ,indexNumber: 100
                                    ,name: "Jigglypuff"
                                    ,pokedexNumber: 39}
                                   ,{_: {}
+                                   ,cryDiff: 8
                                    ,indexNumber: 101
                                    ,name: "Wigglytuff"
                                    ,pokedexNumber: 40}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 102
                                    ,name: "Eevee"
                                    ,pokedexNumber: 133}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 103
                                    ,name: "Flareon"
                                    ,pokedexNumber: 136}
                                   ,{_: {}
+                                   ,cryDiff: 34
                                    ,indexNumber: 104
                                    ,name: "Jolteon"
                                    ,pokedexNumber: 135}
                                   ,{_: {}
+                                   ,cryDiff: 55
                                    ,indexNumber: 105
                                    ,name: "Vaporeon"
                                    ,pokedexNumber: 134}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 106
                                    ,name: "Machop"
                                    ,pokedexNumber: 66}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 107
                                    ,name: "Zubat"
                                    ,pokedexNumber: 41}
                                   ,{_: {}
+                                   ,cryDiff: 39
                                    ,indexNumber: 108
                                    ,name: "Ekans"
                                    ,pokedexNumber: 23}
                                   ,{_: {}
+                                   ,cryDiff: 71
                                    ,indexNumber: 109
                                    ,name: "Paras"
                                    ,pokedexNumber: 46}
                                   ,{_: {}
+                                   ,cryDiff: 6
                                    ,indexNumber: 110
                                    ,name: "Poliwhirl"
                                    ,pokedexNumber: 61}
                                   ,{_: {}
+                                   ,cryDiff: 19
                                    ,indexNumber: 111
                                    ,name: "Poliwrath"
                                    ,pokedexNumber: 62}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 112
                                    ,name: "Weedle"
                                    ,pokedexNumber: 13}
                                   ,{_: {}
+                                   ,cryDiff: 39
                                    ,indexNumber: 113
                                    ,name: "Kakuna"
                                    ,pokedexNumber: 14}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 114
                                    ,name: "Beedrill"
                                    ,pokedexNumber: 15}
                                   ,{_: {}
+                                   ,cryDiff: 42
                                    ,indexNumber: 116
                                    ,name: "Dodrio"
                                    ,pokedexNumber: 85}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 117
                                    ,name: "Primeape"
                                    ,pokedexNumber: 57}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 118
                                    ,name: "Dugtrio"
                                    ,pokedexNumber: 51}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 119
                                    ,name: "Venomoth"
                                    ,pokedexNumber: 49}
                                   ,{_: {}
+                                   ,cryDiff: 52
                                    ,indexNumber: 120
                                    ,name: "Dewgong"
                                    ,pokedexNumber: 87}
                                   ,{_: {}
+                                   ,cryDiff: 20
                                    ,indexNumber: 123
                                    ,name: "Caterpie"
                                    ,pokedexNumber: 10}
                                   ,{_: {}
+                                   ,cryDiff: 51
                                    ,indexNumber: 124
                                    ,name: "Metapod"
                                    ,pokedexNumber: 11}
                                   ,{_: {}
+                                   ,cryDiff: 21
                                    ,indexNumber: 125
                                    ,name: "Butterfree"
                                    ,pokedexNumber: 12}
                                   ,{_: {}
+                                   ,cryDiff: 34
                                    ,indexNumber: 126
                                    ,name: "Machamp"
                                    ,pokedexNumber: 68}
                                   ,{_: {}
+                                   ,cryDiff: 20
                                    ,indexNumber: 128
                                    ,name: "Golduck"
                                    ,pokedexNumber: 55}
                                   ,{_: {}
+                                   ,cryDiff: 68
                                    ,indexNumber: 129
                                    ,name: "Hypno"
                                    ,pokedexNumber: 97}
                                   ,{_: {}
+                                   ,cryDiff: 42
                                    ,indexNumber: 130
                                    ,name: "Golbat"
                                    ,pokedexNumber: 42}
                                   ,{_: {}
+                                   ,cryDiff: 80
                                    ,indexNumber: 131
                                    ,name: "Mewtwo"
                                    ,pokedexNumber: 150}
                                   ,{_: {}
+                                   ,cryDiff: 0
                                    ,indexNumber: 132
                                    ,name: "Snorlax"
                                    ,pokedexNumber: 143}
                                   ,{_: {}
+                                   ,cryDiff: 44
                                    ,indexNumber: 133
                                    ,name: "Magikarp"
                                    ,pokedexNumber: 129}
                                   ,{_: {}
+                                   ,cryDiff: 34
                                    ,indexNumber: 136
                                    ,name: "Muk"
                                    ,pokedexNumber: 89}
                                   ,{_: {}
+                                   ,cryDiff: 59
                                    ,indexNumber: 138
                                    ,name: "Kingler"
                                    ,pokedexNumber: 99}
                                   ,{_: {}
+                                   ,cryDiff: 50
                                    ,indexNumber: 139
                                    ,name: "Cloyster"
                                    ,pokedexNumber: 91}
                                   ,{_: {}
+                                   ,cryDiff: 60
                                    ,indexNumber: 141
                                    ,name: "Electrode"
                                    ,pokedexNumber: 101}
                                   ,{_: {}
+                                   ,cryDiff: 12
                                    ,indexNumber: 142
                                    ,name: "Clefable"
                                    ,pokedexNumber: 36}
                                   ,{_: {}
+                                   ,cryDiff: 52
                                    ,indexNumber: 143
                                    ,name: "Weezing"
                                    ,pokedexNumber: 110}
                                   ,{_: {}
+                                   ,cryDiff: 47
                                    ,indexNumber: 144
                                    ,name: "Persian"
                                    ,pokedexNumber: 53}
                                   ,{_: {}
+                                   ,cryDiff: 31
                                    ,indexNumber: 145
                                    ,name: "Marowak"
                                    ,pokedexNumber: 105}
                                   ,{_: {}
+                                   ,cryDiff: 53
                                    ,indexNumber: 147
                                    ,name: "Haunter"
                                    ,pokedexNumber: 93}
                                   ,{_: {}
+                                   ,cryDiff: 55
                                    ,indexNumber: 148
                                    ,name: "Abra"
                                    ,pokedexNumber: 63}
                                   ,{_: {}
+                                   ,cryDiff: 82
                                    ,indexNumber: 149
                                    ,name: "Alakazam"
                                    ,pokedexNumber: 65}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 150
                                    ,name: "Pidgeotto"
                                    ,pokedexNumber: 17}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 151
                                    ,name: "Pidgeot"
                                    ,pokedexNumber: 18}
                                   ,{_: {}
+                                   ,cryDiff: 49
                                    ,indexNumber: 152
                                    ,name: "Starmie"
                                    ,pokedexNumber: 121}
                                   ,{_: {}
+                                   ,cryDiff: 33
                                    ,indexNumber: 153
                                    ,name: "Bulbasaur"
                                    ,pokedexNumber: 1}
                                   ,{_: {}
+                                   ,cryDiff: 46
                                    ,indexNumber: 154
                                    ,name: "Venusaur"
                                    ,pokedexNumber: 3}
                                   ,{_: {}
+                                   ,cryDiff: 54
                                    ,indexNumber: 155
                                    ,name: "Tentacruel"
                                    ,pokedexNumber: 73}
                                   ,{_: {}
+                                   ,cryDiff: 20
                                    ,indexNumber: 157
                                    ,name: "Goldeen"
                                    ,pokedexNumber: 118}
                                   ,{_: {}
+                                   ,cryDiff: 43
                                    ,indexNumber: 158
                                    ,name: "Seaking"
                                    ,pokedexNumber: 119}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 163
                                    ,name: "Ponyta"
                                    ,pokedexNumber: 77}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 164
                                    ,name: "Rapidash"
                                    ,pokedexNumber: 78}
                                   ,{_: {}
+                                   ,cryDiff: 8
                                    ,indexNumber: 165
                                    ,name: "Rattata"
                                    ,pokedexNumber: 19}
                                   ,{_: {}
+                                   ,cryDiff: 21
                                    ,indexNumber: 166
                                    ,name: "Raticate"
                                    ,pokedexNumber: 20}
                                   ,{_: {}
+                                   ,cryDiff: 26
                                    ,indexNumber: 167
                                    ,name: "Nidorino"
                                    ,pokedexNumber: 33}
                                   ,{_: {}
+                                   ,cryDiff: 24
                                    ,indexNumber: 168
                                    ,name: "Nidorina"
                                    ,pokedexNumber: 30}
                                   ,{_: {}
+                                   ,cryDiff: 54
                                    ,indexNumber: 169
                                    ,name: "Geodude"
                                    ,pokedexNumber: 74}
                                   ,{_: {}
+                                   ,cryDiff: 53
                                    ,indexNumber: 170
                                    ,name: "Porygon"
                                    ,pokedexNumber: 77}
                                   ,{_: {}
+                                   ,cryDiff: 61
                                    ,indexNumber: 171
                                    ,name: "Aerodactyl"
                                    ,pokedexNumber: 142}
                                   ,{_: {}
+                                   ,cryDiff: 53
                                    ,indexNumber: 173
                                    ,name: "Magnemite"
                                    ,pokedexNumber: 81}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 176
                                    ,name: "Charmander"
                                    ,pokedexNumber: 4}
                                   ,{_: {}
+                                   ,cryDiff: 38
                                    ,indexNumber: 177
                                    ,name: "Squirtle"
                                    ,pokedexNumber: 7}
                                   ,{_: {}
+                                   ,cryDiff: 32
                                    ,indexNumber: 178
                                    ,name: "Charmeleon"
                                    ,pokedexNumber: 5}
                                   ,{_: {}
+                                   ,cryDiff: 40
                                    ,indexNumber: 179
                                    ,name: "Wartortle"
                                    ,pokedexNumber: 8}
                                   ,{_: {}
+                                   ,cryDiff: 41
                                    ,indexNumber: 180
                                    ,name: "Charizard"
                                    ,pokedexNumber: 6}
                                   ,{_: {}
+                                   ,cryDiff: 27
                                    ,indexNumber: 185
                                    ,name: "Oddish"
                                    ,pokedexNumber: 43}
                                   ,{_: {}
+                                   ,cryDiff: 29
                                    ,indexNumber: 186
                                    ,name: "Gloom"
                                    ,pokedexNumber: 44}
                                   ,{_: {}
+                                   ,cryDiff: 63
                                    ,indexNumber: 187
                                    ,name: "Vileplume"
                                    ,pokedexNumber: 45}
                                   ,{_: {}
+                                   ,cryDiff: 7
                                    ,indexNumber: 188
                                    ,name: "Bellsprout"
                                    ,pokedexNumber: 69}
                                   ,{_: {}
+                                   ,cryDiff: 30
                                    ,indexNumber: 189
                                    ,name: "Weepinbell"
                                    ,pokedexNumber: 70}
                                   ,{_: {}
+                                   ,cryDiff: 46
                                    ,indexNumber: 190
                                    ,name: "Victreebel"
                                    ,pokedexNumber: 71}]);
    var noSpecies = {_: {}
+                   ,cryDiff: 0
                    ,indexNumber: 0
                    ,name: ""
                    ,pokedexNumber: 0};
@@ -8302,10 +10353,12 @@ Elm.Pokemon.make = function (_elm) {
              ,_0: species.indexNumber
              ,_1: species};
    })(speciesList));
-   var Species = F3(function (a,
+   var Species = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
+             ,cryDiff: d
              ,indexNumber: a
              ,name: c
              ,pokedexNumber: b};
@@ -8318,6 +10371,122 @@ Elm.Pokemon.make = function (_elm) {
                          ,noSpecies: noSpecies
                          ,speciesList: speciesList};
    return _elm.Pokemon.values;
+};
+Elm.RNG = Elm.RNG || {};
+Elm.RNG.make = function (_elm) {
+   "use strict";
+   _elm.RNG = _elm.RNG || {};
+   if (_elm.RNG.values)
+   return _elm.RNG.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "RNG",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var getDSum$ = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple4":
+            return A2($Basics._op["%"],
+              _v0._2 + _v0._3,
+              256);}
+         _U.badCase($moduleName,
+         "on line 48, column 28 to 42");
+      }();
+   };
+   var getDSum = function (s) {
+      return A2($Basics._op["%"],
+      s.hRandomAdd + s.hRandomSub,
+      256);
+   };
+   var rngStep = F2(function (carry,
+   s) {
+      return function () {
+         var cycle$$ = A2($Basics._op["%"],
+         s.cycle + 70224,
+         256);
+         var rDiv$$ = A2($Basics._op["%"],
+         s.rDiv + ((s.cycle + 70224) / 256 | 0),
+         256);
+         var cycle$ = s.cycle + 44;
+         var rDiv$ = _U.cmp(cycle$,
+         256) > -1 ? A2($Basics._op["%"],
+         s.rDiv + 1,
+         256) : s.rDiv;
+         var hRandomAdd$ = s.hRandomAdd + s.rDiv + carry;
+         var carry$ = _U.cmp(hRandomAdd$,
+         256) > -1 ? 1 : 0;
+         var hRandomSub$ = s.hRandomSub - rDiv$ - carry$;
+         return {_: {}
+                ,cycle: cycle$$
+                ,hRandomAdd: A2($Basics._op["%"],
+                hRandomAdd$,
+                256)
+                ,hRandomSub: A2($Basics._op["%"],
+                hRandomSub$,
+                256)
+                ,rDiv: rDiv$$};
+      }();
+   });
+   var rngState = F4(function (r,
+   c,
+   a,
+   s) {
+      return {_: {}
+             ,cycle: c
+             ,hRandomAdd: a
+             ,hRandomSub: s
+             ,rDiv: r};
+   });
+   var fromComparable = function (_v6) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple4":
+            return A4(rngState,
+              _v6._0,
+              _v6._1,
+              _v6._2,
+              _v6._3);}
+         _U.badCase($moduleName,
+         "on line 16, column 56 to 97");
+      }();
+   };
+   var toComparable = function (state) {
+      return {ctor: "_Tuple4"
+             ,_0: state.rDiv
+             ,_1: state.cycle
+             ,_2: state.hRandomAdd
+             ,_3: state.hRandomSub};
+   };
+   var rngStep$ = F2(function (carry,
+   s) {
+      return toComparable(rngStep(carry)(fromComparable(s)));
+   });
+   var RNGState = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,cycle: b
+             ,hRandomAdd: c
+             ,hRandomSub: d
+             ,rDiv: a};
+   });
+   _elm.RNG.values = {_op: _op
+                     ,RNGState: RNGState
+                     ,toComparable: toComparable
+                     ,fromComparable: fromComparable
+                     ,rngState: rngState
+                     ,rngStep: rngStep
+                     ,rngStep$: rngStep$
+                     ,getDSum: getDSum
+                     ,getDSum$: getDSum$};
+   return _elm.RNG.values;
 };
 Elm.Result = Elm.Result || {};
 Elm.Result.make = function (_elm) {
@@ -8706,6 +10875,105 @@ Elm.Signal.make = function (_elm) {
                         ,forwardTo: forwardTo
                         ,Mailbox: Mailbox};
    return _elm.Signal.values;
+};
+Elm.Strategy = Elm.Strategy || {};
+Elm.Strategy.make = function (_elm) {
+   "use strict";
+   _elm.Strategy = _elm.Strategy || {};
+   if (_elm.Strategy.values)
+   return _elm.Strategy.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Strategy",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var removeSmallSteps = F2(function (frameThreshold,
+   strat) {
+      return function () {
+         switch (strat.ctor)
+         {case "::":
+            switch (strat._1.ctor)
+              {case "::":
+                 return _U.cmp(strat._0.frames,
+                   frameThreshold) < 0 ? A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   {_: {}
+                   ,frames: strat._0.frames + strat._1._0.frames
+                   ,inGrass: strat._1._0.inGrass},
+                   strat._1._1)) : A2($List._op["::"],
+                   strat._0,
+                   A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   strat._1._0,
+                   strat._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   strat._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 21 and 26");
+      }();
+   });
+   var combineSteps = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::": switch (l._1.ctor)
+              {case "::":
+                 return _U.eq(l._0.inGrass,
+                   l._1._0.inGrass) ? combineSteps(A2($List._op["::"],
+                   {_: {}
+                   ,frames: l._0.frames + l._1._0.frames
+                   ,inGrass: l._0.inGrass},
+                   l._1._1)) : A2($List._op["::"],
+                   l._0,
+                   combineSteps(A2($List._op["::"],
+                   l._1._0,
+                   l._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   l._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 13 and 18");
+      }();
+   };
+   var simplify = F2(function (frameThreshold,
+   strat) {
+      return removeSmallSteps(frameThreshold)(combineSteps(strat));
+   });
+   var frameStrategy = function (l) {
+      return combineSteps($List.map(function (b) {
+         return {_: {}
+                ,frames: 1
+                ,inGrass: b};
+      })(l));
+   };
+   var StrategyStep = F2(function (a,
+   b) {
+      return {_: {}
+             ,frames: b
+             ,inGrass: a};
+   });
+   _elm.Strategy.values = {_op: _op
+                          ,StrategyStep: StrategyStep
+                          ,combineSteps: combineSteps
+                          ,removeSmallSteps: removeSmallSteps
+                          ,simplify: simplify
+                          ,frameStrategy: frameStrategy};
+   return _elm.Strategy.values;
 };
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {
@@ -9119,6 +11387,111 @@ Elm.Text.make = function (_elm) {
                       ,Through: Through};
    return _elm.Text.values;
 };
+Elm.Time = Elm.Time || {};
+Elm.Time.make = function (_elm) {
+   "use strict";
+   _elm.Time = _elm.Time || {};
+   if (_elm.Time.values)
+   return _elm.Time.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Time",
+   $Basics = Elm.Basics.make(_elm),
+   $Native$Signal = Elm.Native.Signal.make(_elm),
+   $Native$Time = Elm.Native.Time.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var delay = $Native$Signal.delay;
+   var since = F2(function (time,
+   signal) {
+      return function () {
+         var stop = A2($Signal.map,
+         $Basics.always(-1),
+         A2(delay,time,signal));
+         var start = A2($Signal.map,
+         $Basics.always(1),
+         signal);
+         var delaydiff = A3($Signal.foldp,
+         F2(function (x,y) {
+            return x + y;
+         }),
+         0,
+         A2($Signal.merge,start,stop));
+         return A2($Signal.map,
+         F2(function (x,y) {
+            return !_U.eq(x,y);
+         })(0),
+         delaydiff);
+      }();
+   });
+   var timestamp = $Native$Signal.timestamp;
+   var every = $Native$Time.every;
+   var fpsWhen = $Native$Time.fpsWhen;
+   var fps = function (targetFrames) {
+      return A2(fpsWhen,
+      targetFrames,
+      $Signal.constant(true));
+   };
+   var inMilliseconds = function (t) {
+      return t;
+   };
+   var millisecond = 1;
+   var second = 1000 * millisecond;
+   var minute = 60 * second;
+   var hour = 60 * minute;
+   var inHours = function (t) {
+      return t / hour;
+   };
+   var inMinutes = function (t) {
+      return t / minute;
+   };
+   var inSeconds = function (t) {
+      return t / second;
+   };
+   _elm.Time.values = {_op: _op
+                      ,millisecond: millisecond
+                      ,second: second
+                      ,minute: minute
+                      ,hour: hour
+                      ,inMilliseconds: inMilliseconds
+                      ,inSeconds: inSeconds
+                      ,inMinutes: inMinutes
+                      ,inHours: inHours
+                      ,fps: fps
+                      ,fpsWhen: fpsWhen
+                      ,every: every
+                      ,timestamp: timestamp
+                      ,delay: delay
+                      ,since: since};
+   return _elm.Time.values;
+};
+Elm.Trampoline = Elm.Trampoline || {};
+Elm.Trampoline.make = function (_elm) {
+   "use strict";
+   _elm.Trampoline = _elm.Trampoline || {};
+   if (_elm.Trampoline.values)
+   return _elm.Trampoline.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trampoline",
+   $Native$Trampoline = Elm.Native.Trampoline.make(_elm);
+   var trampoline = $Native$Trampoline.trampoline;
+   var Continue = function (a) {
+      return {ctor: "Continue"
+             ,_0: a};
+   };
+   var Done = function (a) {
+      return {ctor: "Done",_0: a};
+   };
+   _elm.Trampoline.values = {_op: _op
+                            ,trampoline: trampoline
+                            ,Done: Done
+                            ,Continue: Continue};
+   return _elm.Trampoline.values;
+};
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
    "use strict";
@@ -9183,4 +11556,106 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
+};
+Elm.Worker = Elm.Worker || {};
+Elm.Worker.make = function (_elm) {
+   "use strict";
+   _elm.Worker = _elm.Worker || {};
+   if (_elm.Worker.values)
+   return _elm.Worker.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Worker",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var getResult = function (state) {
+      return function () {
+         switch (state.ctor)
+         {case "Done":
+            return $Maybe.Just(state._0);
+            case "Unstarted":
+            return $Maybe.Nothing;
+            case "Working":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 19 and 22");
+      }();
+   };
+   var isWorking = function (state) {
+      return function () {
+         switch (state.ctor)
+         {case "Done": return false;
+            case "Unstarted": return false;
+            case "Working": return true;}
+         _U.badCase($moduleName,
+         "between lines 13 and 16");
+      }();
+   };
+   var Worker = F2(function (a,b) {
+      return {_: {}
+             ,signal: b
+             ,state: a};
+   });
+   var Unstarted = {ctor: "Unstarted"};
+   var Done = function (a) {
+      return {ctor: "Done",_0: a};
+   };
+   var Working = function (a) {
+      return {ctor: "Working"
+             ,_0: a};
+   };
+   var createWorker = F2(function (inputSignal,
+   step) {
+      return function () {
+         var state = A3($Signal.foldp,
+         F2(function (inp,_v6) {
+            return function () {
+               switch (_v6.ctor)
+               {case "_Tuple2":
+                  return _U.eq($Maybe.Just(inp),
+                    _v6._0) ? function () {
+                       switch (_v6._1.ctor)
+                       {case "Done":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _v6._0
+                                 ,_1: Done(_v6._1._0)};
+                          case "Working":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _v6._0
+                                 ,_1: step(_v6._1._0)};}
+                       _U.badCase($moduleName,
+                       "between lines 29 and 32");
+                    }() : {ctor: "_Tuple2"
+                          ,_0: $Maybe.Just(inp)
+                          ,_1: Working(inp)};}
+               _U.badCase($moduleName,
+               "between lines 28 and 32");
+            }();
+         }),
+         {ctor: "_Tuple2"
+         ,_0: $Maybe.Nothing
+         ,_1: Unstarted},
+         $Signal.sampleOn($Time.fps(60))(inputSignal));
+         return {_: {}
+                ,signal: $Signal.dropRepeats($Signal.map(function ($) {
+                   return getResult($Basics.snd($));
+                })(state))
+                ,state: state};
+      }();
+   });
+   _elm.Worker.values = {_op: _op
+                        ,Working: Working
+                        ,Done: Done
+                        ,Unstarted: Unstarted
+                        ,Worker: Worker
+                        ,isWorking: isWorking
+                        ,getResult: getResult
+                        ,createWorker: createWorker};
+   return _elm.Worker.values;
 };

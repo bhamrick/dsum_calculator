@@ -173,4 +173,4 @@ main = flow down <~ combine
     -- , Signal.map show strategy
     -- , Signal.map show initialDSumState
     -- , Signal.map (snd >> show) successProbabilitiesWorker.state
-    
+    ]
