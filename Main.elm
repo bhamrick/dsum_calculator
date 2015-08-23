@@ -1,4 +1,5 @@
 import Color exposing (..)
+import Dict
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Graphics.Input exposing (..)
@@ -16,32 +17,118 @@ import DSum exposing (..)
 import Encounters exposing (..)
 import Graph exposing (..)
 import RNG exposing (..)
+import Pokemon exposing (..)
 import Strategy exposing (..)
 import Worker exposing (..)
 
-dsumLow : Signal.Mailbox Content
-dsumLow = Signal.mailbox noContent
-
-dsumLowSignal : Signal Int
-dsumLowSignal = Signal.sampleOn calculateBox.signal (Maybe.withDefault 0 << toMaybe << toInt << contentString <~ dsumLow.signal)
-
-dsumLowField : Signal Element
-dsumLowField = field defaultStyle (Signal.message dsumLow.address) "DSum lower bound" <~ dsumLow.signal
-
-dsumHigh : Signal.Mailbox Content
-dsumHigh = Signal.mailbox noContent
-
-dsumHighSignal : Signal Int
-dsumHighSignal = Signal.sampleOn calculateBox.signal (Maybe.withDefault 25 << toMaybe << toInt << contentString <~ dsumHigh.signal)
-
-dsumHighField : Signal Element
-dsumHighField = field defaultStyle (Signal.message dsumHigh.address) "DSum upper bound" <~ dsumHigh.signal
-
-calculateBox : Signal.Mailbox ()
-calculateBox = Signal.mailbox ()
+encounterTable : Signal EncounterTable
+encounterTable = Signal.constant route22table
 
 desiredSlots : Signal (List Int)
 desiredSlots = Signal.constant [2, 4]
+
+leadPokemon : Signal Species
+leadPokemon = Signal.constant (Maybe.withDefault noSpecies (Dict.get "Squirtle" speciesByName))
+
+buildRequestList : EncounterTable -> List Int -> Species -> List (String, ChartRequest)
+buildRequestList table slots poke =
+    [ ( displayName table.slot1
+      , { desiredSlots = slots
+        , encounteredSlots = [1]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot1.species
+        }
+      )
+    , ( displayName table.slot2
+      , { desiredSlots = slots
+        , encounteredSlots = [2]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot2.species
+        }
+      )
+    , ( displayName table.slot3
+      , { desiredSlots = slots
+        , encounteredSlots = [3]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot3.species
+        }
+      )
+    , ( displayName table.slot4
+      , { desiredSlots = slots
+        , encounteredSlots = [4]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot4.species
+        }
+      )
+    , ( displayName table.slot5
+      , { desiredSlots = slots
+        , encounteredSlots = [5]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot5.species
+        }
+      )
+    , ( displayName table.slot6
+      , { desiredSlots = slots
+        , encounteredSlots = [6]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot6.species
+        }
+      )
+    , ( displayName table.slot7
+      , { desiredSlots = slots
+        , encounteredSlots = [7]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot7.species
+        }
+      )
+    , ( displayName table.slot8
+      , { desiredSlots = slots
+        , encounteredSlots = [8]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot8.species
+        }
+      )
+    , ( displayName table.slot9
+      , { desiredSlots = slots
+        , encounteredSlots = [9]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot9.species
+        }
+      )
+    , ( displayName table.slot10
+      , { desiredSlots = slots
+        , encounteredSlots = [10]
+        , encounterRate = table.rate
+        , encounterLength = battleLength poke table.slot10.species
+        }
+      )
+    ]
+
+requestBox : Signal.Mailbox ChartRequest
+requestBox = 
+    Signal.mailbox
+        { desiredSlots = [2, 4]
+        , encounteredSlots = [1]
+        , encounterRate = 25
+        , encounterLength = 594
+        }
+
+requestDropDown : Signal Element
+requestDropDown =
+    dropDown (Signal.message requestBox.address)
+    <~ (buildRequestList <~ encounterTable ~ desiredSlots ~ leadPokemon)
+
+thresholdBox : Signal.Mailbox Content
+thresholdBox = Signal.mailbox noContent
+
+thresholdSignal : Signal Float
+thresholdSignal = Signal.map (Maybe.withDefault 0.25 << Result.toMaybe << String.toFloat << .string) thresholdBox.signal
+
+thresholdInput : Signal Element
+thresholdInput = field defaultStyle (Signal.message thresholdBox.address) "Threshold (default 0.25)" <~ thresholdBox.signal
+
+calculateBox : Signal.Mailbox ()
+calculateBox = Signal.mailbox ()
 
 encounteredSlots : Signal (List Int)
 encounteredSlots = Signal.constant [3]
@@ -120,14 +207,6 @@ type alias ChartRequest =
     , encounterLength : Int
     }
 
-requestSignal : Signal ChartRequest
-requestSignal = Signal.constant
-    { desiredSlots = [2, 4]
-    , encounteredSlots = [3]
-    , encounterRate = 25
-    , encounterLength = 600
-    }
-
 workerInputSignal : Signal (ChartRequest, Int, DSumState, List Float)
 workerInputSignal = (\req ->
     let
@@ -138,7 +217,7 @@ workerInputSignal = (\req ->
             |> Dist.probability (\s -> List.member s req.encounteredSlots))
     in
     (req, 0, initialState, [])
-    ) <~ requestSignal
+    ) <~ Signal.sampleOn calculateBox.signal requestBox.signal
 
 successProbabilitiesWorker : Worker (ChartRequest, Int, DSumState, List Float) (List Float)
 successProbabilitiesWorker =
@@ -176,11 +255,11 @@ successProbabilitiesSignal = Signal.map (\state ->
 successGraph : Signal Graph
 successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
 
-buildStrategy : List Float -> Strategy
-buildStrategy = simplify 15 << frameStrategy << List.map (\x -> x > 0.4)
+buildStrategy : Float -> List Float -> Strategy
+buildStrategy threshold = simplify 15 << frameStrategy << List.map (\x -> x >= threshold)
 
 strategy : Signal Strategy
-strategy = Maybe.withDefault [] << Maybe.map buildStrategy <~ successProbabilitiesWorker.signal
+strategy = buildStrategy <~ thresholdSignal ~ (Signal.map (Maybe.withDefault []) successProbabilitiesWorker.signal)
 
 strategy2 : Signal Strategy
 strategy2 = roundStrategy 17 <~ strategy
@@ -190,9 +269,9 @@ stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 
 main : Signal Element
 main = flow down <~ combine
-    [ dsumLowField
-    , dsumHighField
+    [ requestDropDown
     , Signal.constant calculateButton
+    , thresholdInput
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
     , Signal.map show strategy

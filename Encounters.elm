@@ -69,6 +69,10 @@ encounter name level =
     , level = level
     }
 
+displayName : Encounter -> String
+displayName enc =
+    "L" ++ toString enc.level ++ " " ++ enc.species.name
+
 noEncounter : Encounter
 noEncounter = { species = noSpecies, level = 0 }
 
