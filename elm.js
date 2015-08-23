@@ -3972,6 +3972,7 @@ Elm.Main.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Strategy = Elm.Strategy.make(_elm),
    $String = Elm.String.make(_elm),
+   $Text = Elm.Text.make(_elm),
    $Trampoline = Elm.Trampoline.make(_elm),
    $Worker = Elm.Worker.make(_elm);
    var buildStrategy = function (threshold) {
@@ -4038,7 +4039,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 187, column 23 to 43");
+            "on line 354, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -4058,7 +4059,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 176 and 178");
+         "between lines 343 and 345");
       }();
    });
    var toPath = toPath$(0);
@@ -4112,7 +4113,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 158, column 37 to 58");
+            "on line 325, column 37 to 58");
          }();
       });
    });
@@ -4183,119 +4184,12 @@ Elm.Main.make = function (_elm) {
    $Signal.message(thresholdBox.address),
    "Threshold (default 0.25)"),
    thresholdBox.signal);
-   var requestBox = $Signal.mailbox({_: {}
-                                    ,desiredSlots: _L.fromArray([2
-                                                                ,4])
-                                    ,encounterLength: 594
-                                    ,encounterRate: 25
-                                    ,encounteredSlots: _L.fromArray([1])});
-   var workerInputSignal = A2($Signal._op["<~"],
-   function (req) {
-      return function () {
-         var initialState = $DSum.conditionDSum(function (x) {
-            return $Dist.probability(function (s) {
-               return A2($List.member,
-               s,
-               req.encounteredSlots);
-            })(A2($DSum.dsumSlotDist,
-            req.encounterRate,
-            x));
-         })($DSum.initialRNGMix);
-         return {ctor: "_Tuple4"
-                ,_0: req
-                ,_1: 0
-                ,_2: initialState
-                ,_3: _L.fromArray([])};
-      }();
-   },
-   A2($Signal.sampleOn,
-   calculateBox.signal,
-   requestBox.signal));
-   var successProbabilitiesWorker = function () {
-      var workerStep = function (_v8) {
-         return function () {
-            switch (_v8.ctor)
-            {case "_Tuple4":
-               return function () {
-                    var acc$ = _U.cmp(_v8._1,
-                    _v8._0.encounterLength + $Encounters.framesBeforeMove) < 0 ? _v8._3 : A2($List._op["::"],
-                    A3(successProbability,
-                    _v8._0.encounterRate,
-                    _v8._0.desiredSlots,
-                    _v8._2),
-                    _v8._3);
-                    var state$ = _U.cmp(_v8._1,
-                    _v8._0.encounterLength) < 0 ? A2($DSum.dsumStep,
-                    1,
-                    _v8._2) : _U.eq(_v8._1,
-                    _v8._0.encounterLength) ? $Dist.collapseMap($DSum.randomizeBand)(A2($DSum.dsumStep,
-                    1,
-                    _v8._2)) : A2($DSum.dsumStep,
-                    0,
-                    _v8._2);
-                    return _U.cmp(_v8._1,
-                    _v8._0.encounterLength + $Encounters.framesBeforeMove + 1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
-                                                                                                        ,_0: _v8._0
-                                                                                                        ,_1: _v8._1 + 1
-                                                                                                        ,_2: state$
-                                                                                                        ,_3: acc$}) : $Worker.Done($List.reverse(_v8._3));
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 226 and 242");
-         }();
-      };
-      return A2($Worker.createWorker,
-      workerInputSignal,
-      workerStep);
-   }();
-   var successProbabilitiesSignal = A2($Signal.map,
-   function (state) {
-      return function () {
-         var _v14 = $Basics.snd(state);
-         switch (_v14.ctor)
-         {case "Done": return _v14._0;
-            case "Unstarted":
-            return _L.fromArray([]);
-            case "Working":
-            switch (_v14._0.ctor)
-              {case "_Tuple4":
-                 return $List.reverse(_v14._0._3);}
-              break;}
-         _U.badCase($moduleName,
-         "between lines 248 and 252");
-      }();
-   },
-   successProbabilitiesWorker.state);
-   var successGraph = A2($Signal._op["<~"],
-   function ($) {
-      return A2($Graph.graph,
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1000}),
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1}))(function (x) {
-         return _L.fromArray([x]);
-      }(toPath($)));
-   },
-   successProbabilitiesSignal);
-   var strategy = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   buildStrategy,
-   thresholdSignal),
-   A2($Signal.map,
-   $Maybe.withDefault(_L.fromArray([])),
-   successProbabilitiesWorker.signal));
-   var strategy2 = A2($Signal._op["<~"],
-   $Strategy.roundStrategy(17),
-   strategy);
-   var stepStrategy = A2($Signal._op["<~"],
-   $List.map(function (s) {
-      return {ctor: "_Tuple2"
-             ,_0: s.frames / 17 | 0
-             ,_1: s.inGrass};
-   }),
-   strategy2);
+   var partialRequestBox = $Signal.mailbox({_: {}
+                                           ,desiredSlots: _L.fromArray([2
+                                                                       ,4])
+                                           ,encounterLength: 594
+                                           ,encounterRate: 25
+                                           ,encounteredSlots: _L.fromArray([1])});
    var buildRequestList = F3(function (table,
    slots,
    poke) {
@@ -4395,11 +4289,318 @@ Elm.Main.make = function (_elm) {
    A2($Dict.get,
    "Squirtle",
    $Pokemon.speciesByName)));
-   var desiredSlots = $Signal.constant(_L.fromArray([2
-                                                    ,4]));
+   var slot10DesiredBox = $Signal.mailbox(false);
+   var slot10checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot10DesiredBox.address)),
+   slot10DesiredBox.signal);
+   var slot9DesiredBox = $Signal.mailbox(false);
+   var slot9checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot9DesiredBox.address)),
+   slot9DesiredBox.signal);
+   var slot8DesiredBox = $Signal.mailbox(false);
+   var slot8checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot8DesiredBox.address)),
+   slot8DesiredBox.signal);
+   var slot7DesiredBox = $Signal.mailbox(false);
+   var slot7checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot7DesiredBox.address)),
+   slot7DesiredBox.signal);
+   var slot6DesiredBox = $Signal.mailbox(false);
+   var slot6checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot6DesiredBox.address)),
+   slot6DesiredBox.signal);
+   var slot5DesiredBox = $Signal.mailbox(false);
+   var slot5checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot5DesiredBox.address)),
+   slot5DesiredBox.signal);
+   var slot4DesiredBox = $Signal.mailbox(true);
+   var slot4checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot4DesiredBox.address)),
+   slot4DesiredBox.signal);
+   var slot3DesiredBox = $Signal.mailbox(false);
+   var slot3checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot3DesiredBox.address)),
+   slot3DesiredBox.signal);
+   var slot2DesiredBox = $Signal.mailbox(true);
+   var slot2checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot2DesiredBox.address)),
+   slot2DesiredBox.signal);
+   var slot1DesiredBox = $Signal.mailbox(false);
+   var slot1checkbox = A2($Signal._op["<~"],
+   $Graphics$Input.checkbox($Signal.message(slot1DesiredBox.address)),
+   slot1DesiredBox.signal);
+   var desiredSlots = A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   function (slot1) {
+      return function (slot2) {
+         return function (slot3) {
+            return function (slot4) {
+               return function (slot5) {
+                  return function (slot6) {
+                     return function (slot7) {
+                        return function (slot8) {
+                           return function (slot9) {
+                              return function (slot10) {
+                                 return $List.map($Basics.fst)($List.filter($Basics.snd)(_L.fromArray([{ctor: "_Tuple2"
+                                                                                                       ,_0: 1
+                                                                                                       ,_1: slot1}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 2
+                                                                                                       ,_1: slot2}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 3
+                                                                                                       ,_1: slot3}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 4
+                                                                                                       ,_1: slot4}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 5
+                                                                                                       ,_1: slot5}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 6
+                                                                                                       ,_1: slot6}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 7
+                                                                                                       ,_1: slot7}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 8
+                                                                                                       ,_1: slot8}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 9
+                                                                                                       ,_1: slot9}
+                                                                                                      ,{ctor: "_Tuple2"
+                                                                                                       ,_0: 10
+                                                                                                       ,_1: slot10}])));
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   },
+   slot1DesiredBox.signal),
+   slot2DesiredBox.signal),
+   slot3DesiredBox.signal),
+   slot4DesiredBox.signal),
+   slot5DesiredBox.signal),
+   slot6DesiredBox.signal),
+   slot7DesiredBox.signal),
+   slot8DesiredBox.signal),
+   slot9DesiredBox.signal),
+   slot10DesiredBox.signal);
+   var requestSignal = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   F2(function (partialRequest,
+   slots) {
+      return _U.replace([["desiredSlots"
+                         ,slots]],
+      partialRequest);
+   }),
+   partialRequestBox.signal),
+   desiredSlots);
+   var workerInputSignal = A2($Signal._op["<~"],
+   function (req) {
+      return function () {
+         var initialState = $DSum.conditionDSum(function (x) {
+            return $Dist.probability(function (s) {
+               return A2($List.member,
+               s,
+               req.encounteredSlots);
+            })(A2($DSum.dsumSlotDist,
+            req.encounterRate,
+            x));
+         })($DSum.initialRNGMix);
+         return {ctor: "_Tuple4"
+                ,_0: req
+                ,_1: 0
+                ,_2: initialState
+                ,_3: _L.fromArray([])};
+      }();
+   },
+   A2($Signal.sampleOn,
+   calculateBox.signal,
+   requestSignal));
+   var successProbabilitiesWorker = function () {
+      var workerStep = function (_v8) {
+         return function () {
+            switch (_v8.ctor)
+            {case "_Tuple4":
+               return function () {
+                    var acc$ = _U.cmp(_v8._1,
+                    _v8._0.encounterLength + $Encounters.framesBeforeMove) < 0 ? _v8._3 : A2($List._op["::"],
+                    A3(successProbability,
+                    _v8._0.encounterRate,
+                    _v8._0.desiredSlots,
+                    _v8._2),
+                    _v8._3);
+                    var state$ = _U.cmp(_v8._1,
+                    _v8._0.encounterLength) < 0 ? A2($DSum.dsumStep,
+                    1,
+                    _v8._2) : _U.eq(_v8._1,
+                    _v8._0.encounterLength) ? $Dist.collapseMap($DSum.randomizeBand)(A2($DSum.dsumStep,
+                    1,
+                    _v8._2)) : A2($DSum.dsumStep,
+                    0,
+                    _v8._2);
+                    return _U.cmp(_v8._1,
+                    _v8._0.encounterLength + $Encounters.framesBeforeMove + 1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
+                                                                                                        ,_0: _v8._0
+                                                                                                        ,_1: _v8._1 + 1
+                                                                                                        ,_2: state$
+                                                                                                        ,_3: acc$}) : $Worker.Done($List.reverse(_v8._3));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 393 and 409");
+         }();
+      };
+      return A2($Worker.createWorker,
+      workerInputSignal,
+      workerStep);
+   }();
+   var successProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v14 = $Basics.snd(state);
+         switch (_v14.ctor)
+         {case "Done": return _v14._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v14._0.ctor)
+              {case "_Tuple4":
+                 return $List.reverse(_v14._0._3);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 415 and 419");
+      }();
+   },
+   successProbabilitiesWorker.state);
+   var successGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   successProbabilitiesSignal);
+   var strategy = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   buildStrategy,
+   thresholdSignal),
+   A2($Signal.map,
+   $Maybe.withDefault(_L.fromArray([])),
+   successProbabilitiesWorker.signal));
+   var strategy2 = A2($Signal._op["<~"],
+   $Strategy.roundStrategy(17),
+   strategy);
+   var stepStrategy = A2($Signal._op["<~"],
+   $List.map(function (s) {
+      return {ctor: "_Tuple2"
+             ,_0: s.frames / 17 | 0
+             ,_1: s.inGrass};
+   }),
+   strategy2);
    var encounterTable = $Signal.constant($Encounters.route22table);
+   var desiredSlotsInputs = A2($Signal._op["<~"],
+   $Graphics$Element.flow($Graphics$Element.right),
+   combine(_L.fromArray([slot1checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot1;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot2checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot2;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot3checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot3;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot4checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot4;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot5checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot5;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot6checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot6;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot7checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot7;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot8checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot8;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot9checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot9;
+                           }($))));
+                        },
+                        encounterTable)
+                        ,slot10checkbox
+                        ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.centered($Text.fromString($Encounters.displayName(function (_) {
+                              return _.slot10;
+                           }($))));
+                        },
+                        encounterTable)])));
    var requestDropDown = A2($Signal._op["<~"],
-   $Graphics$Input.dropDown($Signal.message(requestBox.address)),
+   $Graphics$Input.dropDown($Signal.message(partialRequestBox.address)),
    A2($Signal._op["~"],
    A2($Signal._op["~"],
    A2($Signal._op["<~"],
@@ -4410,6 +4611,7 @@ Elm.Main.make = function (_elm) {
    var main = A2($Signal._op["<~"],
    $Graphics$Element.flow($Graphics$Element.down),
    combine(_L.fromArray([requestDropDown
+                        ,desiredSlotsInputs
                         ,$Signal.constant(calculateButton)
                         ,thresholdInput
                         ,A2($Signal._op["<~"],
@@ -4440,7 +4642,7 @@ Elm.Main.make = function (_elm) {
                                                                        ,_1: state._0._2});}
                                       break;}
                                  _U.badCase($moduleName,
-                                 "between lines 281 and 285");
+                                 "between lines 451 and 455");
                               }();
                            };
                            return A2($Signal.map,
@@ -4451,10 +4653,32 @@ Elm.Main.make = function (_elm) {
                         }()])));
    _elm.Main.values = {_op: _op
                       ,encounterTable: encounterTable
+                      ,slot1DesiredBox: slot1DesiredBox
+                      ,slot2DesiredBox: slot2DesiredBox
+                      ,slot3DesiredBox: slot3DesiredBox
+                      ,slot4DesiredBox: slot4DesiredBox
+                      ,slot5DesiredBox: slot5DesiredBox
+                      ,slot6DesiredBox: slot6DesiredBox
+                      ,slot7DesiredBox: slot7DesiredBox
+                      ,slot8DesiredBox: slot8DesiredBox
+                      ,slot9DesiredBox: slot9DesiredBox
+                      ,slot10DesiredBox: slot10DesiredBox
+                      ,slot1checkbox: slot1checkbox
+                      ,slot2checkbox: slot2checkbox
+                      ,slot3checkbox: slot3checkbox
+                      ,slot4checkbox: slot4checkbox
+                      ,slot5checkbox: slot5checkbox
+                      ,slot6checkbox: slot6checkbox
+                      ,slot7checkbox: slot7checkbox
+                      ,slot8checkbox: slot8checkbox
+                      ,slot9checkbox: slot9checkbox
+                      ,slot10checkbox: slot10checkbox
+                      ,desiredSlotsInputs: desiredSlotsInputs
                       ,desiredSlots: desiredSlots
                       ,leadPokemon: leadPokemon
                       ,buildRequestList: buildRequestList
-                      ,requestBox: requestBox
+                      ,partialRequestBox: partialRequestBox
+                      ,requestSignal: requestSignal
                       ,requestDropDown: requestDropDown
                       ,thresholdBox: thresholdBox
                       ,thresholdSignal: thresholdSignal

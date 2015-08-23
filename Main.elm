@@ -24,8 +24,166 @@ import Worker exposing (..)
 encounterTable : Signal EncounterTable
 encounterTable = Signal.constant route22table
 
+slot1DesiredBox : Signal.Mailbox Bool
+slot1DesiredBox = Signal.mailbox False
+
+slot2DesiredBox : Signal.Mailbox Bool
+slot2DesiredBox = Signal.mailbox True
+
+slot3DesiredBox : Signal.Mailbox Bool
+slot3DesiredBox = Signal.mailbox False
+
+slot4DesiredBox : Signal.Mailbox Bool
+slot4DesiredBox = Signal.mailbox True
+
+slot5DesiredBox : Signal.Mailbox Bool
+slot5DesiredBox = Signal.mailbox False
+
+slot6DesiredBox : Signal.Mailbox Bool
+slot6DesiredBox = Signal.mailbox False
+
+slot7DesiredBox : Signal.Mailbox Bool
+slot7DesiredBox = Signal.mailbox False
+
+slot8DesiredBox : Signal.Mailbox Bool
+slot8DesiredBox = Signal.mailbox False
+
+slot9DesiredBox : Signal.Mailbox Bool
+slot9DesiredBox = Signal.mailbox False
+
+slot10DesiredBox : Signal.Mailbox Bool
+slot10DesiredBox = Signal.mailbox False
+
+slot1checkbox : Signal Element
+slot1checkbox = checkbox (Signal.message slot1DesiredBox.address) <~ slot1DesiredBox.signal
+
+slot2checkbox : Signal Element
+slot2checkbox = checkbox (Signal.message slot2DesiredBox.address) <~ slot2DesiredBox.signal
+
+slot3checkbox : Signal Element
+slot3checkbox = checkbox (Signal.message slot3DesiredBox.address) <~ slot3DesiredBox.signal
+
+slot4checkbox : Signal Element
+slot4checkbox = checkbox (Signal.message slot4DesiredBox.address) <~ slot4DesiredBox.signal
+
+slot5checkbox : Signal Element
+slot5checkbox = checkbox (Signal.message slot5DesiredBox.address) <~ slot5DesiredBox.signal
+
+slot6checkbox : Signal Element
+slot6checkbox = checkbox (Signal.message slot6DesiredBox.address) <~ slot6DesiredBox.signal
+
+slot7checkbox : Signal Element
+slot7checkbox = checkbox (Signal.message slot7DesiredBox.address) <~ slot7DesiredBox.signal
+
+slot8checkbox : Signal Element
+slot8checkbox = checkbox (Signal.message slot8DesiredBox.address) <~ slot8DesiredBox.signal
+
+slot9checkbox : Signal Element
+slot9checkbox = checkbox (Signal.message slot9DesiredBox.address) <~ slot9DesiredBox.signal
+
+slot10checkbox : Signal Element
+slot10checkbox = checkbox (Signal.message slot10DesiredBox.address) <~ slot10DesiredBox.signal
+
+desiredSlotsInputs : Signal Element
+desiredSlotsInputs = flow right <~ combine
+    [ slot1checkbox
+    , (.slot1
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot2checkbox
+    , (.slot2
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot3checkbox
+    , (.slot3
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot4checkbox
+    , (.slot4
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot5checkbox
+    , (.slot5
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot6checkbox
+    , (.slot6
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot7checkbox
+    , (.slot7
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot8checkbox
+    , (.slot8
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot9checkbox
+    , (.slot9
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    , slot10checkbox
+    , (.slot10
+        >> displayName
+        >> Text.fromString
+        >> centered
+      ) <~ encounterTable
+    ]
+
 desiredSlots : Signal (List Int)
-desiredSlots = Signal.constant [2, 4]
+desiredSlots =
+    (\slot1
+      slot2
+      slot3
+      slot4
+      slot5
+      slot6
+      slot7
+      slot8
+      slot9
+      slot10 ->
+    [ (1, slot1)
+    , (2, slot2)
+    , (3, slot3)
+    , (4, slot4)
+    , (5, slot5)
+    , (6, slot6)
+    , (7, slot7)
+    , (8, slot8)
+    , (9, slot9)
+    , (10, slot10)
+    ]
+    |> List.filter snd
+    |> List.map fst
+    )
+    <~ slot1DesiredBox.signal
+    ~ slot2DesiredBox.signal
+    ~ slot3DesiredBox.signal
+    ~ slot4DesiredBox.signal
+    ~ slot5DesiredBox.signal
+    ~ slot6DesiredBox.signal
+    ~ slot7DesiredBox.signal
+    ~ slot8DesiredBox.signal
+    ~ slot9DesiredBox.signal
+    ~ slot10DesiredBox.signal
 
 leadPokemon : Signal Species
 leadPokemon = Signal.constant (Maybe.withDefault noSpecies (Dict.get "Squirtle" speciesByName))
@@ -104,8 +262,8 @@ buildRequestList table slots poke =
       )
     ]
 
-requestBox : Signal.Mailbox ChartRequest
-requestBox = 
+partialRequestBox : Signal.Mailbox ChartRequest
+partialRequestBox = 
     Signal.mailbox
         { desiredSlots = [2, 4]
         , encounteredSlots = [1]
@@ -113,9 +271,18 @@ requestBox =
         , encounterLength = 594
         }
 
+requestSignal : Signal ChartRequest
+requestSignal =
+    (\partialRequest
+      slots ->
+    { partialRequest
+    | desiredSlots <- slots
+    }
+    ) <~ partialRequestBox.signal ~ desiredSlots
+
 requestDropDown : Signal Element
 requestDropDown =
-    dropDown (Signal.message requestBox.address)
+    dropDown (Signal.message partialRequestBox.address)
     <~ (buildRequestList <~ encounterTable ~ desiredSlots ~ leadPokemon)
 
 thresholdBox : Signal.Mailbox Content
@@ -217,7 +384,7 @@ workerInputSignal = (\req ->
             |> Dist.probability (\s -> List.member s req.encounteredSlots))
     in
     (req, 0, initialState, [])
-    ) <~ Signal.sampleOn calculateBox.signal requestBox.signal
+    ) <~ Signal.sampleOn calculateBox.signal requestSignal
 
 successProbabilitiesWorker : Worker (ChartRequest, Int, DSumState, List Float) (List Float)
 successProbabilitiesWorker =
@@ -270,10 +437,13 @@ stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 main : Signal Element
 main = flow down <~ combine
     [ requestDropDown
+    , desiredSlotsInputs
     , Signal.constant calculateButton
     , thresholdInput
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
+    -- , Signal.map show desiredSlots
+    -- , Signal.map show requestSignal
     , Signal.map show strategy
     , Signal.map show strategy2
     , Signal.map show stepStrategy
