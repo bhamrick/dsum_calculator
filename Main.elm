@@ -13,6 +13,7 @@ import Trampoline exposing (..)
 
 import Dist
 import DSum exposing (..)
+import Encounters exposing (..)
 import Graph exposing (..)
 import RNG exposing (..)
 import Strategy exposing (..)
@@ -42,6 +43,9 @@ calculateBox = Signal.mailbox ()
 desiredSlots : Signal (List Int)
 desiredSlots = Signal.constant [2, 4]
 
+encounteredSlots : Signal (List Int)
+encounteredSlots = Signal.constant [3]
+
 calculateButton : Element
 calculateButton = button (Signal.message calculateBox.address ()) "Calculate"
 
@@ -66,18 +70,6 @@ iterate' n f x = if
     | n == 0 -> Trampoline.Done x
     | otherwise -> Continue (\() -> iterate' (n-1) f (f x))
 
-{-
-output : Signal Element
--- output = show << List.map (iterate 1500 (rngStep 0)) <~ Signal.sampleOn calculateBox.signal initialRNGStates
-output = initialRNGMix
-    |> filterDSum (\x -> x >= 50 && x <= 101)
-    |> iterate 1000 (dsumStep 0)
-    |> dsumDist
-    |> Dist.collapseMap (dsumSlotDist 25)
-    |> show
-    |> Signal.constant
--}
-
 successProbability : Int -> List Int -> DSumState -> Float
 successProbability rate slots state =
     state
@@ -99,55 +91,83 @@ toPath' n l = case l of
     x::xs -> (n, x) :: toPath' (n+1) xs
 
 dsumPath : Int -> Int -> RNGState -> List (Float, Float)
-dsumPath n carry state = List.map (\(x,y) -> (toFloat x, toFloat y)) << List.map2 (,) [0 .. (n-1)] <| dsums n carry state
+dsumPath n carry state = toPath << List.map toFloat << snd <| dsums n carry state
 
-dsums : Int -> Int -> RNGState -> List Int
+sampleEncounterDSums : RNGState -> List Int
+sampleEncounterDSums state =
+    let (state', sums) = dsums 594 1 state
+        (state'', sums') = dsums 44 0 state'
+        (_, sums'') = dsums 1000 0 state''
+    in List.concat [sums, sums', sums'']
+
+dsums : Int -> Int -> RNGState -> (RNGState, List Int)
 dsums n carry state = if
-    | n == 0 -> []
-    | otherwise -> getDSum state :: dsums (n-1) carry (rngStep carry state)
+    | n == 0 -> (state, [])
+    | otherwise ->
+        let (finalState, sums) = dsums (n-1) carry (rngStep carry state)
+        in (finalState, getDSum state :: sums)
 
 combine : List (Signal a) -> Signal (List a)
 combine = List.foldr (Signal.map2 (::)) (Signal.constant [])
 
 dsumGraph : Signal Graph
-dsumGraph = graph (Just (0, 1000)) (Just (0, 255)) << List.map (dsumPath 1000 0) <~ Signal.sampleOn calculateBox.signal initialRNGStates
+dsumGraph = graph (Just (0, 1638)) (Just (0, 255)) << List.map (toPath << List.map toFloat) << List.map sampleEncounterDSums <~ Signal.sampleOn calculateBox.signal initialRNGStates
 
-buildSuccessProbabilities : Int -> Int -> DSumState -> List Float
-buildSuccessProbabilities low high state =
-    state
-    |> filterDSum (\x -> (x - low) % 256 < (high - low) % 256)
-    |> successProbabilities 25 [2, 4] 1 0
+type alias ChartRequest =
+    { desiredSlots : List Int
+    , encounteredSlots : List Int
+    , encounterRate : Int
+    , encounterLength : Int
+    }
 
-initialDSumState : Signal DSumState
-initialDSumState = (\low high mix ->
-    mix
-    |> filterDSum (\x -> (x - low) % 256 < (high - low) % 256)
-    ) <~ dsumLowSignal ~ dsumHighSignal ~ Signal.constant initialRNGMix
+requestSignal : Signal ChartRequest
+requestSignal = Signal.constant
+    { desiredSlots = [2, 4]
+    , encounteredSlots = [3]
+    , encounterRate = 25
+    , encounterLength = 600
+    }
 
-successProbabilitiesWorker : Worker (Int, DSumState, List Float) (List Float)
-successProbabilitiesWorker =
+workerInputSignal : Signal (ChartRequest, Int, DSumState, List Float)
+workerInputSignal = (\req ->
     let
     initialState =
         initialRNGMix
-        |> filterDSum (\x -> x >= 25 && x <= 50)
-    desiredSlots = [2, 4]
-    carry = 0
-    encounterRate = 25
-    workerStep (n, state, acc) =
-        if n == 0
-        then Worker.Done (List.reverse acc)
-        else Working
-            ( n-1
-            , dsumStep carry state
-            , successProbability encounterRate desiredSlots state :: acc
-            )
+        |> conditionDSum (\x ->
+            dsumSlotDist req.encounterRate x
+            |> Dist.probability (\s -> List.member s req.encounteredSlots))
     in
-    createWorker ((\x -> (1000, x, [])) <~ initialDSumState) workerStep
+    (req, 0, initialState, [])
+    ) <~ requestSignal
+
+successProbabilitiesWorker : Worker (ChartRequest, Int, DSumState, List Float) (List Float)
+successProbabilitiesWorker =
+    let
+    workerStep (req, n, state, acc) =
+        let state' = if
+                | n < req.encounterLength ->
+                    dsumStep 1 state
+                | n == req.encounterLength ->
+                    dsumStep 1 state 
+                    |> Dist.collapseMap randomizeBand
+                | otherwise ->
+                    dsumStep 0 state
+            acc' = if
+                | n < req.encounterLength + framesBeforeMove ->
+                    acc
+                | otherwise ->
+                    successProbability req.encounterRate req.desiredSlots state :: acc
+        in
+        if n < req.encounterLength + framesBeforeMove + 1000
+        then Working (req, n+1, state', acc')
+        else Worker.Done (List.reverse acc)
+    in
+    createWorker workerInputSignal workerStep
 
 successProbabilitiesSignal : Signal (List Float)
 successProbabilitiesSignal = Signal.map (\state ->
     case snd state of
-        Working (_, _, acc) -> List.reverse acc
+        Working (_, _, _, acc) -> List.reverse acc
         Worker.Done probs -> probs
         Unstarted -> []
     ) successProbabilitiesWorker.state
@@ -157,20 +177,32 @@ successGraph : Signal Graph
 successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
 
 buildStrategy : List Float -> Strategy
-buildStrategy = simplify 15 << frameStrategy << List.map (\x -> x > 0.3)
+buildStrategy = simplify 15 << frameStrategy << List.map (\x -> x > 0.4)
 
 strategy : Signal Strategy
-strategy = buildStrategy <~ successProbabilitiesSignal
+strategy = Maybe.withDefault [] << Maybe.map buildStrategy <~ successProbabilitiesWorker.signal
+
+strategy2 : Signal Strategy
+strategy2 = roundStrategy 17 <~ strategy
+
+stepStrategy : Signal (List (Int, Bool))
+stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 
 main : Signal Element
 main = flow down <~ combine
     [ dsumLowField
     , dsumHighField
     , Signal.constant calculateButton
-    -- , output
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
-    -- , Signal.map show strategy
-    -- , Signal.map show initialDSumState
-    -- , Signal.map (snd >> show) successProbabilitiesWorker.state
+    , Signal.map show strategy
+    , Signal.map show strategy2
+    , Signal.map show stepStrategy
+    , let
+        showWorkerState state = case state of
+            Unstarted -> show "Unstarted"
+            Working (req, n, dist, acc) -> show (n, dist)
+            Worker.Done _ -> show "Done"
+      in
+        Signal.map (snd >> showWorkerState) successProbabilitiesWorker.state
     ]

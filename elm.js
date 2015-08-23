@@ -712,6 +712,32 @@ Elm.DSum.make = function (_elm) {
    $RNG = Elm.RNG.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var randomizeBand = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple4":
+            return $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
+                                                ,_0: {ctor: "_Tuple4"
+                                                     ,_0: _v0._0
+                                                     ,_1: _v0._1 - A2($Basics._op["%"],
+                                                     _v0._1,
+                                                     16) + 4
+                                                     ,_2: _v0._2
+                                                     ,_3: _v0._3}
+                                                ,_1: 3 / 4}
+                                               ,{ctor: "_Tuple2"
+                                                ,_0: {ctor: "_Tuple4"
+                                                     ,_0: _v0._0
+                                                     ,_1: _v0._1 - A2($Basics._op["%"],
+                                                     _v0._1,
+                                                     16)
+                                                     ,_2: _v0._2
+                                                     ,_3: _v0._3}
+                                                ,_1: 1 / 4}]));}
+         _U.badCase($moduleName,
+         "between lines 40 and 43");
+      }();
+   };
    var dsumSlotDist = F2(function (rate,
    dsum) {
       return $Dist.map($Encounters.slotFromRand)($Dist.uniform($List.map(function (r1) {
@@ -727,6 +753,14 @@ Elm.DSum.make = function (_elm) {
       dist);
    });
    var dsumDist = $Dist.map($RNG.getDSum$);
+   var conditionDSum = F2(function (f,
+   dist) {
+      return A2($Dist.condition,
+      function ($) {
+         return f($RNG.getDSum$($));
+      },
+      dist);
+   });
    var filterDSum = F2(function (f,
    dist) {
       return A2($Dist.filter,
@@ -763,9 +797,11 @@ Elm.DSum.make = function (_elm) {
                       ,initialRDiv: initialRDiv
                       ,initialRNGMix: initialRNGMix
                       ,filterDSum: filterDSum
+                      ,conditionDSum: conditionDSum
                       ,dsumDist: dsumDist
                       ,dsumStep: dsumStep
-                      ,dsumSlotDist: dsumSlotDist};
+                      ,dsumSlotDist: dsumSlotDist
+                      ,randomizeBand: randomizeBand};
    return _elm.DSum.values;
 };
 Elm.Debug = Elm.Debug || {};
@@ -1815,12 +1851,12 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: _v4._0
                                  ,_1: _v0._1 * _v4._1};}
                        _U.badCase($moduleName,
-                       "on line 72, column 74 to 80");
+                       "on line 82, column 74 to 80");
                     }();
                  },
                  _v0._0);}
             _U.badCase($moduleName,
-            "on line 72, column 52 to 84");
+            "on line 82, column 52 to 84");
          }();
       },
       vals));
@@ -1853,7 +1889,7 @@ Elm.Dist.make = function (_elm) {
                                            ,_1: _v13._0}
                                       ,_1: l1._0._1 * _v13._1};}
                             _U.badCase($moduleName,
-                            "on line 50, column 39 to 50");
+                            "on line 60, column 39 to 50");
                          }();
                       },
                       l2);
@@ -1865,7 +1901,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 46 and 52");
+         "between lines 56 and 62");
       }();
    });
    var product = F2(function (d1,
@@ -1884,8 +1920,15 @@ Elm.Dist.make = function (_elm) {
          var total = $List.sum(A2($List.map,
          $Basics.snd,
          probs));
-         return A2($List.map,
-         function (_v17) {
+         return $List.filter(function (_v21) {
+            return function () {
+               switch (_v21.ctor)
+               {case "_Tuple2":
+                  return !_U.eq(_v21._1,0);}
+               _U.badCase($moduleName,
+               "on line 39, column 32 to 38");
+            }();
+         })($List.map(function (_v17) {
             return function () {
                switch (_v17.ctor)
                {case "_Tuple2":
@@ -1893,21 +1936,34 @@ Elm.Dist.make = function (_elm) {
                          ,_0: _v17._0
                          ,_1: _v17._1 / total};}
                _U.badCase($moduleName,
-               "on line 36, column 30 to 42");
+               "on line 38, column 30 to 42");
             }();
-         },
-         probs);
+         })(probs));
       }();
    };
    var filter = F2(function (f,
    dist) {
-      return $Dict.fromList(normalize($List.filter(function (_v21) {
+      return $Dict.fromList(normalize($List.filter(function (_v25) {
          return function () {
-            switch (_v21.ctor)
+            switch (_v25.ctor)
             {case "_Tuple2":
-               return f(_v21._0);}
+               return f(_v25._0);}
             _U.badCase($moduleName,
-            "on line 41, column 32 to 35");
+            "on line 44, column 32 to 35");
+         }();
+      })($Dict.toList(dist))));
+   });
+   var condition = F2(function (f,
+   dist) {
+      return $Dict.fromList(normalize($List.map(function (_v29) {
+         return function () {
+            switch (_v29.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: _v29._0
+                      ,_1: _v29._1 * f(_v29._0)};}
+            _U.badCase($moduleName,
+            "on line 51, column 30 to 40");
          }();
       })($Dict.toList(dist))));
    });
@@ -1968,13 +2024,13 @@ Elm.Dist.make = function (_elm) {
       }();
    };
    var map = F2(function (f,dist) {
-      return $Dict.fromList(combineProbs($List.sort($List.map(function (_v33) {
+      return $Dict.fromList(combineProbs($List.sort($List.map(function (_v41) {
          return function () {
-            switch (_v33.ctor)
+            switch (_v41.ctor)
             {case "_Tuple2":
                return {ctor: "_Tuple2"
-                      ,_0: f(_v33._0)
-                      ,_1: _v33._1};}
+                      ,_0: f(_v41._0)
+                      ,_1: _v41._1};}
             _U.badCase($moduleName,
             "on line 28, column 30 to 36");
          }();
@@ -1992,15 +2048,15 @@ Elm.Dist.make = function (_elm) {
       return function () {
          var probs = $Dict.toList(dist);
          var nestedProbs = A2($List.map,
-         function (_v37) {
+         function (_v45) {
             return function () {
-               switch (_v37.ctor)
+               switch (_v45.ctor)
                {case "_Tuple2":
                   return {ctor: "_Tuple2"
-                         ,_0: $Dict.toList(f(_v37._0))
-                         ,_1: _v37._1};}
+                         ,_0: $Dict.toList(f(_v45._0))
+                         ,_1: _v45._1};}
                _U.badCase($moduleName,
-               "on line 78, column 41 to 61");
+               "on line 88, column 41 to 61");
             }();
          },
          probs);
@@ -2024,6 +2080,7 @@ Elm.Dist.make = function (_elm) {
                       ,map: map
                       ,normalize: normalize
                       ,filter: filter
+                      ,condition: condition
                       ,product$: product$
                       ,product: product
                       ,lift2: lift2
@@ -2186,7 +2243,16 @@ Elm.Encounters.make = function (_elm) {
              ,level: b
              ,species: a};
    });
+   var framesBeforeMove = 44;
+   var baseBattleLength = 549;
+   var battleLength = F2(function (you,
+   enemy) {
+      return baseBattleLength + you.cryDiff + enemy.cryDiff;
+   });
    _elm.Encounters.values = {_op: _op
+                            ,baseBattleLength: baseBattleLength
+                            ,framesBeforeMove: framesBeforeMove
+                            ,battleLength: battleLength
                             ,Encounter: Encounter
                             ,slots: slots
                             ,slotStarts: slotStarts
@@ -3882,6 +3948,7 @@ Elm.Main.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $DSum = Elm.DSum.make(_elm),
    $Dist = Elm.Dist.make(_elm),
+   $Encounters = Elm.Encounters.make(_elm),
    $Graph = Elm.Graph.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Graphics$Input = Elm.Graphics.Input.make(_elm),
@@ -3897,9 +3964,45 @@ Elm.Main.make = function (_elm) {
    $Worker = Elm.Worker.make(_elm);
    var buildStrategy = function ($) {
       return $Strategy.simplify(15)($Strategy.frameStrategy($List.map(function (x) {
-         return _U.cmp(x,0.3) > 0;
+         return _U.cmp(x,0.4) > 0;
       })($)));
    };
+   var requestSignal = $Signal.constant({_: {}
+                                        ,desiredSlots: _L.fromArray([2
+                                                                    ,4])
+                                        ,encounterLength: 600
+                                        ,encounterRate: 25
+                                        ,encounteredSlots: _L.fromArray([3])});
+   var workerInputSignal = A2($Signal._op["<~"],
+   function (req) {
+      return function () {
+         var initialState = $DSum.conditionDSum(function (x) {
+            return $Dist.probability(function (s) {
+               return A2($List.member,
+               s,
+               req.encounteredSlots);
+            })(A2($DSum.dsumSlotDist,
+            req.encounterRate,
+            x));
+         })($DSum.initialRNGMix);
+         return {ctor: "_Tuple4"
+                ,_0: req
+                ,_1: 0
+                ,_2: initialState
+                ,_3: _L.fromArray([])};
+      }();
+   },
+   requestSignal);
+   var ChartRequest = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,desiredSlots: a
+             ,encounterLength: d
+             ,encounterRate: c
+             ,encounteredSlots: b};
+   });
    var combine = A2($List.foldr,
    $Signal.map2(F2(function (x,y) {
       return A2($List._op["::"],
@@ -3911,37 +4014,48 @@ Elm.Main.make = function (_elm) {
    carry,
    state) {
       return _U.eq(n,
-      0) ? _L.fromArray([]) : A2($List._op["::"],
-      $RNG.getDSum(state),
-      A3(dsums,
-      n - 1,
-      carry,
-      A2($RNG.rngStep,carry,state)));
-   });
-   var dsumPath = F3(function (n,
-   carry,
-   state) {
-      return $List.map(function (_v0) {
-         return function () {
-            switch (_v0.ctor)
-            {case "_Tuple2":
-               return {ctor: "_Tuple2"
-                      ,_0: $Basics.toFloat(_v0._0)
-                      ,_1: $Basics.toFloat(_v0._1)};}
-            _U.badCase($moduleName,
-            "on line 102, column 47 to 67");
-         }();
-      })(A2($List.map2,
-      F2(function (v0,v1) {
+      0) ? {ctor: "_Tuple2"
+           ,_0: state
+           ,_1: _L.fromArray([])} : function () {
+         var $ = A3(dsums,
+         n - 1,
+         carry,
+         A2($RNG.rngStep,carry,state)),
+         finalState = $._0,
+         sums = $._1;
          return {ctor: "_Tuple2"
-                ,_0: v0
-                ,_1: v1};
-      }),
-      _L.range(0,n - 1))(A3(dsums,
-      n,
-      carry,
-      state)));
+                ,_0: finalState
+                ,_1: A2($List._op["::"],
+                $RNG.getDSum(state),
+                sums)};
+      }();
    });
+   var sampleEncounterDSums = function (state) {
+      return function () {
+         var $ = A3(dsums,
+         594,
+         1,
+         state),
+         state$ = $._0,
+         sums = $._1;
+         var $ = A3(dsums,44,0,state$),
+         state$$ = $._0,
+         sums$ = $._1;
+         var _ = A3(dsums,
+         1000,
+         0,
+         state$$);
+         var sums$$ = function () {
+            switch (_.ctor)
+            {case "_Tuple2": return _._1;}
+            _U.badCase($moduleName,
+            "on line 100, column 23 to 43");
+         }();
+         return $List.concat(_L.fromArray([sums
+                                          ,sums$
+                                          ,sums$$]));
+      }();
+   };
    var toPath$ = F2(function (n,
    l) {
       return function () {
@@ -3955,10 +4069,18 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 97 and 99");
+         "between lines 89 and 91");
       }();
    });
    var toPath = toPath$(0);
+   var dsumPath = F3(function (n,
+   carry,
+   state) {
+      return toPath($List.map($Basics.toFloat)($Basics.snd(A3(dsums,
+      n,
+      carry,
+      state))));
+   });
    var successProbability = F3(function (rate,
    slots,
    state) {
@@ -3988,36 +4110,103 @@ Elm.Main.make = function (_elm) {
       carry,
       state)));
    });
-   var buildSuccessProbabilities = F3(function (low,
-   high,
-   state) {
-      return A4(successProbabilities,
-      25,
-      _L.fromArray([2,4]),
-      1,
-      0)($DSum.filterDSum(function (x) {
-         return _U.cmp(A2($Basics._op["%"],
-         x - low,
-         256),
-         A2($Basics._op["%"],
-         high - low,
-         256)) < 0;
-      })(state));
-   });
+   var successProbabilitiesWorker = function () {
+      var workerStep = function (_v6) {
+         return function () {
+            switch (_v6.ctor)
+            {case "_Tuple4":
+               return function () {
+                    var acc$ = _U.cmp(_v6._1,
+                    _v6._0.encounterLength + $Encounters.framesBeforeMove) < 0 ? _v6._3 : A2($List._op["::"],
+                    A3(successProbability,
+                    _v6._0.encounterRate,
+                    _v6._0.desiredSlots,
+                    _v6._2),
+                    _v6._3);
+                    var state$ = _U.cmp(_v6._1,
+                    _v6._0.encounterLength) < 0 ? A2($DSum.dsumStep,
+                    1,
+                    _v6._2) : _U.eq(_v6._1,
+                    _v6._0.encounterLength) ? $Dist.collapseMap($DSum.randomizeBand)(A2($DSum.dsumStep,
+                    1,
+                    _v6._2)) : A2($DSum.dsumStep,
+                    0,
+                    _v6._2);
+                    return _U.cmp(_v6._1,
+                    _v6._0.encounterLength + $Encounters.framesBeforeMove + 1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
+                                                                                                        ,_0: _v6._0
+                                                                                                        ,_1: _v6._1 + 1
+                                                                                                        ,_2: state$
+                                                                                                        ,_3: acc$}) : $Worker.Done($List.reverse(_v6._3));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 147 and 163");
+         }();
+      };
+      return A2($Worker.createWorker,
+      workerInputSignal,
+      workerStep);
+   }();
+   var successProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v12 = $Basics.snd(state);
+         switch (_v12.ctor)
+         {case "Done": return _v12._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v12._0.ctor)
+              {case "_Tuple4":
+                 return $List.reverse(_v12._0._3);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 169 and 173");
+      }();
+   },
+   successProbabilitiesWorker.state);
+   var successGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   successProbabilitiesSignal);
+   var strategy = A2($Signal._op["<~"],
+   function ($) {
+      return $Maybe.withDefault(_L.fromArray([]))($Maybe.map(buildStrategy)($));
+   },
+   successProbabilitiesWorker.signal);
+   var strategy2 = A2($Signal._op["<~"],
+   $Strategy.roundStrategy(17),
+   strategy);
+   var stepStrategy = A2($Signal._op["<~"],
+   $List.map(function (s) {
+      return {ctor: "_Tuple2"
+             ,_0: s.frames / 17 | 0
+             ,_1: s.inGrass};
+   }),
+   strategy2);
    var iterate$ = F3(function (n,
    f,
    x) {
       return _U.eq(n,
-      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v7) {
+      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v19) {
          return function () {
-            switch (_v7.ctor)
+            switch (_v19.ctor)
             {case "_Tuple0":
                return A3(iterate$,
                  n - 1,
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 67, column 37 to 58");
+            "on line 71, column 37 to 58");
          }();
       });
    });
@@ -4052,6 +4241,7 @@ Elm.Main.make = function (_elm) {
    }),
    $Signal.constant(0)),
    $Signal.constant(0));
+   var encounteredSlots = $Signal.constant(_L.fromArray([3]));
    var desiredSlots = $Signal.constant(_L.fromArray([2
                                                     ,4]));
    var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
@@ -4065,12 +4255,12 @@ Elm.Main.make = function (_elm) {
       return A2($Graph.graph,
       $Maybe.Just({ctor: "_Tuple2"
                   ,_0: 0
-                  ,_1: 1000}),
+                  ,_1: 1638}),
       $Maybe.Just({ctor: "_Tuple2"
                   ,_0: 0
-                  ,_1: 255}))($List.map(A2(dsumPath,
-      1000,
-      0))($));
+                  ,_1: 255}))($List.map(function ($) {
+         return toPath($List.map($Basics.toFloat)($));
+      })($List.map(sampleEncounterDSums)($)));
    },
    A2($Signal.sampleOn,
    calculateBox.signal,
@@ -4097,96 +4287,6 @@ Elm.Main.make = function (_elm) {
       return $Maybe.withDefault(0)($Result.toMaybe($String.toInt(contentString($))));
    },
    dsumLow.signal));
-   var initialDSumState = A2($Signal._op["~"],
-   A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   F3(function (low,high,mix) {
-      return $DSum.filterDSum(function (x) {
-         return _U.cmp(A2($Basics._op["%"],
-         x - low,
-         256),
-         A2($Basics._op["%"],
-         high - low,
-         256)) < 0;
-      })(mix);
-   }),
-   dsumLowSignal),
-   dsumHighSignal),
-   $Signal.constant($DSum.initialRNGMix));
-   var successProbabilitiesWorker = function () {
-      var encounterRate = 25;
-      var carry = 0;
-      var desiredSlots = _L.fromArray([2
-                                      ,4]);
-      var workerStep = function (_v9) {
-         return function () {
-            switch (_v9.ctor)
-            {case "_Tuple3":
-               return _U.eq(_v9._0,
-                 0) ? $Worker.Done($List.reverse(_v9._2)) : $Worker.Working({ctor: "_Tuple3"
-                                                                            ,_0: _v9._0 - 1
-                                                                            ,_1: A2($DSum.dsumStep,
-                                                                            carry,
-                                                                            _v9._1)
-                                                                            ,_2: A2($List._op["::"],
-                                                                            A3(successProbability,
-                                                                            encounterRate,
-                                                                            desiredSlots,
-                                                                            _v9._1),
-                                                                            _v9._2)});}
-            _U.badCase($moduleName,
-            "between lines 137 and 143");
-         }();
-      };
-      var initialState = $DSum.filterDSum(function (x) {
-         return _U.cmp(x,
-         25) > -1 && _U.cmp(x,50) < 1;
-      })($DSum.initialRNGMix);
-      return A2($Worker.createWorker,
-      A2($Signal._op["<~"],
-      function (x) {
-         return {ctor: "_Tuple3"
-                ,_0: 1000
-                ,_1: x
-                ,_2: _L.fromArray([])};
-      },
-      initialDSumState),
-      workerStep);
-   }();
-   var successProbabilitiesSignal = A2($Signal.map,
-   function (state) {
-      return function () {
-         var _v14 = $Basics.snd(state);
-         switch (_v14.ctor)
-         {case "Done": return _v14._0;
-            case "Unstarted":
-            return _L.fromArray([]);
-            case "Working":
-            switch (_v14._0.ctor)
-              {case "_Tuple3":
-                 return $List.reverse(_v14._0._2);}
-              break;}
-         _U.badCase($moduleName,
-         "between lines 149 and 153");
-      }();
-   },
-   successProbabilitiesWorker.state);
-   var successGraph = A2($Signal._op["<~"],
-   function ($) {
-      return A2($Graph.graph,
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1000}),
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1}))(function (x) {
-         return _L.fromArray([x]);
-      }(toPath($)));
-   },
-   successProbabilitiesSignal);
-   var strategy = A2($Signal._op["<~"],
-   buildStrategy,
-   successProbabilitiesSignal);
    var dsumLowField = A2($Signal._op["<~"],
    A3($Graphics$Input$Field.field,
    $Graphics$Input$Field.defaultStyle,
@@ -4200,7 +4300,41 @@ Elm.Main.make = function (_elm) {
                         ,$Signal.constant(calculateButton)
                         ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
-                        successGraph)])));
+                        successGraph)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        strategy)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        strategy2)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        stepStrategy)
+                        ,function () {
+                           var showWorkerState = function (state) {
+                              return function () {
+                                 switch (state.ctor)
+                                 {case "Done":
+                                    return $Graphics$Element.show("Done");
+                                    case "Unstarted":
+                                    return $Graphics$Element.show("Unstarted");
+                                    case "Working":
+                                    switch (state._0.ctor)
+                                      {case "_Tuple4":
+                                         return $Graphics$Element.show({ctor: "_Tuple2"
+                                                                       ,_0: state._0._1
+                                                                       ,_1: state._0._2});}
+                                      break;}
+                                 _U.badCase($moduleName,
+                                 "between lines 202 and 206");
+                              }();
+                           };
+                           return A2($Signal.map,
+                           function ($) {
+                              return showWorkerState($Basics.snd($));
+                           },
+                           successProbabilitiesWorker.state);
+                        }()])));
    _elm.Main.values = {_op: _op
                       ,dsumLow: dsumLow
                       ,dsumLowSignal: dsumLowSignal
@@ -4210,6 +4344,7 @@ Elm.Main.make = function (_elm) {
                       ,dsumHighField: dsumHighField
                       ,calculateBox: calculateBox
                       ,desiredSlots: desiredSlots
+                      ,encounteredSlots: encounteredSlots
                       ,calculateButton: calculateButton
                       ,initialRNGStates: initialRNGStates
                       ,contentString: contentString
@@ -4220,16 +4355,20 @@ Elm.Main.make = function (_elm) {
                       ,toPath: toPath
                       ,toPath$: toPath$
                       ,dsumPath: dsumPath
+                      ,sampleEncounterDSums: sampleEncounterDSums
                       ,dsums: dsums
                       ,combine: combine
                       ,dsumGraph: dsumGraph
-                      ,buildSuccessProbabilities: buildSuccessProbabilities
-                      ,initialDSumState: initialDSumState
+                      ,ChartRequest: ChartRequest
+                      ,requestSignal: requestSignal
+                      ,workerInputSignal: workerInputSignal
                       ,successProbabilitiesWorker: successProbabilitiesWorker
                       ,successProbabilitiesSignal: successProbabilitiesSignal
                       ,successGraph: successGraph
                       ,buildStrategy: buildStrategy
                       ,strategy: strategy
+                      ,strategy2: strategy2
+                      ,stepStrategy: stepStrategy
                       ,main: main};
    return _elm.Main.values;
 };
@@ -10892,6 +11031,30 @@ Elm.Strategy.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var roundStrategy$ = F3(function (rounding,
+   extraFrames,
+   strat) {
+      return function () {
+         switch (strat.ctor)
+         {case "::": return function () {
+                 var idealFrameCount = strat._0.frames + extraFrames;
+                 var roundedFrameCount = rounding * $Basics.round($Basics.toFloat(idealFrameCount) / $Basics.toFloat(rounding));
+                 var extras = idealFrameCount - roundedFrameCount;
+                 return A2($List._op["::"],
+                 _U.replace([["frames"
+                             ,roundedFrameCount]],
+                 strat._0),
+                 A3(roundStrategy$,
+                 rounding,
+                 extras,
+                 strat._1));
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 46 and 54");
+      }();
+   });
    var removeSmallSteps = F2(function (frameThreshold,
    strat) {
       return function () {
@@ -10952,7 +11115,7 @@ Elm.Strategy.make = function (_elm) {
    };
    var simplify = F2(function (frameThreshold,
    strat) {
-      return removeSmallSteps(frameThreshold)(combineSteps(strat));
+      return combineSteps(removeSmallSteps(frameThreshold)(combineSteps(strat)));
    });
    var frameStrategy = function (l) {
       return combineSteps($List.map(function (b) {
@@ -10961,6 +11124,13 @@ Elm.Strategy.make = function (_elm) {
                 ,inGrass: b};
       })(l));
    };
+   var roundStrategy = F2(function (rounding,
+   strat) {
+      return combineSteps(A3(roundStrategy$,
+      rounding,
+      0,
+      strat));
+   });
    var StrategyStep = F2(function (a,
    b) {
       return {_: {}
@@ -10972,7 +11142,9 @@ Elm.Strategy.make = function (_elm) {
                           ,combineSteps: combineSteps
                           ,removeSmallSteps: removeSmallSteps
                           ,simplify: simplify
-                          ,frameStrategy: frameStrategy};
+                          ,frameStrategy: frameStrategy
+                          ,roundStrategy: roundStrategy
+                          ,roundStrategy$: roundStrategy$};
    return _elm.Strategy.values;
 };
 Elm.String = Elm.String || {};

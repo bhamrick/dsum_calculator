@@ -6,6 +6,13 @@ import Maybe
 import Dist exposing (Dist)
 import Pokemon exposing (..)
 
+baseBattleLength = 549
+framesBeforeMove = 44
+
+battleLength : Species -> Species -> Int
+battleLength you enemy =
+    baseBattleLength + you.cryDiff + enemy.cryDiff
+
 type alias Encounter =
     { species : Species
     , level : Int

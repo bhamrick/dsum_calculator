@@ -29,8 +29,26 @@ simplify : Int -> Strategy -> Strategy
 simplify frameThreshold strat = strat
     |> combineSteps
     |> removeSmallSteps frameThreshold
+    |> combineSteps
 
 frameStrategy : List Bool -> Strategy
 frameStrategy l = l
     |> List.map (\b -> {inGrass = b, frames = 1})
     |> combineSteps
+
+roundStrategy : Int -> Strategy -> Strategy
+roundStrategy rounding strat =
+    roundStrategy' rounding 0 strat
+    |> combineSteps
+
+roundStrategy' : Int -> Int -> Strategy -> Strategy
+roundStrategy' rounding extraFrames strat =
+    case strat of
+        [] -> []
+        x::xs ->
+            let
+                idealFrameCount = x.frames + extraFrames
+                roundedFrameCount = rounding * round (toFloat idealFrameCount / toFloat rounding)
+                extras = idealFrameCount - roundedFrameCount
+            in
+            { x | frames <- roundedFrameCount } :: roundStrategy' rounding extras xs

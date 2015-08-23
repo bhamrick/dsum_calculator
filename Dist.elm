@@ -33,12 +33,22 @@ map f dist = dist
 normalize : List (comparable, Float) -> List (comparable, Float)
 normalize probs =
     let total = List.sum (List.map snd probs)
-    in List.map (\(k, v) -> (k, v / total)) probs
+    in
+    probs
+    |> List.map (\(k, v) -> (k, v / total))
+    |> List.filter (\(k, v) -> v /= 0)
 
 filter : (comparable -> Bool) -> Dist comparable -> Dist comparable
 filter f dist = dist
     |> Dict.toList
     |> List.filter (\(k, _) -> f k)
+    |> normalize
+    |> Dict.fromList
+
+condition : (comparable -> Float) -> Dist comparable -> Dist comparable
+condition f dist = dist
+    |> Dict.toList
+    |> List.map (\(k, p) -> (k, p * f k))
     |> normalize
     |> Dict.fromList
 
