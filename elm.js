@@ -415,7 +415,7 @@ Elm.Color.make = function (_elm) {
                         ,saturation: s};
               }();}
          _U.badCase($moduleName,
-         "between lines 114 and 121");
+         "between lines 114 and 118");
       }();
    };
    var HSLA = F4(function (a,
@@ -471,7 +471,7 @@ Elm.Color.make = function (_elm) {
                  color._3);
               }();}
          _U.badCase($moduleName,
-         "between lines 105 and 111");
+         "between lines 105 and 108");
       }();
    };
    var grayscale = function (p) {
@@ -692,6 +692,191 @@ Elm.Color.make = function (_elm) {
                        ,darkGray: darkGray};
    return _elm.Color.values;
 };
+Elm.DApprox = Elm.DApprox || {};
+Elm.DApprox.make = function (_elm) {
+   "use strict";
+   _elm.DApprox = _elm.DApprox || {};
+   if (_elm.DApprox.values)
+   return _elm.DApprox.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "DApprox",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var floatMod = F2(function (x,
+   m) {
+      return x - m * $Basics.toFloat($Basics.floor(x / m));
+   });
+   var dTheta = 3 * $Basics.pi / 1024;
+   var advanceDApprox = F3(function (slopeDist,
+   n,
+   s) {
+      return {_: {}
+             ,muDist: A3($Dist.lift2,
+             F2(function (slope,mu) {
+                return A2(floatMod,
+                mu + $Basics.toFloat(n) * slope,
+                256);
+             }),
+             slopeDist,
+             s.muDist)
+             ,thetaDist: A2($Dist.map,
+             function (theta) {
+                return A2(floatMod,
+                theta + $Basics.toFloat(n) * dTheta,
+                2 * $Basics.pi);
+             },
+             s.thetaDist)};
+   });
+   var insideLowSlope = 40704 / 131072;
+   var insideHighSlope = 48896 / 131072;
+   var insideSlopeDist = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
+                                                      ,_0: insideLowSlope
+                                                      ,_1: 3 / 4}
+                                                     ,{ctor: "_Tuple2"
+                                                      ,_0: insideHighSlope
+                                                      ,_1: 1 / 4}]));
+   var outsideLowSlope = -89856 / 131072;
+   var outsideHighSlope = -81664 / 131072;
+   var outsideSlopeDist = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
+                                                       ,_0: outsideLowSlope
+                                                       ,_1: 3 / 4}
+                                                      ,{ctor: "_Tuple2"
+                                                       ,_0: outsideHighSlope
+                                                       ,_1: 1 / 4}]));
+   var dsumApproximation = F2(function (mu,
+   theta) {
+      return A2($Basics._op["%"],
+      $Basics.round(mu + 5.45 + 2.47 * $Basics.sin(theta)),
+      256);
+   });
+   var dapproxDist = function (s) {
+      return A3($Dist.lift2,
+      dsumApproximation,
+      s.muDist,
+      s.thetaDist);
+   };
+   var filterMu = F2(function (f,
+   thetaDist) {
+      return $Dist.condition(function (mu) {
+         return A2($Dist.probability,
+         f,
+         A2($Dist.map,
+         dsumApproximation(mu),
+         thetaDist));
+      });
+   });
+   var filterTheta = F2(function (f,
+   muDist) {
+      return $Dist.condition(function (theta) {
+         return A2($Dist.probability,
+         f,
+         A2($Dist.map,
+         function (mu) {
+            return A2(dsumApproximation,
+            mu,
+            theta);
+         },
+         muDist));
+      });
+   });
+   var filterDApprox = F2(function (f,
+   s) {
+      return function () {
+         var muDist$ = A3(filterMu,
+         f,
+         s.thetaDist,
+         s.muDist);
+         var thetaDist$ = A3(filterTheta,
+         f,
+         muDist$,
+         s.thetaDist);
+         return {_: {}
+                ,muDist: muDist$
+                ,thetaDist: thetaDist$};
+      }();
+   });
+   var conditionMu = F2(function (f,
+   thetaDist) {
+      return $Dist.condition(function (mu) {
+         return A2($Dist.weightedProbability,
+         f,
+         A2($Dist.map,
+         dsumApproximation(mu),
+         thetaDist));
+      });
+   });
+   var conditionTheta = F2(function (f,
+   muDist) {
+      return $Dist.condition(function (theta) {
+         return A2($Dist.weightedProbability,
+         f,
+         A2($Dist.map,
+         function (mu) {
+            return A2(dsumApproximation,
+            mu,
+            theta);
+         },
+         muDist));
+      });
+   });
+   var conditionDApprox = F2(function (f,
+   s) {
+      return function () {
+         var muDist$ = A3(conditionMu,
+         f,
+         s.thetaDist,
+         s.muDist);
+         var thetaDist$ = A3(conditionTheta,
+         f,
+         muDist$,
+         s.thetaDist);
+         return {_: {}
+                ,muDist: muDist$
+                ,thetaDist: thetaDist$};
+      }();
+   });
+   var initialDApproxState = {_: {}
+                             ,muDist: $Dist.uniform(_L.range(0,
+                             255))
+                             ,thetaDist: $Dist.uniform($List.map(function (x) {
+                                return x * 2 * $Basics.pi / 16;
+                             })(_L.range(0,15)))};
+   var DApproxState = F2(function (a,
+   b) {
+      return {_: {}
+             ,muDist: a
+             ,thetaDist: b};
+   });
+   _elm.DApprox.values = {_op: _op
+                         ,DApproxState: DApproxState
+                         ,initialDApproxState: initialDApproxState
+                         ,dsumApproximation: dsumApproximation
+                         ,outsideHighSlope: outsideHighSlope
+                         ,outsideLowSlope: outsideLowSlope
+                         ,insideHighSlope: insideHighSlope
+                         ,insideLowSlope: insideLowSlope
+                         ,dTheta: dTheta
+                         ,dapproxDist: dapproxDist
+                         ,outsideSlopeDist: outsideSlopeDist
+                         ,insideSlopeDist: insideSlopeDist
+                         ,floatMod: floatMod
+                         ,advanceDApprox: advanceDApprox
+                         ,filterDApprox: filterDApprox
+                         ,filterMu: filterMu
+                         ,filterTheta: filterTheta
+                         ,conditionDApprox: conditionDApprox
+                         ,conditionMu: conditionMu
+                         ,conditionTheta: conditionTheta};
+   return _elm.DApprox.values;
+};
 Elm.DSum = Elm.DSum || {};
 Elm.DSum.make = function (_elm) {
    "use strict";
@@ -708,7 +893,10 @@ Elm.DSum.make = function (_elm) {
    $Dist = Elm.Dist.make(_elm),
    $Encounters = Elm.Encounters.make(_elm),
    $List = Elm.List.make(_elm),
-   $RNG = Elm.RNG.make(_elm);
+   $Maybe = Elm.Maybe.make(_elm),
+   $RNG = Elm.RNG.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var randomizeBand = function (_v0) {
       return function () {
          switch (_v0.ctor)
@@ -860,7 +1048,7 @@ Elm.Dict.make = function (_elm) {
               A3(foldr,f,acc,t._4)),
               t._3);}
          _U.badCase($moduleName,
-         "between lines 417 and 425");
+         "between lines 417 and 421");
       }();
    });
    var keys = function (dict) {
@@ -916,7 +1104,7 @@ Elm.Dict.make = function (_elm) {
               A3(foldl,f,acc,dict._3)),
               dict._4);}
          _U.badCase($moduleName,
-         "between lines 406 and 414");
+         "between lines 406 and 410");
       }();
    });
    var isBBlack = function (dict) {
@@ -940,7 +1128,7 @@ Elm.Dict.make = function (_elm) {
             case "Remove": return "Remove";
             case "Same": return "Same";}
          _U.badCase($moduleName,
-         "between lines 182 and 188");
+         "between lines 182 and 185");
       }();
    };
    var Same = {ctor: "Same"};
@@ -970,10 +1158,10 @@ Elm.Dict.make = function (_elm) {
                       targetKey,
                       dict._3);}
                  _U.badCase($moduleName,
-                 "between lines 129 and 135");
+                 "between lines 129 and 132");
               }();}
          _U.badCase($moduleName,
-         "between lines 124 and 135");
+         "between lines 124 and 132");
       }();
    });
    var member = F2(function (key,
@@ -984,7 +1172,7 @@ Elm.Dict.make = function (_elm) {
          {case "Just": return true;
             case "Nothing": return false;}
          _U.badCase($moduleName,
-         "between lines 138 and 146");
+         "between lines 138 and 140");
       }();
    });
    var max = function (dict) {
@@ -1000,7 +1188,7 @@ Elm.Dict.make = function (_elm) {
                         ,_1: dict._2};}
               return max(dict._4);}
          _U.badCase($moduleName,
-         "between lines 100 and 121");
+         "between lines 100 and 108");
       }();
    };
    var min = function (dict) {
@@ -1072,7 +1260,7 @@ Elm.Dict.make = function (_elm) {
               A2(map,f,dict._3),
               A2(map,f,dict._4));}
          _U.badCase($moduleName,
-         "between lines 394 and 403");
+         "between lines 394 and 399");
       }();
    });
    var showNColor = function (c) {
@@ -1121,7 +1309,7 @@ Elm.Dict.make = function (_elm) {
                    dict._4);}
               break;}
          _U.badCase($moduleName,
-         "between lines 154 and 166");
+         "between lines 154 and 162");
       }();
    };
    var blackish = function (t) {
@@ -1205,7 +1393,7 @@ Elm.Dict.make = function (_elm) {
               t._3,
               t._4);}
          _U.badCase($moduleName,
-         "between lines 386 and 391");
+         "between lines 386 and 388");
       }();
    };
    var balance_node = function (t) {
@@ -1672,7 +1860,7 @@ Elm.Dict.make = function (_elm) {
                case "Same":
                return updatedDict;}
             _U.badCase($moduleName,
-            "between lines 222 and 228");
+            "between lines 222 and 225");
          }();
       }();
    });
@@ -1829,7 +2017,10 @@ Elm.Dist.make = function (_elm) {
    $moduleName = "Dist",
    $Basics = Elm.Basics.make(_elm),
    $Dict = Elm.Dict.make(_elm),
-   $List = Elm.List.make(_elm);
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var collapse$ = function (vals) {
       return $List.concat(A2($List.map,
       function (_v0) {
@@ -1845,12 +2036,12 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: _v4._0
                                  ,_1: _v0._1 * _v4._1};}
                        _U.badCase($moduleName,
-                       "on line 82, column 74 to 80");
+                       "on line 85, column 74 to 80");
                     }();
                  },
                  _v0._0);}
             _U.badCase($moduleName,
-            "on line 82, column 52 to 84");
+            "on line 85, column 52 to 84");
          }();
       },
       vals));
@@ -1883,7 +2074,7 @@ Elm.Dist.make = function (_elm) {
                                            ,_1: _v13._0}
                                       ,_1: l1._0._1 * _v13._1};}
                             _U.badCase($moduleName,
-                            "on line 60, column 39 to 50");
+                            "on line 63, column 39 to 50");
                          }();
                       },
                       l2);
@@ -1895,7 +2086,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 56 and 62");
+         "between lines 59 and 65");
       }();
    });
    var product = F2(function (d1,
@@ -1920,7 +2111,7 @@ Elm.Dist.make = function (_elm) {
                {case "_Tuple2":
                   return !_U.eq(_v21._1,0);}
                _U.badCase($moduleName,
-               "on line 39, column 32 to 38");
+               "on line 42, column 32 to 38");
             }();
          })($List.map(function (_v17) {
             return function () {
@@ -1930,7 +2121,7 @@ Elm.Dist.make = function (_elm) {
                          ,_0: _v17._0
                          ,_1: _v17._1 / total};}
                _U.badCase($moduleName,
-               "on line 38, column 30 to 42");
+               "on line 41, column 30 to 42");
             }();
          })(probs));
       }();
@@ -1943,7 +2134,7 @@ Elm.Dist.make = function (_elm) {
             {case "_Tuple2":
                return f(_v25._0);}
             _U.badCase($moduleName,
-            "on line 44, column 32 to 35");
+            "on line 47, column 32 to 35");
          }();
       })($Dict.toList(dist))));
    });
@@ -1957,7 +2148,7 @@ Elm.Dist.make = function (_elm) {
                       ,_0: _v29._0
                       ,_1: _v29._1 * f(_v29._0)};}
             _U.badCase($moduleName,
-            "on line 51, column 30 to 40");
+            "on line 54, column 30 to 40");
          }();
       })($Dict.toList(dist))));
    });
@@ -1985,7 +2176,7 @@ Elm.Dist.make = function (_elm) {
                    ,_0: _L.fromArray([])
                    ,_1: _L.fromArray([])};}
          _U.badCase($moduleName,
-         "between lines 12 and 16");
+         "between lines 15 and 19");
       }();
    });
    var combineProbs = function (list) {
@@ -2014,7 +2205,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 19 and 23");
+         "between lines 22 and 26");
       }();
    };
    var map = F2(function (f,dist) {
@@ -2026,7 +2217,7 @@ Elm.Dist.make = function (_elm) {
                       ,_0: f(_v41._0)
                       ,_1: _v41._1};}
             _U.badCase($moduleName,
-            "on line 28, column 30 to 36");
+            "on line 31, column 30 to 36");
          }();
       })($Dict.toList(dist)))));
    });
@@ -2050,13 +2241,22 @@ Elm.Dist.make = function (_elm) {
                          ,_0: $Dict.toList(f(_v45._0))
                          ,_1: _v45._1};}
                _U.badCase($moduleName,
-               "on line 88, column 41 to 61");
+               "on line 91, column 41 to 61");
             }();
          },
          probs);
          var collapsedProbs = collapse$(nestedProbs);
          return $Dict.fromList(combineProbs($List.sort(collapsedProbs)));
       }();
+   });
+   var weightedProbability = F2(function (f,
+   dist) {
+      return A3($Dict.foldl,
+      F3(function (x,p,s) {
+         return s + f(x) * p;
+      }),
+      0,
+      dist);
    });
    var probability = F2(function (f,
    dist) {
@@ -2069,6 +2269,7 @@ Elm.Dist.make = function (_elm) {
    });
    _elm.Dist.values = {_op: _op
                       ,probability: probability
+                      ,weightedProbability: weightedProbability
                       ,partitionPrefix: partitionPrefix
                       ,combineProbs: combineProbs
                       ,map: map
@@ -2098,7 +2299,9 @@ Elm.Encounters.make = function (_elm) {
    $Dict = Elm.Dict.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Pokemon = Elm.Pokemon.make(_elm);
+   $Pokemon = Elm.Pokemon.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var noEncounter = {_: {}
                      ,level: 0
                      ,species: $Pokemon.noSpecies};
@@ -2283,6 +2486,8 @@ Elm.Graph.make = function (_elm) {
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm);
    var roundTo = F2(function (gap,
    x) {
@@ -2658,7 +2863,7 @@ Elm.Graphics.Collage.make = function (_elm) {
                               ,["y",f.y + _v0._1]],
               f);}
          _U.badCase($moduleName,
-         "on line 226, column 7 to 35");
+         "on line 226, column 3 to 37");
       }();
    });
    var form = function (f) {
@@ -3341,7 +3546,7 @@ Elm.Graphics.Element.make = function (_elm) {
                  maxOrZero(ws),
                  $List.sum(hs));}
             _U.badCase($moduleName,
-            "between lines 362 and 373");
+            "between lines 362 and 368");
          }();
       }();
    });
@@ -3696,7 +3901,7 @@ Elm.List.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 87 and 95");
+         "between lines 87 and 89");
       }();
    };
    var head = function (list) {
@@ -3707,7 +3912,7 @@ Elm.List.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 75 and 84");
+         "between lines 75 and 77");
       }();
    };
    _op["::"] = $Native$List.cons;
@@ -3746,7 +3951,7 @@ Elm.List.make = function (_elm) {
             return A2(_op["::"],_v15._0,xs);
             case "Nothing": return xs;}
          _U.badCase($moduleName,
-         "between lines 179 and 186");
+         "between lines 179 and 181");
       }();
    });
    var filterMap = F2(function (f,
@@ -3893,7 +4098,7 @@ Elm.List.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 350 and 361");
+         "between lines 350 and 356");
       }();
    });
    _elm.List.values = {_op: _op
@@ -3946,6 +4151,7 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
+   $DApprox = Elm.DApprox.make(_elm),
    $DSum = Elm.DSum.make(_elm),
    $Dict = Elm.Dict.make(_elm),
    $Dist = Elm.Dist.make(_elm),
@@ -4029,7 +4235,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 354, column 23 to 43");
+            "on line 362, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -4049,7 +4255,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 343 and 345");
+         "between lines 351 and 353");
       }();
    });
    var toPath = toPath$(0);
@@ -4060,6 +4266,15 @@ Elm.Main.make = function (_elm) {
       n,
       carry,
       state))));
+   });
+   var approxProbability = F3(function (rate,
+   slots,
+   state) {
+      return $Dist.probability(function (s) {
+         return A2($List.member,
+         s,
+         slots);
+      })($Dist.collapseMap($DSum.dsumSlotDist(rate))($DApprox.dapproxDist(state)));
    });
    var successProbability = F3(function (rate,
    slots,
@@ -4103,7 +4318,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 325, column 37 to 58");
+            "on line 326, column 37 to 58");
          }();
       });
    });
@@ -4451,7 +4666,7 @@ Elm.Main.make = function (_elm) {
                                                                                                         ,_3: acc$}) : $Worker.Done($List.reverse(_v8._3));
                  }();}
             _U.badCase($moduleName,
-            "between lines 393 and 409");
+            "between lines 401 and 417");
          }();
       };
       return A2($Worker.createWorker,
@@ -4472,7 +4687,7 @@ Elm.Main.make = function (_elm) {
                  return $List.reverse(_v14._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 415 and 419");
+         "between lines 423 and 427");
       }();
    },
    successProbabilitiesWorker.state);
@@ -4506,6 +4721,101 @@ Elm.Main.make = function (_elm) {
              ,_1: s.inGrass};
    }),
    strategy2);
+   var approxInputSignal = A2($Signal._op["<~"],
+   function (req) {
+      return function () {
+         var initialState = function (s) {
+            return _U.replace([["muDist"
+                               ,A2($Dist.map,
+                               function ($) {
+                                  return $Basics.toFloat($Basics.round($));
+                               },
+                               s.muDist)]],
+            s);
+         }(A2($DApprox.advanceDApprox,
+         $DApprox.outsideSlopeDist,
+         $Encounters.framesBeforeMove)(A2($DApprox.advanceDApprox,
+         $DApprox.insideSlopeDist,
+         req.encounterLength)($DApprox.conditionDApprox(function (x) {
+            return $Dist.probability(function (s) {
+               return A2($List.member,
+               s,
+               req.encounteredSlots);
+            })(A2($DSum.dsumSlotDist,
+            req.encounterRate,
+            x));
+         })($DApprox.initialDApproxState))));
+         return {ctor: "_Tuple4"
+                ,_0: req
+                ,_1: 0
+                ,_2: initialState
+                ,_3: _L.fromArray([])};
+      }();
+   },
+   A2($Signal.sampleOn,
+   calculateBox.signal,
+   requestSignal));
+   var approxProbabilitiesWorker = function () {
+      var workerStep = function (_v21) {
+         return function () {
+            switch (_v21.ctor)
+            {case "_Tuple4":
+               return function () {
+                    var frameState = A3($DApprox.advanceDApprox,
+                    $DApprox.outsideSlopeDist,
+                    _v21._1,
+                    _v21._2);
+                    return _U.cmp(_v21._1,
+                    1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
+                                                ,_0: _v21._0
+                                                ,_1: _v21._1 + 1
+                                                ,_2: _v21._2
+                                                ,_3: A2($List._op["::"],
+                                                A3(approxProbability,
+                                                _v21._0.encounterRate,
+                                                _v21._0.desiredSlots,
+                                                frameState),
+                                                _v21._3)}) : $Worker.Done($List.reverse(_v21._3));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 452 and 456");
+         }();
+      };
+      return A2($Worker.createWorker,
+      approxInputSignal,
+      workerStep);
+   }();
+   var approxProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v27 = $Basics.snd(state);
+         switch (_v27.ctor)
+         {case "Done": return _v27._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v27._0.ctor)
+              {case "_Tuple4":
+                 return $List.reverse(_v27._0._3);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 462 and 466");
+      }();
+   },
+   approxProbabilitiesWorker.state);
+   var approxGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   approxProbabilitiesSignal);
    var encounterTable = $Signal.constant($Encounters.route22table);
    var desiredSlotsInputs = A2($Signal._op["<~"],
    $Graphics$Element.flow($Graphics$Element.right),
@@ -4605,8 +4915,24 @@ Elm.Main.make = function (_elm) {
                         ,$Signal.constant(calculateButton)
                         ,thresholdInput
                         ,A2($Signal._op["<~"],
+                        function ($) {
+                           return $Graphics$Element.show($DApprox.dapproxDist(function (_v34) {
+                              return function () {
+                                 switch (_v34.ctor)
+                                 {case "_Tuple4":
+                                    return _v34._2;}
+                                 _U.badCase($moduleName,
+                                 "on line 490, column 48 to 49");
+                              }();
+                           }($)));
+                        },
+                        approxInputSignal)
+                        ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
                         successGraph)
+                        ,A2($Signal._op["<~"],
+                        A2($Graph.drawGraph,700,400),
+                        approxGraph)
                         ,A2($Signal.map,
                         $Graphics$Element.show,
                         strategy)
@@ -4615,32 +4941,7 @@ Elm.Main.make = function (_elm) {
                         strategy2)
                         ,A2($Signal.map,
                         $Graphics$Element.show,
-                        stepStrategy)
-                        ,function () {
-                           var showWorkerState = function (state) {
-                              return function () {
-                                 switch (state.ctor)
-                                 {case "Done":
-                                    return $Graphics$Element.show("Done");
-                                    case "Unstarted":
-                                    return $Graphics$Element.show("Unstarted");
-                                    case "Working":
-                                    switch (state._0.ctor)
-                                      {case "_Tuple4":
-                                         return $Graphics$Element.show({ctor: "_Tuple2"
-                                                                       ,_0: state._0._1
-                                                                       ,_1: state._0._2});}
-                                      break;}
-                                 _U.badCase($moduleName,
-                                 "between lines 451 and 455");
-                              }();
-                           };
-                           return A2($Signal.map,
-                           function ($) {
-                              return showWorkerState($Basics.snd($));
-                           },
-                           successProbabilitiesWorker.state);
-                        }()])));
+                        stepStrategy)])));
    _elm.Main.values = {_op: _op
                       ,encounterTable: encounterTable
                       ,slot1DesiredBox: slot1DesiredBox
@@ -4681,6 +4982,7 @@ Elm.Main.make = function (_elm) {
                       ,iterate: iterate
                       ,iterate$: iterate$
                       ,successProbability: successProbability
+                      ,approxProbability: approxProbability
                       ,successProbabilities: successProbabilities
                       ,toPath: toPath
                       ,toPath$: toPath$
@@ -4694,6 +4996,10 @@ Elm.Main.make = function (_elm) {
                       ,successProbabilitiesWorker: successProbabilitiesWorker
                       ,successProbabilitiesSignal: successProbabilitiesSignal
                       ,successGraph: successGraph
+                      ,approxInputSignal: approxInputSignal
+                      ,approxProbabilitiesWorker: approxProbabilitiesWorker
+                      ,approxProbabilitiesSignal: approxProbabilitiesSignal
+                      ,approxGraph: approxGraph
                       ,buildStrategy: buildStrategy
                       ,strategy: strategy
                       ,strategy2: strategy2
@@ -4720,7 +5026,7 @@ Elm.Maybe.make = function (_elm) {
             case "Nothing":
             return $default;}
          _U.badCase($moduleName,
-         "between lines 45 and 56");
+         "between lines 45 and 47");
       }();
    });
    var Nothing = {ctor: "Nothing"};
@@ -4733,11 +5039,11 @@ Elm.Maybe.make = function (_elm) {
                     case "Nothing":
                     return oneOf(maybes._1);}
                  _U.badCase($moduleName,
-                 "between lines 64 and 73");
+                 "between lines 64 and 66");
               }();
             case "[]": return Nothing;}
          _U.badCase($moduleName,
-         "between lines 59 and 73");
+         "between lines 59 and 66");
       }();
    };
    var andThen = F2(function (maybeValue,
@@ -4762,7 +5068,7 @@ Elm.Maybe.make = function (_elm) {
             return Just(f(maybe._0));
             case "Nothing": return Nothing;}
          _U.badCase($moduleName,
-         "between lines 76 and 107");
+         "between lines 76 and 78");
       }();
    });
    _elm.Maybe.values = {_op: _op
@@ -10042,7 +10348,10 @@ Elm.Pokemon.make = function (_elm) {
    $moduleName = "Pokemon",
    $Basics = Elm.Basics.make(_elm),
    $Dict = Elm.Dict.make(_elm),
-   $List = Elm.List.make(_elm);
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var speciesList = _L.fromArray([{_: {}
                                    ,cryDiff: 49
                                    ,indexNumber: 1
@@ -10848,7 +11157,11 @@ Elm.RNG.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "RNG",
-   $Basics = Elm.Basics.make(_elm);
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var getDSum$ = function (_v0) {
       return function () {
          switch (_v0.ctor)
@@ -10969,7 +11282,7 @@ Elm.Result.make = function (_elm) {
             case "Ok":
             return $Maybe.Just(result._0);}
          _U.badCase($moduleName,
-         "between lines 164 and 177");
+         "between lines 164 and 166");
       }();
    };
    var Err = function (a) {
@@ -10984,7 +11297,7 @@ Elm.Result.make = function (_elm) {
             case "Ok":
             return callback(result._0);}
          _U.badCase($moduleName,
-         "between lines 126 and 145");
+         "between lines 126 and 128");
       }();
    });
    var Ok = function (a) {
@@ -10998,7 +11311,7 @@ Elm.Result.make = function (_elm) {
             case "Ok":
             return Ok(func(ra._0));}
          _U.badCase($moduleName,
-         "between lines 41 and 52");
+         "between lines 41 and 43");
       }();
    });
    var map2 = F3(function (func,
@@ -11152,7 +11465,7 @@ Elm.Result.make = function (_elm) {
                  return Err(_v39._4._0);}
               break;}
          _U.badCase($moduleName,
-         "between lines 82 and 123");
+         "between lines 82 and 88");
       }();
    });
    var formatError = F2(function (f,
@@ -11164,7 +11477,7 @@ Elm.Result.make = function (_elm) {
             case "Ok":
             return Ok(result._0);}
          _U.badCase($moduleName,
-         "between lines 148 and 161");
+         "between lines 148 and 150");
       }();
    });
    var fromMaybe = F2(function (err,
@@ -11295,7 +11608,7 @@ Elm.Signal.make = function (_elm) {
             case "[]":
             return $Debug.crash("mergeMany was given an empty list!");}
          _U.badCase($moduleName,
-         "between lines 177 and 197");
+         "between lines 177 and 182");
       }();
    };
    var foldp = $Native$Signal.foldp;
@@ -11349,7 +11662,10 @@ Elm.Strategy.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Strategy",
    $Basics = Elm.Basics.make(_elm),
-   $List = Elm.List.make(_elm);
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
    var roundStrategy$ = F3(function (rounding,
    extraFrames,
    strat) {
@@ -12060,7 +12376,9 @@ Elm.Worker.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Worker",
    $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm);
    var getResult = function (state) {

@@ -8,6 +8,9 @@ type alias Dist comparable = Dict comparable Float
 probability : (comparable -> Bool) -> Dist comparable -> Float
 probability f dist = Dict.foldl (\x p s -> if f x then s + p else s) 0 dist
 
+weightedProbability : (comparable -> Float) -> Dist comparable -> Float
+weightedProbability f dist = Dict.foldl (\x p s -> s + f x * p) 0 dist
+
 partitionPrefix : (a -> Bool) -> List a -> (List a, List a)
 partitionPrefix f l = case l of
     [] -> ([], [])

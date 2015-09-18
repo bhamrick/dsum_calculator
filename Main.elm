@@ -12,8 +12,9 @@ import String exposing (toInt)
 import Text exposing (fromString)
 import Trampoline exposing (..)
 
-import Dist
+import DApprox exposing (..)
 import DSum exposing (..)
+import Dist
 import Encounters exposing (..)
 import Graph exposing (..)
 import RNG exposing (..)
@@ -331,6 +332,13 @@ successProbability rate slots state =
     |> Dist.collapseMap (dsumSlotDist rate)
     |> Dist.probability (\s -> List.member s slots)
 
+approxProbability : Int -> List Int -> DApproxState -> Float
+approxProbability rate slots state =
+    state
+    |> dapproxDist
+    |> Dist.collapseMap (dsumSlotDist rate)
+    |> Dist.probability (\s -> List.member s slots)
+
 successProbabilities : Int -> List Int -> Int -> Int -> DSumState -> List Float
 successProbabilities rate slots n carry state = if n <= 0 then [] else
     successProbability rate slots state
@@ -422,6 +430,44 @@ successProbabilitiesSignal = Signal.map (\state ->
 successGraph : Signal Graph
 successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
 
+approxInputSignal : Signal (ChartRequest, Int, DApproxState, List Float)
+approxInputSignal = (\req ->
+    let
+    initialState =
+        initialDApproxState
+        |> conditionDApprox (\x ->
+            dsumSlotDist req.encounterRate x
+            |> Dist.probability (\s -> List.member s req.encounteredSlots))
+        |> advanceDApprox insideSlopeDist req.encounterLength
+        |> advanceDApprox outsideSlopeDist framesBeforeMove
+        |> (\s -> { s | muDist <- Dist.map (toFloat << round) s.muDist })
+    in
+    (req, 0, initialState, [])
+    ) <~ Signal.sampleOn calculateBox.signal requestSignal
+
+approxProbabilitiesWorker : Worker (ChartRequest, Int, DApproxState, List Float) (List Float)
+approxProbabilitiesWorker =
+    let
+    workerStep (req, n, state, acc) =
+        let frameState = advanceDApprox outsideSlopeDist n state
+        in if n < 1000
+        then Working
+            (req, n+1, state, approxProbability req.encounterRate req.desiredSlots frameState :: acc)
+        else Worker.Done (List.reverse acc)
+    in
+    createWorker approxInputSignal workerStep
+
+approxProbabilitiesSignal : Signal (List Float)
+approxProbabilitiesSignal = Signal.map (\state ->
+    case snd state of
+        Working (_, _, _, acc) -> List.reverse acc
+        Worker.Done probs -> probs
+        Unstarted -> []
+    ) approxProbabilitiesWorker.state
+
+approxGraph : Signal Graph
+approxGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ approxProbabilitiesSignal
+
 buildStrategy : Float -> List Float -> Strategy
 buildStrategy threshold = simplify 15 << frameStrategy << List.map (\x -> x >= threshold)
 
@@ -440,18 +486,21 @@ main = flow down <~ combine
     , desiredSlotsInputs
     , Signal.constant calculateButton
     , thresholdInput
+    -- , Signal.map show approxInputSignal
+    , show << dapproxDist << (\(_, _, d, _) -> d) <~ approxInputSignal
     -- , drawGraph 700 400 <~ dsumGraph
     , drawGraph 700 400 <~ successGraph
+    , drawGraph 700 400 <~ approxGraph
     -- , Signal.map show desiredSlots
     -- , Signal.map show requestSignal
     , Signal.map show strategy
     , Signal.map show strategy2
     , Signal.map show stepStrategy
-    , let
-        showWorkerState state = case state of
-            Unstarted -> show "Unstarted"
-            Working (req, n, dist, acc) -> show (n, dist)
-            Worker.Done _ -> show "Done"
-      in
-        Signal.map (snd >> showWorkerState) successProbabilitiesWorker.state
+    -- , let
+    --     showWorkerState state = case state of
+    --         Unstarted -> show "Unstarted"
+    --         Working (req, n, dist, acc) -> show (n, dist)
+    --         Worker.Done _ -> show "Done"
+    --   in
+    --     Signal.map (snd >> showWorkerState) successProbabilitiesWorker.state
     ]
