@@ -4658,7 +4658,9 @@ Elm.Main.make = function (_elm) {
       };
       return A2($Worker.createWorker,
       approxInputSignal,
-      workerStep);
+      A2($Worker.iterateStateFunc,
+      3,
+      workerStep));
    }();
    var approxProbabilitiesSignal = A2($Signal.map,
    function (state) {
@@ -12254,7 +12256,7 @@ Elm.Worker.make = function (_elm) {
    $Time = Elm.Time.make(_elm);
    var workerClock = A2($Signal._op["<~"],
    $Debug.watch("frame time"),
-   $Time.fps(60));
+   $Time.fps(30));
    var getResult = function (state) {
       return function () {
          switch (state.ctor)
@@ -12291,32 +12293,52 @@ Elm.Worker.make = function (_elm) {
       return {ctor: "Working"
              ,_0: a};
    };
+   var iterateStateFunc = F3(function (n,
+   f,
+   s) {
+      return _U.cmp(n,
+      0) < 1 ? Working(s) : function () {
+         var _v6 = f(s);
+         switch (_v6.ctor)
+         {case "Done":
+            return Done(_v6._0);
+            case "Unstarted":
+            return Unstarted;
+            case "Working":
+            return A3(iterateStateFunc,
+              n - 1,
+              f,
+              _v6._0);}
+         _U.badCase($moduleName,
+         "between lines 32 and 35");
+      }();
+   });
    var createWorker = F2(function (inputSignal,
    step) {
       return function () {
          var state = A3($Signal.foldp,
-         F2(function (inp,_v6) {
+         F2(function (inp,_v9) {
             return function () {
-               switch (_v6.ctor)
+               switch (_v9.ctor)
                {case "_Tuple2":
                   return _U.eq($Maybe.Just(inp),
-                    _v6._0) ? function () {
-                       switch (_v6._1.ctor)
+                    _v9._0) ? function () {
+                       switch (_v9._1.ctor)
                        {case "Done":
                           return {ctor: "_Tuple2"
-                                 ,_0: _v6._0
-                                 ,_1: Done(_v6._1._0)};
+                                 ,_0: _v9._0
+                                 ,_1: Done(_v9._1._0)};
                           case "Working":
                           return {ctor: "_Tuple2"
-                                 ,_0: _v6._0
-                                 ,_1: step(_v6._1._0)};}
+                                 ,_0: _v9._0
+                                 ,_1: step(_v9._1._0)};}
                        _U.badCase($moduleName,
-                       "between lines 33 and 36");
+                       "between lines 42 and 45");
                     }() : {ctor: "_Tuple2"
                           ,_0: $Maybe.Just(inp)
                           ,_1: Working(inp)};}
                _U.badCase($moduleName,
-               "between lines 32 and 36");
+               "between lines 41 and 45");
             }();
          }),
          {ctor: "_Tuple2"
@@ -12338,6 +12360,7 @@ Elm.Worker.make = function (_elm) {
                         ,isWorking: isWorking
                         ,getResult: getResult
                         ,workerClock: workerClock
+                        ,iterateStateFunc: iterateStateFunc
                         ,createWorker: createWorker};
    return _elm.Worker.values;
 };

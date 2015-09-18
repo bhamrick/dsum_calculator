@@ -394,7 +394,7 @@ approxProbabilitiesWorker =
             (req, n+1, state, approxProbability req.encounterRate req.desiredSlots frameState :: acc)
         else Worker.Done (List.reverse acc)
     in
-    createWorker approxInputSignal workerStep
+    createWorker approxInputSignal (iterateStateFunc 3 workerStep)
 
 approxProbabilitiesSignal : Signal (List Float)
 approxProbabilitiesSignal = Signal.map (\state ->

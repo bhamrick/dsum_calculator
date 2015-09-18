@@ -23,7 +23,16 @@ getResult state = case state of
     Unstarted -> Nothing
 
 workerClock : Signal Time
-workerClock = Debug.watch "frame time" <~ fps 60
+workerClock = Debug.watch "frame time" <~ fps 30
+
+iterateStateFunc : Int -> (s -> WorkerState s r) -> s -> WorkerState s r
+iterateStateFunc n f s =
+    if n <= 0
+    then Working s
+    else case f s of
+        Working s' -> iterateStateFunc (n-1) f s'
+        Done r -> Done r
+        Unstarted -> Unstarted
 
 createWorker : Signal s -> (s -> WorkerState s r) -> Worker s r
 createWorker inputSignal step =
