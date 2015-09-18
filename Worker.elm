@@ -1,7 +1,8 @@
 module Worker where
 
-import Signal
-import Time exposing (fps)
+import Debug
+import Signal exposing ((<~))
+import Time exposing (Time, fps)
 
 type WorkerState s r = Working s | Done r | Unstarted
 type alias Worker s r =
@@ -21,6 +22,9 @@ getResult state = case state of
     Done r -> Just r
     Unstarted -> Nothing
 
+workerClock : Signal Time
+workerClock = Debug.watch "frame time" <~ fps 60
+
 createWorker : Signal s -> (s -> WorkerState s r) -> Worker s r
 createWorker inputSignal step =
     let state = 
@@ -32,7 +36,7 @@ createWorker inputSignal step =
                 else (Just inp, Working inp)
             )
             (Nothing, Unstarted)
-            (inputSignal |> Signal.sampleOn (fps 60))
+            (inputSignal |> Signal.sampleOn workerClock)
     in
     { state = state
     , signal =

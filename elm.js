@@ -704,7 +704,6 @@ Elm.DApprox.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "DApprox",
    $Basics = Elm.Basics.make(_elm),
-   $Dict = Elm.Dict.make(_elm),
    $Dist = Elm.Dist.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -737,20 +736,20 @@ Elm.DApprox.make = function (_elm) {
    });
    var insideLowSlope = 40704 / 131072;
    var insideHighSlope = 48896 / 131072;
-   var insideSlopeDist = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
-                                                      ,_0: insideLowSlope
-                                                      ,_1: 3 / 4}
-                                                     ,{ctor: "_Tuple2"
-                                                      ,_0: insideHighSlope
-                                                      ,_1: 1 / 4}]));
+   var insideSlopeDist = _L.fromArray([{ctor: "_Tuple2"
+                                       ,_0: insideLowSlope
+                                       ,_1: 3 / 4}
+                                      ,{ctor: "_Tuple2"
+                                       ,_0: insideHighSlope
+                                       ,_1: 1 / 4}]);
    var outsideLowSlope = -89856 / 131072;
    var outsideHighSlope = -81664 / 131072;
-   var outsideSlopeDist = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
-                                                       ,_0: outsideLowSlope
-                                                       ,_1: 3 / 4}
-                                                      ,{ctor: "_Tuple2"
-                                                       ,_0: outsideHighSlope
-                                                       ,_1: 1 / 4}]));
+   var outsideSlopeDist = _L.fromArray([{ctor: "_Tuple2"
+                                        ,_0: outsideLowSlope
+                                        ,_1: 3 / 4}
+                                       ,{ctor: "_Tuple2"
+                                        ,_0: outsideHighSlope
+                                        ,_1: 1 / 4}]);
    var dsumApproximation = F2(function (mu,
    theta) {
       return A2($Basics._op["%"],
@@ -889,7 +888,6 @@ Elm.DSum.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "DSum",
    $Basics = Elm.Basics.make(_elm),
-   $Dict = Elm.Dict.make(_elm),
    $Dist = Elm.Dist.make(_elm),
    $Encounters = Elm.Encounters.make(_elm),
    $List = Elm.List.make(_elm),
@@ -901,26 +899,26 @@ Elm.DSum.make = function (_elm) {
       return function () {
          switch (_v0.ctor)
          {case "_Tuple4":
-            return $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
-                                                ,_0: {ctor: "_Tuple4"
-                                                     ,_0: _v0._0
-                                                     ,_1: _v0._1 - A2($Basics._op["%"],
-                                                     _v0._1,
-                                                     16) + 4
-                                                     ,_2: _v0._2
-                                                     ,_3: _v0._3}
-                                                ,_1: 3 / 4}
-                                               ,{ctor: "_Tuple2"
-                                                ,_0: {ctor: "_Tuple4"
-                                                     ,_0: _v0._0
-                                                     ,_1: _v0._1 - A2($Basics._op["%"],
-                                                     _v0._1,
-                                                     16)
-                                                     ,_2: _v0._2
-                                                     ,_3: _v0._3}
-                                                ,_1: 1 / 4}]));}
+            return _L.fromArray([{ctor: "_Tuple2"
+                                 ,_0: {ctor: "_Tuple4"
+                                      ,_0: _v0._0
+                                      ,_1: _v0._1 - A2($Basics._op["%"],
+                                      _v0._1,
+                                      16) + 4
+                                      ,_2: _v0._2
+                                      ,_3: _v0._3}
+                                 ,_1: 3 / 4}
+                                ,{ctor: "_Tuple2"
+                                 ,_0: {ctor: "_Tuple4"
+                                      ,_0: _v0._0
+                                      ,_1: _v0._1 - A2($Basics._op["%"],
+                                      _v0._1,
+                                      16)
+                                      ,_2: _v0._2
+                                      ,_3: _v0._3}
+                                 ,_1: 1 / 4}]);}
          _U.badCase($moduleName,
-         "between lines 40 and 43");
+         "between lines 40 and 42");
       }();
    };
    var dsumSlotDist = F2(function (rate,
@@ -955,29 +953,28 @@ Elm.DSum.make = function (_elm) {
       dist);
    });
    var initialRDiv = 17;
-   var initialRNGMix = $Dict.fromList($List.concat(_L.fromArray([A2($List.map,
-                                                                function (dsum) {
-                                                                   return {ctor: "_Tuple2"
-                                                                          ,_0: {ctor: "_Tuple4"
-                                                                               ,_0: initialRDiv
-                                                                               ,_1: 4
-                                                                               ,_2: dsum
-                                                                               ,_3: 0}
-                                                                          ,_1: 3 / 1024};
-                                                                },
-                                                                _L.range(0,255))
-                                                                ,A2($List.map,
-                                                                function (dsum) {
-                                                                   return {ctor: "_Tuple2"
-                                                                          ,_0: {ctor: "_Tuple4"
-                                                                               ,_0: initialRDiv
-                                                                               ,_1: 0
-                                                                               ,_2: dsum
-                                                                               ,_3: 0}
-                                                                          ,_1: 1 / 1024};
-                                                                },
-                                                                _L.range(0,
-                                                                255))])));
+   var initialRNGMix = $List.concat(_L.fromArray([A2($List.map,
+                                                 function (dsum) {
+                                                    return {ctor: "_Tuple2"
+                                                           ,_0: {ctor: "_Tuple4"
+                                                                ,_0: initialRDiv
+                                                                ,_1: 4
+                                                                ,_2: dsum
+                                                                ,_3: 0}
+                                                           ,_1: 3 / 1024};
+                                                 },
+                                                 _L.range(0,255))
+                                                 ,A2($List.map,
+                                                 function (dsum) {
+                                                    return {ctor: "_Tuple2"
+                                                           ,_0: {ctor: "_Tuple4"
+                                                                ,_0: initialRDiv
+                                                                ,_1: 0
+                                                                ,_2: dsum
+                                                                ,_3: 0}
+                                                           ,_1: 1 / 1024};
+                                                 },
+                                                 _L.range(0,255))]));
    _elm.DSum.values = {_op: _op
                       ,initialRDiv: initialRDiv
                       ,initialRNGMix: initialRNGMix
@@ -2016,7 +2013,6 @@ Elm.Dist.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Dist",
    $Basics = Elm.Basics.make(_elm),
-   $Dict = Elm.Dict.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -2036,12 +2032,12 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: _v4._0
                                  ,_1: _v0._1 * _v4._1};}
                        _U.badCase($moduleName,
-                       "on line 85, column 74 to 80");
+                       "on line 100, column 74 to 80");
                     }();
                  },
                  _v0._0);}
             _U.badCase($moduleName,
-            "on line 85, column 52 to 84");
+            "on line 100, column 52 to 84");
          }();
       },
       vals));
@@ -2049,14 +2045,15 @@ Elm.Dist.make = function (_elm) {
    var uniform = function (l) {
       return function () {
          var n = $List.length(l);
-         return $Dict.fromList($List.map(function (x) {
+         return $List.map(function (x) {
             return {ctor: "_Tuple2"
                    ,_0: x
                    ,_1: 1 / $Basics.toFloat(n)};
-         })(l));
+         })(l);
       }();
    };
-   var product$ = F2(function (l1,
+   var lift2$ = F3(function (f,
+   l1,
    l2) {
       return function () {
          switch (l1.ctor)
@@ -2069,12 +2066,43 @@ Elm.Dist.make = function (_elm) {
                             switch (_v13.ctor)
                             {case "_Tuple2":
                                return {ctor: "_Tuple2"
-                                      ,_0: {ctor: "_Tuple2"
-                                           ,_0: l1._0._0
-                                           ,_1: _v13._0}
+                                      ,_0: A2(f,l1._0._0,_v13._0)
                                       ,_1: l1._0._1 * _v13._1};}
                             _U.badCase($moduleName,
-                            "on line 63, column 39 to 50");
+                            "on line 86, column 39 to 51");
+                         }();
+                      },
+                      l2);
+                      return A2($List.append,
+                      probs,
+                      A3(lift2$,f,l1._1,l2));
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 82 and 87");
+      }();
+   });
+   var product$ = F2(function (l1,
+   l2) {
+      return function () {
+         switch (l1.ctor)
+         {case "::": switch (l1._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var probs = A2($List.map,
+                      function (_v22) {
+                         return function () {
+                            switch (_v22.ctor)
+                            {case "_Tuple2":
+                               return {ctor: "_Tuple2"
+                                      ,_0: {ctor: "_Tuple2"
+                                           ,_0: l1._0._0
+                                           ,_1: _v22._0}
+                                      ,_1: l1._0._1 * _v22._1};}
+                            _U.badCase($moduleName,
+                            "on line 73, column 39 to 50");
                          }();
                       },
                       l2);
@@ -2086,183 +2114,171 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 59 and 65");
+         "between lines 69 and 75");
       }();
    });
-   var product = F2(function (d1,
-   d2) {
-      return function () {
-         var probs2 = $Dict.toList(d2);
-         var probs1 = $Dict.toList(d1);
-         var productProbs = A2(product$,
-         probs1,
-         probs2);
-         return $Dict.fromList(productProbs);
-      }();
-   });
+   var product = product$;
    var normalize = function (probs) {
       return function () {
          var total = $List.sum(A2($List.map,
          $Basics.snd,
          probs));
-         return $List.filter(function (_v21) {
+         return $List.filter(function (_v30) {
             return function () {
-               switch (_v21.ctor)
+               switch (_v30.ctor)
                {case "_Tuple2":
-                  return !_U.eq(_v21._1,0);}
+                  return !_U.eq(_v30._1,0);}
                _U.badCase($moduleName,
-               "on line 42, column 32 to 38");
+               "on line 56, column 32 to 38");
             }();
-         })($List.map(function (_v17) {
+         })($List.map(function (_v26) {
             return function () {
-               switch (_v17.ctor)
+               switch (_v26.ctor)
                {case "_Tuple2":
                   return {ctor: "_Tuple2"
-                         ,_0: _v17._0
-                         ,_1: _v17._1 / total};}
+                         ,_0: _v26._0
+                         ,_1: _v26._1 / total};}
                _U.badCase($moduleName,
-               "on line 41, column 30 to 42");
+               "on line 55, column 30 to 42");
             }();
          })(probs));
       }();
    };
    var filter = F2(function (f,
    dist) {
-      return $Dict.fromList(normalize($List.filter(function (_v25) {
+      return normalize($List.filter(function (_v34) {
          return function () {
-            switch (_v25.ctor)
+            switch (_v34.ctor)
             {case "_Tuple2":
-               return f(_v25._0);}
+               return f(_v34._0);}
             _U.badCase($moduleName,
-            "on line 47, column 32 to 35");
+            "on line 60, column 32 to 35");
          }();
-      })($Dict.toList(dist))));
+      })(dist));
    });
    var condition = F2(function (f,
    dist) {
-      return $Dict.fromList(normalize($List.map(function (_v29) {
+      return normalize($List.map(function (_v38) {
          return function () {
-            switch (_v29.ctor)
+            switch (_v38.ctor)
             {case "_Tuple2":
                return {ctor: "_Tuple2"
-                      ,_0: _v29._0
-                      ,_1: _v29._1 * f(_v29._0)};}
+                      ,_0: _v38._0
+                      ,_1: _v38._1 * f(_v38._0)};}
             _U.badCase($moduleName,
-            "on line 54, column 30 to 40");
+            "on line 65, column 30 to 40");
          }();
-      })($Dict.toList(dist))));
+      })(dist));
    });
-   var partitionPrefix = F2(function (f,
+   var combineProbs$ = F3(function (x0,
+   p0,
    l) {
       return function () {
          switch (l.ctor)
-         {case "::":
-            return f(l._0) ? function () {
-                 var $ = A2(partitionPrefix,
-                 f,
-                 l._1),
-                 matches = $._0,
-                 rest = $._1;
-                 return {ctor: "_Tuple2"
-                        ,_0: A2($List._op["::"],
-                        l._0,
-                        matches)
-                        ,_1: rest};
-              }() : {ctor: "_Tuple2"
-                    ,_0: _L.fromArray([])
-                    ,_1: l};
+         {case "::": switch (l._0.ctor)
+              {case "_Tuple2":
+                 return _U.eq(x0,
+                   l._0._0) ? A3(combineProbs$,
+                   x0,
+                   p0 + l._0._1,
+                   l._1) : A2($List._op["::"],
+                   {ctor: "_Tuple2",_0: x0,_1: p0},
+                   A3(combineProbs$,
+                   l._0._0,
+                   l._0._1,
+                   l._1));}
+              break;
             case "[]":
-            return {ctor: "_Tuple2"
-                   ,_0: _L.fromArray([])
-                   ,_1: _L.fromArray([])};}
+            return _L.fromArray([{ctor: "_Tuple2"
+                                 ,_0: x0
+                                 ,_1: p0}]);}
          _U.badCase($moduleName,
-         "between lines 15 and 19");
+         "between lines 32 and 37");
       }();
    });
-   var combineProbs = function (list) {
+   var combineProbs = function (l) {
       return function () {
-         switch (list.ctor)
-         {case "::":
-            switch (list._0.ctor)
+         switch (l.ctor)
+         {case "::": switch (l._0.ctor)
               {case "_Tuple2":
-                 return function () {
-                      var $ = A2(partitionPrefix,
-                      function ($) {
-                         return F2(function (x,y) {
-                            return _U.eq(x,y);
-                         })(list._0._0)($Basics.fst($));
-                      },
-                      list),
-                      matches = $._0,
-                      rest = $._1;
-                      return A2($List._op["::"],
-                      {ctor: "_Tuple2"
-                      ,_0: list._0._0
-                      ,_1: $List.sum($List.map($Basics.snd)(matches))},
-                      combineProbs(rest));
-                   }();}
+                 return A3(combineProbs$,
+                   l._0._0,
+                   l._0._1,
+                   l._1);}
               break;
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 22 and 26");
+         "between lines 40 and 42");
       }();
    };
    var map = F2(function (f,dist) {
-      return $Dict.fromList(combineProbs($List.sort($List.map(function (_v41) {
+      return combineProbs($List.sort($List.map(function (_v52) {
          return function () {
-            switch (_v41.ctor)
+            switch (_v52.ctor)
             {case "_Tuple2":
                return {ctor: "_Tuple2"
-                      ,_0: f(_v41._0)
-                      ,_1: _v41._1};}
+                      ,_0: f(_v52._0)
+                      ,_1: _v52._1};}
             _U.badCase($moduleName,
-            "on line 31, column 30 to 36");
+            "on line 46, column 30 to 36");
          }();
-      })($Dict.toList(dist)))));
+      })(dist)));
    });
    var lift2 = F3(function (f,
    d1,
    d2) {
-      return A2(map,
-      $Basics.uncurry(f),
-      A2(product,d1,d2));
+      return combineProbs($List.sort(A3(lift2$,
+      f,
+      d1,
+      d2)));
    });
    var collapseMap = F2(function (f,
    dist) {
       return function () {
-         var probs = $Dict.toList(dist);
          var nestedProbs = A2($List.map,
-         function (_v45) {
+         function (_v56) {
             return function () {
-               switch (_v45.ctor)
+               switch (_v56.ctor)
                {case "_Tuple2":
                   return {ctor: "_Tuple2"
-                         ,_0: $Dict.toList(f(_v45._0))
-                         ,_1: _v45._1};}
+                         ,_0: f(_v56._0)
+                         ,_1: _v56._1};}
                _U.badCase($moduleName,
-               "on line 91, column 41 to 61");
+               "on line 105, column 41 to 47");
             }();
          },
-         probs);
+         dist);
          var collapsedProbs = collapse$(nestedProbs);
-         return $Dict.fromList(combineProbs($List.sort(collapsedProbs)));
+         return combineProbs($List.sort(collapsedProbs));
       }();
    });
    var weightedProbability = F2(function (f,
    dist) {
-      return A3($Dict.foldl,
-      F3(function (x,p,s) {
-         return s + f(x) * p;
+      return A3($List.foldl,
+      F2(function (_v60,s) {
+         return function () {
+            switch (_v60.ctor)
+            {case "_Tuple2":
+               return s + f(_v60._0) * _v60._1;}
+            _U.badCase($moduleName,
+            "on line 12, column 55 to 66");
+         }();
       }),
       0,
       dist);
    });
    var probability = F2(function (f,
    dist) {
-      return A3($Dict.foldl,
-      F3(function (x,p,s) {
-         return f(x) ? s + p : s;
+      return A3($List.foldl,
+      F2(function (_v64,s) {
+         return function () {
+            switch (_v64.ctor)
+            {case "_Tuple2":
+               return f(_v64._0) ? s + _v64._1 : s;}
+            _U.badCase($moduleName,
+            "on line 9, column 47 to 71");
+         }();
       }),
       0,
       dist);
@@ -2270,7 +2286,7 @@ Elm.Dist.make = function (_elm) {
    _elm.Dist.values = {_op: _op
                       ,probability: probability
                       ,weightedProbability: weightedProbability
-                      ,partitionPrefix: partitionPrefix
+                      ,combineProbs$: combineProbs$
                       ,combineProbs: combineProbs
                       ,map: map
                       ,normalize: normalize
@@ -2278,6 +2294,7 @@ Elm.Dist.make = function (_elm) {
                       ,condition: condition
                       ,product$: product$
                       ,product: product
+                      ,lift2$: lift2$
                       ,lift2: lift2
                       ,uniform: uniform
                       ,collapse$: collapse$
@@ -2661,7 +2678,7 @@ Elm.Graph.make = function (_elm) {
                     ,_1: pixelY(_v16._1)},
                     A2($Graphics$Collage.filled,
                     color,
-                    A2($Graphics$Collage.oval,
+                    A2($Graphics$Collage.rect,
                     1,
                     1)));}
                _U.badCase($moduleName,
@@ -4235,7 +4252,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 362, column 23 to 43");
+            "on line 352, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -4255,7 +4272,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 351 and 353");
+         "between lines 341 and 343");
       }();
    });
    var toPath = toPath$(0);
@@ -4318,7 +4335,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 326, column 37 to 58");
+            "on line 316, column 37 to 58");
          }();
       });
    });
@@ -4333,26 +4350,6 @@ Elm.Main.make = function (_elm) {
    var contentString = function (content) {
       return content.string;
    };
-   var initialRNGStates = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   F2(function (hRandomAdd,
-   hRandomSub) {
-      return A2($List.concatMap,
-      function (rDiv) {
-         return A2($List.map,
-         function (cycle) {
-            return A4($RNG.rngState,
-            rDiv,
-            cycle,
-            hRandomAdd,
-            hRandomSub);
-         },
-         _L.fromArray([0,4]));
-      },
-      _L.fromArray([17]));
-   }),
-   $Signal.constant(0)),
-   $Signal.constant(0));
    var encounteredSlots = $Signal.constant(_L.fromArray([3]));
    var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
    var calculateButton = A2($Graphics$Input.button,
@@ -4360,21 +4357,6 @@ Elm.Main.make = function (_elm) {
    calculateBox.address,
    {ctor: "_Tuple0"}),
    "Calculate");
-   var dsumGraph = A2($Signal._op["<~"],
-   function ($) {
-      return A2($Graph.graph,
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1638}),
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 255}))($List.map(function ($) {
-         return toPath($List.map($Basics.toFloat)($));
-      })($List.map(sampleEncounterDSums)($)));
-   },
-   A2($Signal.sampleOn,
-   calculateBox.signal,
-   initialRNGStates));
    var thresholdBox = $Signal.mailbox($Graphics$Input$Field.noContent);
    var thresholdSignal = A2($Signal.map,
    function ($) {
@@ -4614,113 +4596,6 @@ Elm.Main.make = function (_elm) {
    }),
    partialRequestBox.signal),
    desiredSlots);
-   var workerInputSignal = A2($Signal._op["<~"],
-   function (req) {
-      return function () {
-         var initialState = $DSum.conditionDSum(function (x) {
-            return $Dist.probability(function (s) {
-               return A2($List.member,
-               s,
-               req.encounteredSlots);
-            })(A2($DSum.dsumSlotDist,
-            req.encounterRate,
-            x));
-         })($DSum.initialRNGMix);
-         return {ctor: "_Tuple4"
-                ,_0: req
-                ,_1: 0
-                ,_2: initialState
-                ,_3: _L.fromArray([])};
-      }();
-   },
-   A2($Signal.sampleOn,
-   calculateBox.signal,
-   requestSignal));
-   var successProbabilitiesWorker = function () {
-      var workerStep = function (_v8) {
-         return function () {
-            switch (_v8.ctor)
-            {case "_Tuple4":
-               return function () {
-                    var acc$ = _U.cmp(_v8._1,
-                    _v8._0.encounterLength + $Encounters.framesBeforeMove) < 0 ? _v8._3 : A2($List._op["::"],
-                    A3(successProbability,
-                    _v8._0.encounterRate,
-                    _v8._0.desiredSlots,
-                    _v8._2),
-                    _v8._3);
-                    var state$ = _U.cmp(_v8._1,
-                    _v8._0.encounterLength) < 0 ? A2($DSum.dsumStep,
-                    1,
-                    _v8._2) : _U.eq(_v8._1,
-                    _v8._0.encounterLength) ? $Dist.collapseMap($DSum.randomizeBand)(A2($DSum.dsumStep,
-                    1,
-                    _v8._2)) : A2($DSum.dsumStep,
-                    0,
-                    _v8._2);
-                    return _U.cmp(_v8._1,
-                    _v8._0.encounterLength + $Encounters.framesBeforeMove + 1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
-                                                                                                        ,_0: _v8._0
-                                                                                                        ,_1: _v8._1 + 1
-                                                                                                        ,_2: state$
-                                                                                                        ,_3: acc$}) : $Worker.Done($List.reverse(_v8._3));
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 401 and 417");
-         }();
-      };
-      return A2($Worker.createWorker,
-      workerInputSignal,
-      workerStep);
-   }();
-   var successProbabilitiesSignal = A2($Signal.map,
-   function (state) {
-      return function () {
-         var _v14 = $Basics.snd(state);
-         switch (_v14.ctor)
-         {case "Done": return _v14._0;
-            case "Unstarted":
-            return _L.fromArray([]);
-            case "Working":
-            switch (_v14._0.ctor)
-              {case "_Tuple4":
-                 return $List.reverse(_v14._0._3);}
-              break;}
-         _U.badCase($moduleName,
-         "between lines 423 and 427");
-      }();
-   },
-   successProbabilitiesWorker.state);
-   var successGraph = A2($Signal._op["<~"],
-   function ($) {
-      return A2($Graph.graph,
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1000}),
-      $Maybe.Just({ctor: "_Tuple2"
-                  ,_0: 0
-                  ,_1: 1}))(function (x) {
-         return _L.fromArray([x]);
-      }(toPath($)));
-   },
-   successProbabilitiesSignal);
-   var strategy = A2($Signal._op["~"],
-   A2($Signal._op["<~"],
-   buildStrategy,
-   thresholdSignal),
-   A2($Signal.map,
-   $Maybe.withDefault(_L.fromArray([])),
-   successProbabilitiesWorker.signal));
-   var strategy2 = A2($Signal._op["<~"],
-   $Strategy.roundStrategy(17),
-   strategy);
-   var stepStrategy = A2($Signal._op["<~"],
-   $List.map(function (s) {
-      return {ctor: "_Tuple2"
-             ,_0: s.frames / 17 | 0
-             ,_1: s.inGrass};
-   }),
-   strategy2);
    var approxInputSignal = A2($Signal._op["<~"],
    function (req) {
       return function () {
@@ -4756,29 +4631,29 @@ Elm.Main.make = function (_elm) {
    calculateBox.signal,
    requestSignal));
    var approxProbabilitiesWorker = function () {
-      var workerStep = function (_v21) {
+      var workerStep = function (_v8) {
          return function () {
-            switch (_v21.ctor)
+            switch (_v8.ctor)
             {case "_Tuple4":
                return function () {
                     var frameState = A3($DApprox.advanceDApprox,
                     $DApprox.outsideSlopeDist,
-                    _v21._1,
-                    _v21._2);
-                    return _U.cmp(_v21._1,
+                    _v8._1,
+                    _v8._2);
+                    return _U.cmp(_v8._1,
                     1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
-                                                ,_0: _v21._0
-                                                ,_1: _v21._1 + 1
-                                                ,_2: _v21._2
+                                                ,_0: _v8._0
+                                                ,_1: _v8._1 + 1
+                                                ,_2: _v8._2
                                                 ,_3: A2($List._op["::"],
                                                 A3(approxProbability,
-                                                _v21._0.encounterRate,
-                                                _v21._0.desiredSlots,
+                                                _v8._0.encounterRate,
+                                                _v8._0.desiredSlots,
                                                 frameState),
-                                                _v21._3)}) : $Worker.Done($List.reverse(_v21._3));
+                                                _v8._3)}) : $Worker.Done($List.reverse(_v8._3));
                  }();}
             _U.badCase($moduleName,
-            "between lines 452 and 456");
+            "between lines 391 and 395");
          }();
       };
       return A2($Worker.createWorker,
@@ -4788,18 +4663,18 @@ Elm.Main.make = function (_elm) {
    var approxProbabilitiesSignal = A2($Signal.map,
    function (state) {
       return function () {
-         var _v27 = $Basics.snd(state);
-         switch (_v27.ctor)
-         {case "Done": return _v27._0;
+         var _v14 = $Basics.snd(state);
+         switch (_v14.ctor)
+         {case "Done": return _v14._0;
             case "Unstarted":
             return _L.fromArray([]);
             case "Working":
-            switch (_v27._0.ctor)
+            switch (_v14._0.ctor)
               {case "_Tuple4":
-                 return $List.reverse(_v27._0._3);}
+                 return $List.reverse(_v14._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 462 and 466");
+         "between lines 401 and 405");
       }();
    },
    approxProbabilitiesWorker.state);
@@ -4816,6 +4691,23 @@ Elm.Main.make = function (_elm) {
       }(toPath($)));
    },
    approxProbabilitiesSignal);
+   var strategy = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   buildStrategy,
+   thresholdSignal),
+   A2($Signal.map,
+   $Maybe.withDefault(_L.fromArray([])),
+   approxProbabilitiesWorker.signal));
+   var strategy2 = A2($Signal._op["<~"],
+   $Strategy.roundStrategy(17),
+   strategy);
+   var stepStrategy = A2($Signal._op["<~"],
+   $List.map(function (s) {
+      return {ctor: "_Tuple2"
+             ,_0: s.frames / 17 | 0
+             ,_1: s.inGrass};
+   }),
+   strategy2);
    var encounterTable = $Signal.constant($Encounters.route22table);
    var desiredSlotsInputs = A2($Signal._op["<~"],
    $Graphics$Element.flow($Graphics$Element.right),
@@ -4915,22 +4807,6 @@ Elm.Main.make = function (_elm) {
                         ,$Signal.constant(calculateButton)
                         ,thresholdInput
                         ,A2($Signal._op["<~"],
-                        function ($) {
-                           return $Graphics$Element.show($DApprox.dapproxDist(function (_v34) {
-                              return function () {
-                                 switch (_v34.ctor)
-                                 {case "_Tuple4":
-                                    return _v34._2;}
-                                 _U.badCase($moduleName,
-                                 "on line 490, column 48 to 49");
-                              }();
-                           }($)));
-                        },
-                        approxInputSignal)
-                        ,A2($Signal._op["<~"],
-                        A2($Graph.drawGraph,700,400),
-                        successGraph)
-                        ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
                         approxGraph)
                         ,A2($Signal.map,
@@ -4977,7 +4853,6 @@ Elm.Main.make = function (_elm) {
                       ,calculateBox: calculateBox
                       ,encounteredSlots: encounteredSlots
                       ,calculateButton: calculateButton
-                      ,initialRNGStates: initialRNGStates
                       ,contentString: contentString
                       ,iterate: iterate
                       ,iterate$: iterate$
@@ -4990,12 +4865,7 @@ Elm.Main.make = function (_elm) {
                       ,sampleEncounterDSums: sampleEncounterDSums
                       ,dsums: dsums
                       ,combine: combine
-                      ,dsumGraph: dsumGraph
                       ,ChartRequest: ChartRequest
-                      ,workerInputSignal: workerInputSignal
-                      ,successProbabilitiesWorker: successProbabilitiesWorker
-                      ,successProbabilitiesSignal: successProbabilitiesSignal
-                      ,successGraph: successGraph
                       ,approxInputSignal: approxInputSignal
                       ,approxProbabilitiesWorker: approxProbabilitiesWorker
                       ,approxProbabilitiesSignal: approxProbabilitiesSignal
@@ -12376,11 +12246,15 @@ Elm.Worker.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Worker",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm);
+   var workerClock = A2($Signal._op["<~"],
+   $Debug.watch("frame time"),
+   $Time.fps(60));
    var getResult = function (state) {
       return function () {
          switch (state.ctor)
@@ -12391,7 +12265,7 @@ Elm.Worker.make = function (_elm) {
             case "Working":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 19 and 22");
+         "between lines 20 and 23");
       }();
    };
    var isWorking = function (state) {
@@ -12401,7 +12275,7 @@ Elm.Worker.make = function (_elm) {
             case "Unstarted": return false;
             case "Working": return true;}
          _U.badCase($moduleName,
-         "between lines 13 and 16");
+         "between lines 14 and 17");
       }();
    };
    var Worker = F2(function (a,b) {
@@ -12437,18 +12311,18 @@ Elm.Worker.make = function (_elm) {
                                  ,_0: _v6._0
                                  ,_1: step(_v6._1._0)};}
                        _U.badCase($moduleName,
-                       "between lines 29 and 32");
+                       "between lines 33 and 36");
                     }() : {ctor: "_Tuple2"
                           ,_0: $Maybe.Just(inp)
                           ,_1: Working(inp)};}
                _U.badCase($moduleName,
-               "between lines 28 and 32");
+               "between lines 32 and 36");
             }();
          }),
          {ctor: "_Tuple2"
          ,_0: $Maybe.Nothing
          ,_1: Unstarted},
-         $Signal.sampleOn($Time.fps(60))(inputSignal));
+         $Signal.sampleOn(workerClock)(inputSignal));
          return {_: {}
                 ,signal: $Signal.dropRepeats($Signal.map(function ($) {
                    return getResult($Basics.snd($));
@@ -12463,6 +12337,7 @@ Elm.Worker.make = function (_elm) {
                         ,Worker: Worker
                         ,isWorking: isWorking
                         ,getResult: getResult
+                        ,workerClock: workerClock
                         ,createWorker: createWorker};
    return _elm.Worker.values;
 };

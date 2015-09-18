@@ -304,16 +304,6 @@ encounteredSlots = Signal.constant [3]
 calculateButton : Element
 calculateButton = button (Signal.message calculateBox.address ()) "Calculate"
 
-initialRNGStates : Signal (List RNGState)
-initialRNGStates =
-    (\hRandomAdd hRandomSub ->
-        List.concatMap (\rDiv ->
-            List.map (\cycle ->
-                rngState rDiv cycle hRandomAdd hRandomSub
-            ) [0, 4]
-        ) [17]
-    ) <~ Signal.constant 0 ~ Signal.constant 0
-
 contentString : Content -> String
 contentString content = content.string
 
@@ -372,63 +362,12 @@ dsums n carry state = if
 combine : List (Signal a) -> Signal (List a)
 combine = List.foldr (Signal.map2 (::)) (Signal.constant [])
 
-dsumGraph : Signal Graph
-dsumGraph = graph (Just (0, 1638)) (Just (0, 255)) << List.map (toPath << List.map toFloat) << List.map sampleEncounterDSums <~ Signal.sampleOn calculateBox.signal initialRNGStates
-
 type alias ChartRequest =
     { desiredSlots : List Int
     , encounteredSlots : List Int
     , encounterRate : Int
     , encounterLength : Int
     }
-
-workerInputSignal : Signal (ChartRequest, Int, DSumState, List Float)
-workerInputSignal = (\req ->
-    let
-    initialState =
-        initialRNGMix
-        |> conditionDSum (\x ->
-            dsumSlotDist req.encounterRate x
-            |> Dist.probability (\s -> List.member s req.encounteredSlots))
-    in
-    (req, 0, initialState, [])
-    ) <~ Signal.sampleOn calculateBox.signal requestSignal
-
-successProbabilitiesWorker : Worker (ChartRequest, Int, DSumState, List Float) (List Float)
-successProbabilitiesWorker =
-    let
-    workerStep (req, n, state, acc) =
-        let state' = if
-                | n < req.encounterLength ->
-                    dsumStep 1 state
-                | n == req.encounterLength ->
-                    dsumStep 1 state 
-                    |> Dist.collapseMap randomizeBand
-                | otherwise ->
-                    dsumStep 0 state
-            acc' = if
-                | n < req.encounterLength + framesBeforeMove ->
-                    acc
-                | otherwise ->
-                    successProbability req.encounterRate req.desiredSlots state :: acc
-        in
-        if n < req.encounterLength + framesBeforeMove + 1000
-        then Working (req, n+1, state', acc')
-        else Worker.Done (List.reverse acc)
-    in
-    createWorker workerInputSignal workerStep
-
-successProbabilitiesSignal : Signal (List Float)
-successProbabilitiesSignal = Signal.map (\state ->
-    case snd state of
-        Working (_, _, _, acc) -> List.reverse acc
-        Worker.Done probs -> probs
-        Unstarted -> []
-    ) successProbabilitiesWorker.state
-
-
-successGraph : Signal Graph
-successGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ successProbabilitiesSignal
 
 approxInputSignal : Signal (ChartRequest, Int, DApproxState, List Float)
 approxInputSignal = (\req ->
@@ -472,7 +411,7 @@ buildStrategy : Float -> List Float -> Strategy
 buildStrategy threshold = simplify 15 << frameStrategy << List.map (\x -> x >= threshold)
 
 strategy : Signal Strategy
-strategy = buildStrategy <~ thresholdSignal ~ (Signal.map (Maybe.withDefault []) successProbabilitiesWorker.signal)
+strategy = buildStrategy <~ thresholdSignal ~ (Signal.map (Maybe.withDefault []) approxProbabilitiesWorker.signal)
 
 strategy2 : Signal Strategy
 strategy2 = roundStrategy 17 <~ strategy
@@ -486,21 +425,8 @@ main = flow down <~ combine
     , desiredSlotsInputs
     , Signal.constant calculateButton
     , thresholdInput
-    -- , Signal.map show approxInputSignal
-    , show << dapproxDist << (\(_, _, d, _) -> d) <~ approxInputSignal
-    -- , drawGraph 700 400 <~ dsumGraph
-    , drawGraph 700 400 <~ successGraph
     , drawGraph 700 400 <~ approxGraph
-    -- , Signal.map show desiredSlots
-    -- , Signal.map show requestSignal
     , Signal.map show strategy
     , Signal.map show strategy2
     , Signal.map show stepStrategy
-    -- , let
-    --     showWorkerState state = case state of
-    --         Unstarted -> show "Unstarted"
-    --         Working (req, n, dist, acc) -> show (n, dist)
-    --         Worker.Done _ -> show "Done"
-    --   in
-    --     Signal.map (snd >> showWorkerState) successProbabilitiesWorker.state
     ]

@@ -1,6 +1,5 @@
 module DSum where
 
-import Dict
 import List
 
 import Dist exposing (Dist)
@@ -12,7 +11,7 @@ initialRDiv = 17
 type alias DSumState = Dist ComparableRNGState
 
 initialRNGMix : DSumState
-initialRNGMix = Dict.fromList << List.concat <|
+initialRNGMix = List.concat <|
     [ List.map (\dsum -> ((initialRDiv, 4, dsum, 0), 3/1024)) [0 .. 255]
     , List.map (\dsum -> ((initialRDiv, 0, dsum, 0), 1/1024)) [0 .. 255]
     ]
@@ -37,7 +36,7 @@ dsumSlotDist rate dsum =
     |> Dist.map slotFromRand
 
 randomizeBand : ComparableRNGState -> Dist ComparableRNGState 
-randomizeBand (rDiv, cycle, hAdd, hSub) = Dict.fromList
+randomizeBand (rDiv, cycle, hAdd, hSub) =
     [ ((rDiv, cycle - (cycle % 16) + 4, hAdd, hSub), 3/4)
     , ((rDiv, cycle - (cycle % 16), hAdd, hSub), 1/4)
     ]

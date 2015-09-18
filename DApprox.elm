@@ -1,6 +1,5 @@
 module DApprox where
 
-import Dict
 import List
 
 import Dist exposing (Dist)
@@ -32,13 +31,13 @@ dapproxDist : DApproxState -> Dist Int
 dapproxDist s = Dist.lift2 dsumApproximation s.muDist s.thetaDist
 
 outsideSlopeDist : Dist Float
-outsideSlopeDist = Dict.fromList
+outsideSlopeDist =
     [ (outsideLowSlope, 3/4)
     , (outsideHighSlope, 1/4)
     ]
 
 insideSlopeDist : Dist Float
-insideSlopeDist = Dict.fromList
+insideSlopeDist =
     [ (insideLowSlope, 3/4)
     , (insideHighSlope, 1/4)
     ]
