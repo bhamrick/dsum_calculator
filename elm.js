@@ -4659,7 +4659,7 @@ Elm.Main.make = function (_elm) {
       return A2($Worker.createWorker,
       approxInputSignal,
       A2($Worker.iterateStateFunc,
-      3,
+      2,
       workerStep));
    }();
    var approxProbabilitiesSignal = A2($Signal.map,
