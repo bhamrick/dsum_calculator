@@ -19,6 +19,7 @@ import Encounters exposing (..)
 import Graph exposing (..)
 import RNG exposing (..)
 import Pokemon exposing (..)
+import Query exposing (..)
 import Strategy exposing (..)
 import Worker exposing (..)
 
@@ -419,6 +420,31 @@ strategy2 = roundStrategy 17 <~ strategy
 stepStrategy : Signal (List (Int, Bool))
 stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 
+exampleQuery : Query
+exampleQuery =
+    { duration = 1000
+    , successFunc = Dist.probability (\x -> List.member x [2, 4]) << dsumSlotDist 25 
+    , initialSteps =
+        [ QCondition (Dist.probability (\x -> x == 3) << dsumSlotDist 25)
+        , QAdvance 595 insideSlopeDist
+        , QAdvance framesBeforeMove outsideSlopeDist
+        ]
+    }
+
+queryWorker : Worker QueryWorkerState (List Float)
+queryWorker = createQueryWorker (Signal.constant exampleQuery)
+
+queryProbabilitiesSignal : Signal (List Float)
+queryProbabilitiesSignal = Signal.map (\state ->
+    case snd state of
+        Working (_, _, _, acc) -> List.reverse acc
+        Worker.Done probs -> probs
+        Unstarted -> []
+    ) queryWorker.state
+
+queryGraph : Signal Graph
+queryGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ queryProbabilitiesSignal
+
 main : Signal Element
 main = flow down <~ combine
     [ requestDropDown
@@ -426,6 +452,7 @@ main = flow down <~ combine
     , Signal.constant calculateButton
     , thresholdInput
     , drawGraph 700 400 <~ approxGraph
+    , drawGraph 700 400 <~ queryGraph
     , Signal.map show strategy
     , Signal.map show strategy2
     , Signal.map show stepStrategy

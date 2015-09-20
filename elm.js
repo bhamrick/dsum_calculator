@@ -4180,6 +4180,7 @@ Elm.Main.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Pokemon = Elm.Pokemon.make(_elm),
+   $Query = Elm.Query.make(_elm),
    $RNG = Elm.RNG.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -4188,6 +4189,45 @@ Elm.Main.make = function (_elm) {
    $Text = Elm.Text.make(_elm),
    $Trampoline = Elm.Trampoline.make(_elm),
    $Worker = Elm.Worker.make(_elm);
+   var exampleQuery = {_: {}
+                      ,duration: 1000
+                      ,initialSteps: _L.fromArray([$Query.QCondition(function ($) {
+                                                     return $Dist.probability(function (x) {
+                                                        return _U.eq(x,3);
+                                                     })($DSum.dsumSlotDist(25)($));
+                                                  })
+                                                  ,A2($Query.QAdvance,
+                                                  595,
+                                                  $DApprox.insideSlopeDist)
+                                                  ,A2($Query.QAdvance,
+                                                  $Encounters.framesBeforeMove,
+                                                  $DApprox.outsideSlopeDist)])
+                      ,successFunc: function ($) {
+                         return $Dist.probability(function (x) {
+                            return A2($List.member,
+                            x,
+                            _L.fromArray([2,4]));
+                         })($DSum.dsumSlotDist(25)($));
+                      }};
+   var queryWorker = $Query.createQueryWorker($Signal.constant(exampleQuery));
+   var queryProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v0 = $Basics.snd(state);
+         switch (_v0.ctor)
+         {case "Done": return _v0._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v0._0.ctor)
+              {case "_Tuple4":
+                 return $List.reverse(_v0._0._3);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 439 and 443");
+      }();
+   },
+   queryWorker.state);
    var buildStrategy = function (threshold) {
       return function ($) {
          return $Strategy.simplify(15)($Strategy.frameStrategy($List.map(function (x) {
@@ -4252,7 +4292,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 352, column 23 to 43");
+            "on line 353, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -4272,7 +4312,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 341 and 343");
+         "between lines 342 and 344");
       }();
    });
    var toPath = toPath$(0);
@@ -4284,6 +4324,19 @@ Elm.Main.make = function (_elm) {
       carry,
       state))));
    });
+   var queryGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   queryProbabilitiesSignal);
    var approxProbability = F3(function (rate,
    slots,
    state) {
@@ -4326,16 +4379,16 @@ Elm.Main.make = function (_elm) {
    f,
    x) {
       return _U.eq(n,
-      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v6) {
+      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v13) {
          return function () {
-            switch (_v6.ctor)
+            switch (_v13.ctor)
             {case "_Tuple0":
                return A3(iterate$,
                  n - 1,
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 316, column 37 to 58");
+            "on line 317, column 37 to 58");
          }();
       });
    });
@@ -4631,29 +4684,29 @@ Elm.Main.make = function (_elm) {
    calculateBox.signal,
    requestSignal));
    var approxProbabilitiesWorker = function () {
-      var workerStep = function (_v8) {
+      var workerStep = function (_v15) {
          return function () {
-            switch (_v8.ctor)
+            switch (_v15.ctor)
             {case "_Tuple4":
                return function () {
                     var frameState = A3($DApprox.advanceDApprox,
                     $DApprox.outsideSlopeDist,
-                    _v8._1,
-                    _v8._2);
-                    return _U.cmp(_v8._1,
+                    _v15._1,
+                    _v15._2);
+                    return _U.cmp(_v15._1,
                     1000) < 0 ? $Worker.Working({ctor: "_Tuple4"
-                                                ,_0: _v8._0
-                                                ,_1: _v8._1 + 1
-                                                ,_2: _v8._2
+                                                ,_0: _v15._0
+                                                ,_1: _v15._1 + 1
+                                                ,_2: _v15._2
                                                 ,_3: A2($List._op["::"],
                                                 A3(approxProbability,
-                                                _v8._0.encounterRate,
-                                                _v8._0.desiredSlots,
+                                                _v15._0.encounterRate,
+                                                _v15._0.desiredSlots,
                                                 frameState),
-                                                _v8._3)}) : $Worker.Done($List.reverse(_v8._3));
+                                                _v15._3)}) : $Worker.Done($List.reverse(_v15._3));
                  }();}
             _U.badCase($moduleName,
-            "between lines 391 and 395");
+            "between lines 392 and 396");
          }();
       };
       return A2($Worker.createWorker,
@@ -4665,18 +4718,18 @@ Elm.Main.make = function (_elm) {
    var approxProbabilitiesSignal = A2($Signal.map,
    function (state) {
       return function () {
-         var _v14 = $Basics.snd(state);
-         switch (_v14.ctor)
-         {case "Done": return _v14._0;
+         var _v21 = $Basics.snd(state);
+         switch (_v21.ctor)
+         {case "Done": return _v21._0;
             case "Unstarted":
             return _L.fromArray([]);
             case "Working":
-            switch (_v14._0.ctor)
+            switch (_v21._0.ctor)
               {case "_Tuple4":
-                 return $List.reverse(_v14._0._3);}
+                 return $List.reverse(_v21._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 401 and 405");
+         "between lines 402 and 406");
       }();
    },
    approxProbabilitiesWorker.state);
@@ -4811,6 +4864,9 @@ Elm.Main.make = function (_elm) {
                         ,A2($Signal._op["<~"],
                         A2($Graph.drawGraph,700,400),
                         approxGraph)
+                        ,A2($Signal._op["<~"],
+                        A2($Graph.drawGraph,700,400),
+                        queryGraph)
                         ,A2($Signal.map,
                         $Graphics$Element.show,
                         strategy)
@@ -4876,6 +4932,10 @@ Elm.Main.make = function (_elm) {
                       ,strategy: strategy
                       ,strategy2: strategy2
                       ,stepStrategy: stepStrategy
+                      ,exampleQuery: exampleQuery
+                      ,queryWorker: queryWorker
+                      ,queryProbabilitiesSignal: queryProbabilitiesSignal
+                      ,queryGraph: queryGraph
                       ,main: main};
    return _elm.Main.values;
 };
@@ -11017,6 +11077,117 @@ Elm.Pokemon.make = function (_elm) {
                          ,noSpecies: noSpecies
                          ,speciesList: speciesList};
    return _elm.Pokemon.values;
+};
+Elm.Query = Elm.Query || {};
+Elm.Query.make = function (_elm) {
+   "use strict";
+   _elm.Query = _elm.Query || {};
+   if (_elm.Query.values)
+   return _elm.Query.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Query",
+   $Basics = Elm.Basics.make(_elm),
+   $DApprox = Elm.DApprox.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Worker = Elm.Worker.make(_elm);
+   var queryWorkerStep = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple4":
+            return _U.cmp(_v0._1,
+              _v0._0.duration) > -1 ? $Worker.Done($List.reverse(_v0._3)) : function () {
+                 var frameState = A3($DApprox.advanceDApprox,
+                 $DApprox.outsideSlopeDist,
+                 _v0._1,
+                 _v0._2);
+                 var frameSuccessProb = A2($Dist.weightedProbability,
+                 _v0._0.successFunc,
+                 $DApprox.dapproxDist(frameState));
+                 return $Worker.Working({ctor: "_Tuple4"
+                                        ,_0: _v0._0
+                                        ,_1: _v0._1 + 1
+                                        ,_2: _v0._2
+                                        ,_3: A2($List._op["::"],
+                                        frameSuccessProb,
+                                        _v0._3)});
+              }();}
+         _U.badCase($moduleName,
+         "between lines 31 and 38");
+      }();
+   };
+   var queryStep = F2(function (q,
+   s) {
+      return function () {
+         switch (q.ctor)
+         {case "QAdvance":
+            return A3($DApprox.advanceDApprox,
+              q._1,
+              q._0,
+              s);
+            case "QCondition":
+            return A2($DApprox.conditionDApprox,
+              q._0,
+              s);}
+         _U.badCase($moduleName,
+         "between lines 22 and 24");
+      }();
+   });
+   var queryDApproxState = function (l) {
+      return A3($List.foldl,
+      queryStep,
+      $DApprox.initialDApproxState,
+      l);
+   };
+   var createQueryWorker = function (signal) {
+      return function () {
+         var inputSignal = A2($Signal._op["<~"],
+         function (q) {
+            return {ctor: "_Tuple4"
+                   ,_0: q
+                   ,_1: 0
+                   ,_2: queryDApproxState(q.initialSteps)
+                   ,_3: _L.fromArray([])};
+         },
+         signal);
+         return A2($Worker.createWorker,
+         inputSignal,
+         queryWorkerStep);
+      }();
+   };
+   var Query = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,duration: a
+             ,initialSteps: c
+             ,successFunc: b};
+   });
+   var QAdvance = F2(function (a,
+   b) {
+      return {ctor: "QAdvance"
+             ,_0: a
+             ,_1: b};
+   });
+   var QCondition = function (a) {
+      return {ctor: "QCondition"
+             ,_0: a};
+   };
+   _elm.Query.values = {_op: _op
+                       ,QCondition: QCondition
+                       ,QAdvance: QAdvance
+                       ,Query: Query
+                       ,queryStep: queryStep
+                       ,queryDApproxState: queryDApproxState
+                       ,queryWorkerStep: queryWorkerStep
+                       ,createQueryWorker: createQueryWorker};
+   return _elm.Query.values;
 };
 Elm.RNG = Elm.RNG || {};
 Elm.RNG.make = function (_elm) {
