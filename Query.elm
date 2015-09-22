@@ -13,6 +13,7 @@ type QueryStep
 
 type alias Query =
     { duration : Int
+    , offset : Int
     , successFunc : Int -> Float
     , initialSteps : List QueryStep
     }
@@ -32,7 +33,7 @@ queryWorkerStep (q, n, s, acc) =
     then Done (List.reverse acc)
     else
         let
-        frameState = advanceDApprox outsideSlopeDist n s
+        frameState = advanceDApprox outsideSlopeDist (n + q.offset) s
         frameSuccessProb = weightedProbability q.successFunc (dapproxDist frameState)
         in
         Working (q, n+1, s, frameSuccessProb :: acc)

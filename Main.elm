@@ -17,6 +17,7 @@ import DSum exposing (..)
 import Dist
 import Encounters exposing (..)
 import Graph exposing (..)
+import Interface exposing (..)
 import RNG exposing (..)
 import Pokemon exposing (..)
 import Query exposing (..)
@@ -423,6 +424,7 @@ stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 exampleQuery : Query
 exampleQuery =
     { duration = 1000
+    , offset = 0
     , successFunc = Dist.probability (\x -> List.member x [2, 4]) << dsumSlotDist 25 
     , initialSteps =
         [ QCondition (Dist.probability (\x -> x == 3) << dsumSlotDist 25)
@@ -445,6 +447,12 @@ queryProbabilitiesSignal = Signal.map (\state ->
 queryGraph : Signal Graph
 queryGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ queryProbabilitiesSignal
 
+interfaceStateBox : Signal.Mailbox InterfaceState
+interfaceStateBox = Signal.mailbox defaultInterfaceState
+
+interface : Signal Element
+interface = queryInterface (Signal.message interfaceStateBox.address) <~ interfaceStateBox.signal
+
 main : Signal Element
 main = flow down <~ combine
     [ requestDropDown
@@ -456,4 +464,5 @@ main = flow down <~ combine
     , Signal.map show strategy
     , Signal.map show strategy2
     , Signal.map show stepStrategy
+    , interface
     ]

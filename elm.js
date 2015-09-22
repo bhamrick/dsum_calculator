@@ -2032,12 +2032,12 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: _v4._0
                                  ,_1: _v0._1 * _v4._1};}
                        _U.badCase($moduleName,
-                       "on line 100, column 74 to 80");
+                       "on line 87, column 74 to 80");
                     }();
                  },
                  _v0._0);}
             _U.badCase($moduleName,
-            "on line 100, column 52 to 84");
+            "on line 87, column 52 to 84");
          }();
       },
       vals));
@@ -2069,7 +2069,7 @@ Elm.Dist.make = function (_elm) {
                                       ,_0: A2(f,l1._0._0,_v13._0)
                                       ,_1: l1._0._1 * _v13._1};}
                             _U.badCase($moduleName,
-                            "on line 86, column 39 to 51");
+                            "on line 73, column 39 to 51");
                          }();
                       },
                       l2);
@@ -2081,7 +2081,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 82 and 87");
+         "between lines 69 and 74");
       }();
    });
    var product$ = F2(function (l1,
@@ -2102,7 +2102,7 @@ Elm.Dist.make = function (_elm) {
                                            ,_1: _v22._0}
                                       ,_1: l1._0._1 * _v22._1};}
                             _U.badCase($moduleName,
-                            "on line 73, column 39 to 50");
+                            "on line 60, column 39 to 50");
                          }();
                       },
                       l2);
@@ -2114,7 +2114,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 69 and 75");
+         "between lines 56 and 62");
       }();
    });
    var product = product$;
@@ -2129,7 +2129,7 @@ Elm.Dist.make = function (_elm) {
                {case "_Tuple2":
                   return !_U.eq(_v30._1,0);}
                _U.badCase($moduleName,
-               "on line 56, column 32 to 38");
+               "on line 43, column 32 to 38");
             }();
          })($List.map(function (_v26) {
             return function () {
@@ -2139,7 +2139,7 @@ Elm.Dist.make = function (_elm) {
                          ,_0: _v26._0
                          ,_1: _v26._1 / total};}
                _U.badCase($moduleName,
-               "on line 55, column 30 to 42");
+               "on line 42, column 30 to 42");
             }();
          })(probs));
       }();
@@ -2152,7 +2152,7 @@ Elm.Dist.make = function (_elm) {
             {case "_Tuple2":
                return f(_v34._0);}
             _U.badCase($moduleName,
-            "on line 60, column 32 to 35");
+            "on line 47, column 32 to 35");
          }();
       })(dist));
    });
@@ -2166,7 +2166,7 @@ Elm.Dist.make = function (_elm) {
                       ,_0: _v38._0
                       ,_1: _v38._1 * f(_v38._0)};}
             _U.badCase($moduleName,
-            "on line 65, column 30 to 40");
+            "on line 52, column 30 to 40");
          }();
       })(dist));
    });
@@ -2193,7 +2193,7 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: x0
                                  ,_1: p0}]);}
          _U.badCase($moduleName,
-         "between lines 32 and 37");
+         "between lines 19 and 24");
       }();
    });
    var combineProbs = function (l) {
@@ -2209,7 +2209,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 40 and 42");
+         "between lines 27 and 29");
       }();
    };
    var map = F2(function (f,dist) {
@@ -2221,7 +2221,7 @@ Elm.Dist.make = function (_elm) {
                       ,_0: f(_v52._0)
                       ,_1: _v52._1};}
             _U.badCase($moduleName,
-            "on line 46, column 30 to 36");
+            "on line 33, column 30 to 36");
          }();
       })(dist)));
    });
@@ -2245,7 +2245,7 @@ Elm.Dist.make = function (_elm) {
                          ,_0: f(_v56._0)
                          ,_1: _v56._1};}
                _U.badCase($moduleName,
-               "on line 105, column 41 to 47");
+               "on line 92, column 41 to 47");
             }();
          },
          dist);
@@ -2253,6 +2253,11 @@ Elm.Dist.make = function (_elm) {
          return combineProbs($List.sort(collapsedProbs));
       }();
    });
+   var always = function (x) {
+      return _L.fromArray([{ctor: "_Tuple2"
+                           ,_0: x
+                           ,_1: 1}]);
+   };
    var weightedProbability = F2(function (f,
    dist) {
       return A3($List.foldl,
@@ -2286,6 +2291,7 @@ Elm.Dist.make = function (_elm) {
    _elm.Dist.values = {_op: _op
                       ,probability: probability
                       ,weightedProbability: weightedProbability
+                      ,always: always
                       ,combineProbs$: combineProbs$
                       ,combineProbs: combineProbs
                       ,map: map
@@ -2370,6 +2376,7 @@ Elm.Encounters.make = function (_elm) {
                       ,slot9: A2(encounter,
                       "Nidoran F",
                       3)};
+   var allTables = _L.fromArray([route22table]);
    var EncounterTable = function (a) {
       return function (b) {
          return function (c) {
@@ -2483,6 +2490,7 @@ Elm.Encounters.make = function (_elm) {
                             ,encounter: encounter
                             ,displayName: displayName
                             ,noEncounter: noEncounter
+                            ,allTables: allTables
                             ,route22table: route22table};
    return _elm.Encounters.values;
 };
@@ -3801,6 +3809,362 @@ Elm.Graphics.Input.Field.make = function (_elm) {
                                       ,Backward: Backward};
    return _elm.Graphics.Input.Field.values;
 };
+Elm.Interface = Elm.Interface || {};
+Elm.Interface.make = function (_elm) {
+   "use strict";
+   _elm.Interface = _elm.Interface || {};
+   if (_elm.Interface.values)
+   return _elm.Interface.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Interface",
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Encounters = Elm.Encounters.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var defaultInterfaceState = {_: {}
+                               ,nextId: 0
+                               ,query: _L.fromArray([])};
+   var RemoveStep = function (a) {
+      return {ctor: "RemoveStep"
+             ,_0: a};
+   };
+   var AddStep = {ctor: "AddStep"};
+   var EditStep = F2(function (a,
+   b) {
+      return {ctor: "EditStep"
+             ,_0: a
+             ,_1: b};
+   });
+   var InterfaceState = F2(function (a,
+   b) {
+      return {_: {}
+             ,nextId: a
+             ,query: b};
+   });
+   var IWalk = function (a) {
+      return {ctor: "IWalk",_0: a};
+   };
+   var defaultIWalk = IWalk({_: {}
+                            ,frameContent: $Graphics$Input$Field.noContent
+                            ,frames: 0});
+   var IEncounter = function (a) {
+      return {ctor: "IEncounter"
+             ,_0: a};
+   };
+   var defaultIEncounter = IEncounter({_: {}
+                                      ,slot1: false
+                                      ,slot10: false
+                                      ,slot2: false
+                                      ,slot3: false
+                                      ,slot4: false
+                                      ,slot5: false
+                                      ,slot6: false
+                                      ,slot7: false
+                                      ,slot8: false
+                                      ,slot9: false
+                                      ,table: function () {
+                                         var _v0 = $List.head($Encounters.allTables);
+                                         switch (_v0.ctor)
+                                         {case "Just": return _v0._0;
+                                            case "Nothing":
+                                            return $Debug.crash("No encounter tables!");}
+                                         _U.badCase($moduleName,
+                                         "between lines 37 and 40");
+                                      }()});
+   var updateInterfaceState = F2(function (delta,
+   state) {
+      return function () {
+         switch (delta.ctor)
+         {case "AddStep":
+            return _U.replace([["nextId"
+                               ,state.nextId + 1]
+                              ,["query"
+                               ,A2($List.append,
+                               state.query,
+                               _L.fromArray([{ctor: "_Tuple2"
+                                             ,_0: state.nextId
+                                             ,_1: defaultIEncounter}]))]],
+              state);
+            case "EditStep":
+            return _U.replace([["query"
+                               ,A2($List.map,
+                               function (_v6) {
+                                  return function () {
+                                     switch (_v6.ctor)
+                                     {case "_Tuple2":
+                                        return _U.eq(_v6._0,
+                                          delta._0) ? {ctor: "_Tuple2"
+                                                      ,_0: _v6._0
+                                                      ,_1: delta._1} : {ctor: "_Tuple2"
+                                                                       ,_0: _v6._0
+                                                                       ,_1: _v6._1};}
+                                     _U.badCase($moduleName,
+                                     "between lines 173 and 175");
+                                  }();
+                               },
+                               state.query)]],
+              state);
+            case "RemoveStep":
+            return _U.replace([["query"
+                               ,A2($List.filter,
+                               function (_v10) {
+                                  return function () {
+                                     switch (_v10.ctor)
+                                     {case "_Tuple2":
+                                        return _U.eq(_v10._0,delta._0);}
+                                     _U.badCase($moduleName,
+                                     "on line 185, column 48 to 54");
+                                  }();
+                               },
+                               state.query)]],
+              state);}
+         _U.badCase($moduleName,
+         "between lines 169 and 186");
+      }();
+   });
+   var stepField = F2(function (sendStep,
+   step) {
+      return function () {
+         var innerField = function () {
+            switch (step.ctor)
+            {case "IEncounter":
+               return function () {
+                    var sendSlot10 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot10"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot9 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot9"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot8 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot8"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot7 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot7"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot6 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot6"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot5 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot5"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot4 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot4"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot3 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot3"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot2 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot2"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendSlot1 = function (b) {
+                       return sendStep(IEncounter(_U.replace([["slot1"
+                                                              ,b]],
+                       step._0)));
+                    };
+                    var sendTable = function (table) {
+                       return sendStep(IEncounter(_U.replace([["table"
+                                                              ,table]],
+                       step._0)));
+                    };
+                    return A2($Graphics$Element.flow,
+                    $Graphics$Element.down,
+                    _L.fromArray([A2($Graphics$Input.dropDown,
+                                 sendTable,
+                                 A2($List.map,
+                                 function (t) {
+                                    return {ctor: "_Tuple2"
+                                           ,_0: t.name
+                                           ,_1: t};
+                                 },
+                                 $Encounters.allTables))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot1,
+                                              step._0.slot1)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot1)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot2,
+                                              step._0.slot2)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot2)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot3,
+                                              step._0.slot3)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot3)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot4,
+                                              step._0.slot4)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot4)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot5,
+                                              step._0.slot5)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot5)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot6,
+                                              step._0.slot6)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot6)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot7,
+                                              step._0.slot7)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot7)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot8,
+                                              step._0.slot8)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot8)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot9,
+                                              step._0.slot9)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot9)))]))
+                                 ,A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2($Graphics$Input.checkbox,
+                                              sendSlot10,
+                                              step._0.slot10)
+                                              ,$Graphics$Element.leftAligned($Text.fromString($Encounters.displayName(step._0.table.slot10)))]))]));
+                 }();
+               case "IWalk":
+               return function () {
+                    var sendContent = function (c) {
+                       return function () {
+                          var _v17 = $String.toInt(c.string);
+                          switch (_v17.ctor)
+                          {case "Err":
+                             return sendStep(IWalk(_U.replace([["frameContent"
+                                                               ,c]],
+                               step._0)));
+                             case "Ok":
+                             return sendStep(IWalk(_U.replace([["frames"
+                                                               ,_v17._0]
+                                                              ,["frameContent"
+                                                               ,c]],
+                               step._0)));}
+                          _U.badCase($moduleName,
+                          "between lines 150 and 153");
+                       }();
+                    };
+                    return A2($Graphics$Element.flow,
+                    $Graphics$Element.right,
+                    _L.fromArray([A4($Graphics$Input$Field.field,
+                                 $Graphics$Input$Field.defaultStyle,
+                                 sendContent,
+                                 "0",
+                                 step._0.frameContent)
+                                 ,$Graphics$Element.leftAligned($Text.fromString("frames"))]));
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 78 and 158");
+         }();
+         return A2($Graphics$Element.flow,
+         $Graphics$Element.right,
+         _L.fromArray([A2($Graphics$Input.dropDown,
+                      sendStep,
+                      _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: "Encounter"
+                                    ,_1: defaultIEncounter}
+                                   ,{ctor: "_Tuple2"
+                                    ,_0: "Walk"
+                                    ,_1: defaultIWalk}]))
+                      ,innerField]));
+      }();
+   });
+   var queryInterface = F2(function (sendState,
+   state) {
+      return function () {
+         var sendDelta = function (delta) {
+            return sendState(A2(updateInterfaceState,
+            delta,
+            state));
+         };
+         var sendStep = F2(function (i,
+         step) {
+            return sendDelta(A2(EditStep,
+            i,
+            step));
+         });
+         return A2($Graphics$Element.flow,
+         $Graphics$Element.right,
+         _L.fromArray([A2($Graphics$Element.flow,
+                      $Graphics$Element.down,
+                      _L.fromArray([A2($Graphics$Input.button,
+                      sendDelta(AddStep),
+                      "Add step")]))
+                      ,A2($Graphics$Element.flow,
+                      $Graphics$Element.down,
+                      A2($List.map,
+                      function (_v20) {
+                         return function () {
+                            switch (_v20.ctor)
+                            {case "_Tuple2":
+                               return A2(stepField,
+                                 sendStep(_v20._0),
+                                 _v20._1);}
+                            _U.badCase($moduleName,
+                            "on line 199, column 13 to 40");
+                         }();
+                      },
+                      state.query))]));
+      }();
+   });
+   _elm.Interface.values = {_op: _op
+                           ,IEncounter: IEncounter
+                           ,IWalk: IWalk
+                           ,defaultIEncounter: defaultIEncounter
+                           ,defaultIWalk: defaultIWalk
+                           ,InterfaceState: InterfaceState
+                           ,EditStep: EditStep
+                           ,AddStep: AddStep
+                           ,RemoveStep: RemoveStep
+                           ,defaultInterfaceState: defaultInterfaceState
+                           ,stepField: stepField
+                           ,updateInterfaceState: updateInterfaceState
+                           ,queryInterface: queryInterface};
+   return _elm.Interface.values;
+};
 Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
    "use strict";
@@ -4177,6 +4541,7 @@ Elm.Main.make = function (_elm) {
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Graphics$Input = Elm.Graphics.Input.make(_elm),
    $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
+   $Interface = Elm.Interface.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Pokemon = Elm.Pokemon.make(_elm),
@@ -4189,6 +4554,10 @@ Elm.Main.make = function (_elm) {
    $Text = Elm.Text.make(_elm),
    $Trampoline = Elm.Trampoline.make(_elm),
    $Worker = Elm.Worker.make(_elm);
+   var interfaceStateBox = $Signal.mailbox($Interface.defaultInterfaceState);
+   var $interface = A2($Signal._op["<~"],
+   $Interface.queryInterface($Signal.message(interfaceStateBox.address)),
+   interfaceStateBox.signal);
    var exampleQuery = {_: {}
                       ,duration: 1000
                       ,initialSteps: _L.fromArray([$Query.QCondition(function ($) {
@@ -4202,6 +4571,7 @@ Elm.Main.make = function (_elm) {
                                                   ,A2($Query.QAdvance,
                                                   $Encounters.framesBeforeMove,
                                                   $DApprox.outsideSlopeDist)])
+                      ,offset: 0
                       ,successFunc: function ($) {
                          return $Dist.probability(function (x) {
                             return A2($List.member,
@@ -4224,7 +4594,7 @@ Elm.Main.make = function (_elm) {
                  return $List.reverse(_v0._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 439 and 443");
+         "between lines 441 and 445");
       }();
    },
    queryWorker.state);
@@ -4292,7 +4662,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 353, column 23 to 43");
+            "on line 354, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -4312,7 +4682,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 342 and 344");
+         "between lines 343 and 345");
       }();
    });
    var toPath = toPath$(0);
@@ -4388,7 +4758,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 317, column 37 to 58");
+            "on line 318, column 37 to 58");
          }();
       });
    });
@@ -4706,7 +5076,7 @@ Elm.Main.make = function (_elm) {
                                                 _v15._3)}) : $Worker.Done($List.reverse(_v15._3));
                  }();}
             _U.badCase($moduleName,
-            "between lines 392 and 396");
+            "between lines 393 and 397");
          }();
       };
       return A2($Worker.createWorker,
@@ -4729,7 +5099,7 @@ Elm.Main.make = function (_elm) {
                  return $List.reverse(_v21._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 402 and 406");
+         "between lines 403 and 407");
       }();
    },
    approxProbabilitiesWorker.state);
@@ -4875,7 +5245,8 @@ Elm.Main.make = function (_elm) {
                         strategy2)
                         ,A2($Signal.map,
                         $Graphics$Element.show,
-                        stepStrategy)])));
+                        stepStrategy)
+                        ,$interface])));
    _elm.Main.values = {_op: _op
                       ,encounterTable: encounterTable
                       ,slot1DesiredBox: slot1DesiredBox
@@ -4936,6 +5307,8 @@ Elm.Main.make = function (_elm) {
                       ,queryWorker: queryWorker
                       ,queryProbabilitiesSignal: queryProbabilitiesSignal
                       ,queryGraph: queryGraph
+                      ,interfaceStateBox: interfaceStateBox
+                      ,$interface: $interface
                       ,main: main};
    return _elm.Main.values;
 };
@@ -11105,7 +11478,7 @@ Elm.Query.make = function (_elm) {
               _v0._0.duration) > -1 ? $Worker.Done($List.reverse(_v0._3)) : function () {
                  var frameState = A3($DApprox.advanceDApprox,
                  $DApprox.outsideSlopeDist,
-                 _v0._1,
+                 _v0._1 + _v0._0.offset,
                  _v0._2);
                  var frameSuccessProb = A2($Dist.weightedProbability,
                  _v0._0.successFunc,
@@ -11119,7 +11492,7 @@ Elm.Query.make = function (_elm) {
                                         _v0._3)});
               }();}
          _U.badCase($moduleName,
-         "between lines 31 and 38");
+         "between lines 32 and 39");
       }();
    };
    var queryStep = F2(function (q,
@@ -11136,7 +11509,7 @@ Elm.Query.make = function (_elm) {
               q._0,
               s);}
          _U.badCase($moduleName,
-         "between lines 22 and 24");
+         "between lines 23 and 25");
       }();
    });
    var queryDApproxState = function (l) {
@@ -11161,13 +11534,15 @@ Elm.Query.make = function (_elm) {
          queryWorkerStep);
       }();
    };
-   var Query = F3(function (a,
+   var Query = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
              ,duration: a
-             ,initialSteps: c
-             ,successFunc: b};
+             ,initialSteps: d
+             ,offset: b
+             ,successFunc: c};
    });
    var QAdvance = F2(function (a,
    b) {

@@ -76,6 +76,11 @@ displayName enc =
 noEncounter : Encounter
 noEncounter = { species = noSpecies, level = 0 }
 
+allTables : List EncounterTable
+allTables =
+    [ route22table
+    ]
+
 -- Encounter tables for red
 -- TODO: Add other tables
 -- TODO: Include blue tables

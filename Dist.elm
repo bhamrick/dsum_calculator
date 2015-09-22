@@ -3,29 +3,16 @@ module Dist where
 import Dict exposing (Dict)
 import List
 
-type alias Dist comparable = List (comparable, Float)
+type alias Dist a = List (a, Float)
 
-probability : (comparable -> Bool) -> Dist comparable -> Float
+probability : (a -> Bool) -> Dist a -> Float
 probability f dist = List.foldl (\(x, p) s -> if f x then s + p else s) 0 dist
 
-weightedProbability : (comparable -> Float) -> Dist comparable -> Float
+weightedProbability : (a -> Float) -> Dist a -> Float
 weightedProbability f dist = List.foldl (\(x, p) s -> s + f x * p) 0 dist
 
-{-
-partitionPrefix : (a -> Bool) -> List a -> (List a, List a)
-partitionPrefix f l = case l of
-    [] -> ([], [])
-    x::xs -> if f x
-        then let (matches, rest) = partitionPrefix f xs in (x::matches, rest)
-        else ([], l)
-
-combineProbs : List (comp, Float) -> List (comp, Float)
-combineProbs list = case list of
-    [] -> []
-    (k, v) :: _ ->
-        let (matches, rest) = partitionPrefix ((==) k << fst) list
-        in (k, List.sum << List.map snd <| matches) :: combineProbs rest
--}
+always : a -> Dist a
+always x = [(x, 1)]
 
 -- TODO: Figure out if this can be a fold, since those are compiled as pure loops
 combineProbs' : comp -> Float -> List (comp, Float) -> List (comp, Float)
