@@ -1,6 +1,7 @@
 module Interface where
 
 import Debug
+import Dict
 import List
 import Graphics.Element exposing (..)
 import Graphics.Input exposing (..)
@@ -13,6 +14,7 @@ import DApprox exposing (..)
 import Dist
 import DSum exposing (..)
 import Encounters exposing (..)
+import Pokemon exposing (..)
 import Query exposing (..)
 
 type InterfaceStep
@@ -236,6 +238,35 @@ successFunc enc =
     in
     Dist.probability (\x -> List.member x desiredSlots) << dsumSlotDist enc.table.rate
 
+encSpecies : 
+    { table : EncounterTable
+    , slot1 : Bool
+    , slot2 : Bool
+    , slot3 : Bool
+    , slot4 : Bool
+    , slot5 : Bool
+    , slot6 : Bool
+    , slot7 : Bool
+    , slot8 : Bool
+    , slot9 : Bool
+    , slot10 : Bool
+    } -> Species
+encSpecies enc = if
+    | enc.slot1 -> enc.table.slot1.species
+    | enc.slot2 -> enc.table.slot2.species
+    | enc.slot3 -> enc.table.slot3.species
+    | enc.slot4 -> enc.table.slot4.species
+    | enc.slot5 -> enc.table.slot5.species
+    | enc.slot6 -> enc.table.slot6.species
+    | enc.slot7 -> enc.table.slot7.species
+    | enc.slot8 -> enc.table.slot8.species
+    | enc.slot9 -> enc.table.slot9.species
+    | enc.slot10 -> enc.table.slot10.species
+    | otherwise -> noSpecies
+
+squirtle : Species
+squirtle = speciesByName |> Dict.get "Squirtle" |> Maybe.withDefault noSpecies
+
 buildQueryStep : InterfaceStep -> (Int, List QueryStep) -> (Int, List QueryStep)
 buildQueryStep step (n, acc) =
     case step of
@@ -248,7 +279,7 @@ buildQueryStep step (n, acc) =
             encStep =
                 QCondition (successFunc enc)
             battleStep =
-                QAdvance 595 insideSlopeDist
+                QAdvance (battleLength squirtle (encSpecies enc)) insideSlopeDist
             in
             (framesBeforeMove, battleStep :: encStep :: acc')
         IWalk w -> (w.frames + n, acc)
