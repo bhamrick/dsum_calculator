@@ -9,6 +9,9 @@ import Signal exposing (Mailbox, Message, Signal)
 import String
 import Text exposing (..)
 
+import DApprox exposing (..)
+import Dist
+import DSum exposing (..)
 import Encounters exposing (..)
 import Query exposing (..)
 
@@ -159,7 +162,7 @@ stepField sendStep step =
     flow right
         [ dropDown sendStep
             [ ("Encounter", defaultIEncounter)
-            , ("Walk", defaultIWalk)
+            , ("Walk/Wait", defaultIWalk)
             ]
         , innerField
         ]
@@ -199,3 +202,64 @@ queryInterface sendState state =
             stepField (sendStep i) step
           ) state.query)
         ]
+
+successFunc :
+    { table : EncounterTable
+    , slot1 : Bool
+    , slot2 : Bool
+    , slot3 : Bool
+    , slot4 : Bool
+    , slot5 : Bool
+    , slot6 : Bool
+    , slot7 : Bool
+    , slot8 : Bool
+    , slot9 : Bool
+    , slot10 : Bool
+    } -> Int -> Float
+successFunc enc =
+    let
+        desiredSlots =
+            [ enc.slot1
+            , enc.slot2
+            , enc.slot3
+            , enc.slot4
+            , enc.slot5
+            , enc.slot6
+            , enc.slot7
+            , enc.slot8
+            , enc.slot9
+            , enc.slot10
+            ]
+            |> List.map2 (,) [ 1 .. 10]
+            |> List.filter snd
+            |> List.map fst
+    in
+    Dist.probability (\x -> List.member x desiredSlots) << dsumSlotDist enc.table.rate
+
+buildQueryStep : InterfaceStep -> (Int, List QueryStep) -> (Int, List QueryStep)
+buildQueryStep step (n, acc) =
+    case step of
+        IEncounter enc ->
+            let
+            acc' =
+                if n == 0
+                then acc
+                else QAdvance n outsideSlopeDist :: acc
+            encStep =
+                QCondition (successFunc enc)
+            battleStep =
+                QAdvance 595 insideSlopeDist
+            in
+            (framesBeforeMove, battleStep :: encStep :: acc')
+        IWalk w -> (w.frames + n, acc)
+
+buildQuery : InterfaceState -> Query
+buildQuery s =
+    let
+    (offset, revSteps) = List.foldl buildQueryStep (0, []) (List.map snd s.query)
+    in
+    { duration = 1000
+    , offset = offset
+    , successFunc = Dist.probability (\x -> List.member x [2, 4]) << dsumSlotDist 25
+    , initialSteps = List.reverse revSteps
+    }
