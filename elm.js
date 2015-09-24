@@ -2506,6 +2506,283 @@ Elm.Encounters.make = function (_elm) {
                             ,route22table: route22table};
    return _elm.Encounters.values;
 };
+Elm.Graph = Elm.Graph || {};
+Elm.Graph.make = function (_elm) {
+   "use strict";
+   _elm.Graph = _elm.Graph || {};
+   if (_elm.Graph.values)
+   return _elm.Graph.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graph",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var roundTo = F2(function (gap,
+   x) {
+      return gap * $Basics.toFloat($Basics.round(x / gap));
+   });
+   var gapSize = function (x) {
+      return function () {
+         var powerOfTen = Math.pow(10,
+         $Basics.toFloat($Basics.floor(A2($Basics.logBase,
+         10,
+         x))));
+         return _U.cmp(5 * powerOfTen,
+         x) < 0 ? 5 * powerOfTen : _U.cmp(2 * powerOfTen,
+         x) < 0 ? 2 * powerOfTen : powerOfTen;
+      }();
+   };
+   var labelPositions = F2(function (lo,
+   hi) {
+      return function () {
+         var gap = gapSize((hi - lo) / 2);
+         return A2($List._op["::"],
+         lo,
+         A2($List._op["::"],
+         hi,
+         A2($List.map,
+         function ($) {
+            return F2(function (x,y) {
+               return x * y;
+            })(gap)($Basics.toFloat($));
+         },
+         _L.range($Basics.ceiling(lo / gap + 0.2),
+         $Basics.floor(hi / gap - 0.2)))));
+      }();
+   });
+   var drawGraph = F3(function (w,
+   h,
+   g) {
+      return function () {
+         var axisStyle = _U.replace([["width"
+                                     ,2]],
+         $Graphics$Collage.defaultLine);
+         var color_cycle = _L.fromArray([$Color.red
+                                        ,$Color.darkGreen
+                                        ,$Color.blue
+                                        ,$Color.purple
+                                        ,$Color.orange]);
+         var colors = $List.concat(A2($List.repeat,
+         ($List.length(g.points) / $List.length(color_cycle) | 0) + 1,
+         color_cycle));
+         var graphOffsetY = 20;
+         var graphH = $Basics.toFloat(h) - 2 * graphOffsetY;
+         var graphOffsetX = 40;
+         var graphW = $Basics.toFloat(w) - 2 * graphOffsetX;
+         var maxY = function () {
+            var _v0 = g.yRange;
+            switch (_v0.ctor)
+            {case "Just":
+               switch (_v0._0.ctor)
+                 {case "_Tuple2":
+                    return _v0._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 58 and 61");
+         }();
+         var minY = function () {
+            var _v4 = g.yRange;
+            switch (_v4.ctor)
+            {case "Just":
+               switch (_v4._0.ctor)
+                 {case "_Tuple2":
+                    return _v4._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.snd,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 55 and 58");
+         }();
+         var pixelY = function (y) {
+            return (y - minY) / (maxY - minY) * graphH - graphH / 2;
+         };
+         var yLabelPositions = A2(labelPositions,
+         minY,
+         maxY);
+         var maxX = function () {
+            var _v8 = g.xRange;
+            switch (_v8.ctor)
+            {case "Just":
+               switch (_v8._0.ctor)
+                 {case "_Tuple2":
+                    return _v8._0._1;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 100,
+                 $List.maximum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 52 and 55");
+         }();
+         var minX = function () {
+            var _v12 = g.xRange;
+            switch (_v12.ctor)
+            {case "Just":
+               switch (_v12._0.ctor)
+                 {case "_Tuple2":
+                    return _v12._0._0;}
+                 break;
+               case "Nothing":
+               return A2($Maybe.withDefault,
+                 0,
+                 $List.minimum(A2($List.map,
+                 $Basics.fst,
+                 $List.concat(g.points))));}
+            _U.badCase($moduleName,
+            "between lines 49 and 52");
+         }();
+         var pixelX = function (x) {
+            return (x - minX) / (maxX - minX) * graphW - graphW / 2;
+         };
+         var pixelCoordinates = F2(function (x,
+         y) {
+            return {ctor: "_Tuple2"
+                   ,_0: pixelX(x)
+                   ,_1: pixelY(y)};
+         });
+         var yAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,0,minY),
+         A2(pixelCoordinates,0,maxY)));
+         var xLabel = function (x) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: 0
+                                          ,_1: -10})($Graphics$Collage.move(A2(pixelCoordinates,
+            x,
+            0))($Graphics$Collage.text($Text.fromString($Basics.toString(x)))));
+         };
+         var xLabelLine = function (x) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,x,minY),
+            A2(pixelCoordinates,x,maxY)));
+         };
+         var yLabel = function (y) {
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: -20
+                                          ,_1: 0})($Graphics$Collage.move(A2(pixelCoordinates,
+            0,
+            y))($Graphics$Collage.text($Text.fromString($Basics.toString(y)))));
+         };
+         var pointForm = F2(function (color,
+         _v16) {
+            return function () {
+               switch (_v16.ctor)
+               {case "_Tuple2":
+                  return A2($Graphics$Collage.move,
+                    {ctor: "_Tuple2"
+                    ,_0: pixelX(_v16._0)
+                    ,_1: pixelY(_v16._1)},
+                    A2($Graphics$Collage.filled,
+                    color,
+                    A2($Graphics$Collage.rect,
+                    1,
+                    1)));}
+               _U.badCase($moduleName,
+               "on line 70, column 34 to 83");
+            }();
+         });
+         var seriesForm = F2(function (color,
+         points) {
+            return A2($List.map,
+            pointForm(color),
+            points);
+         });
+         var xAxis = A2($Graphics$Collage.traced,
+         axisStyle,
+         A2($Graphics$Collage.segment,
+         A2(pixelCoordinates,minX,0),
+         A2(pixelCoordinates,maxX,0)));
+         var yLabelLine = function (y) {
+            return A2($Graphics$Collage.traced,
+            $Graphics$Collage.dashed($Color.darkGray),
+            A2($Graphics$Collage.segment,
+            A2(pixelCoordinates,minX,y),
+            A2(pixelCoordinates,maxX,y)));
+         };
+         var xLabelPositions = A2(labelPositions,
+         minX,
+         maxX);
+         var forms = $List.concat(_L.fromArray([$List.concat(A3($List.map2,
+                                               seriesForm,
+                                               colors,
+                                               g.points))
+                                               ,A2($List.map,
+                                               xLabel,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               xLabelLine,
+                                               xLabelPositions)
+                                               ,A2($List.map,
+                                               yLabel,
+                                               yLabelPositions)
+                                               ,A2($List.map,
+                                               yLabelLine,
+                                               yLabelPositions)
+                                               ,_L.fromArray([xAxis,yAxis])]));
+         return A3($Graphics$Collage.collage,
+         w,
+         h,
+         forms);
+      }();
+   });
+   var addSeries = F2(function (series,
+   g) {
+      return _U.replace([["points"
+                         ,A2($List._op["::"],
+                         series,
+                         g.points)]],
+      g);
+   });
+   var graph = F3(function (xRange,
+   yRange,
+   points) {
+      return {_: {}
+             ,points: points
+             ,xRange: xRange
+             ,yRange: yRange};
+   });
+   var Graph = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,points: c
+             ,xRange: a
+             ,yRange: b};
+   });
+   _elm.Graph.values = {_op: _op
+                       ,Graph: Graph
+                       ,graph: graph
+                       ,addSeries: addSeries
+                       ,gapSize: gapSize
+                       ,roundTo: roundTo
+                       ,labelPositions: labelPositions
+                       ,drawGraph: drawGraph};
+   return _elm.Graph.values;
+};
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -3639,10 +3916,10 @@ Elm.Interface.make = function (_elm) {
                            ,_0: step._0.frames + _v0._0
                            ,_1: _v0._1};}
                  _U.badCase($moduleName,
-                 "between lines 272 and 285");
+                 "between lines 275 and 288");
               }();}
          _U.badCase($moduleName,
-         "between lines 272 and 285");
+         "between lines 275 and 288");
       }();
    });
    var buildQuery = function (s) {
@@ -3760,7 +4037,8 @@ Elm.Interface.make = function (_elm) {
                                   return function () {
                                      switch (_v17.ctor)
                                      {case "_Tuple2":
-                                        return _U.eq(_v17._0,delta._0);}
+                                        return !_U.eq(_v17._0,
+                                          delta._0);}
                                      _U.badCase($moduleName,
                                      "on line 190, column 48 to 54");
                                   }();
@@ -3978,11 +4256,16 @@ Elm.Interface.make = function (_elm) {
                          return function () {
                             switch (_v27.ctor)
                             {case "_Tuple2":
-                               return A2(stepField,
-                                 sendStep(_v27._0),
-                                 _v27._1);}
+                               return A2($Graphics$Element.flow,
+                                 $Graphics$Element.right,
+                                 _L.fromArray([A2(stepField,
+                                              sendStep(_v27._0),
+                                              _v27._1)
+                                              ,A2($Graphics$Input.button,
+                                              sendDelta(RemoveStep(_v27._0)),
+                                              "Remove")]));}
                             _U.badCase($moduleName,
-                            "on line 204, column 13 to 40");
+                            "between lines 204 and 207");
                          }();
                       },
                       state.query))]));
@@ -4362,6 +4645,336 @@ Elm.List.make = function (_elm) {
                       ,sortBy: sortBy
                       ,sortWith: sortWith};
    return _elm.List.values;
+};
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $DApprox = Elm.DApprox.make(_elm),
+   $DSum = Elm.DSum.make(_elm),
+   $Dist = Elm.Dist.make(_elm),
+   $Encounters = Elm.Encounters.make(_elm),
+   $Graph = Elm.Graph.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
+   $Interface = Elm.Interface.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Query = Elm.Query.make(_elm),
+   $RNG = Elm.RNG.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Strategy = Elm.Strategy.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Trampoline = Elm.Trampoline.make(_elm),
+   $Worker = Elm.Worker.make(_elm);
+   var interfaceStateBox = $Signal.mailbox($Interface.defaultInterfaceState);
+   var $interface = A2($Signal._op["<~"],
+   $Interface.queryInterface($Signal.message(interfaceStateBox.address)),
+   interfaceStateBox.signal);
+   var querySignal = A2($Signal._op["<~"],
+   $Interface.buildQuery,
+   interfaceStateBox.signal);
+   var exampleQuery = {_: {}
+                      ,duration: 1000
+                      ,initialSteps: _L.fromArray([$Query.QCondition(function ($) {
+                                                     return $Dist.probability(function (x) {
+                                                        return _U.eq(x,3);
+                                                     })($DSum.dsumSlotDist(25)($));
+                                                  })
+                                                  ,A2($Query.QAdvance,
+                                                  595,
+                                                  $DApprox.insideSlopeDist)])
+                      ,offset: $Encounters.framesBeforeMove
+                      ,successFunc: function ($) {
+                         return $Dist.probability(function (x) {
+                            return A2($List.member,
+                            x,
+                            _L.fromArray([2,4]));
+                         })($DSum.dsumSlotDist(25)($));
+                      }};
+   var buildStrategy = function (threshold) {
+      return function ($) {
+         return $Strategy.simplify(15)($Strategy.frameStrategy($List.map(function (x) {
+            return _U.cmp(x,
+            threshold) > -1;
+         })($)));
+      };
+   };
+   var combine = A2($List.foldr,
+   $Signal.map2(F2(function (x,y) {
+      return A2($List._op["::"],
+      x,
+      y);
+   })),
+   $Signal.constant(_L.fromArray([])));
+   var dsums = F3(function (n,
+   carry,
+   state) {
+      return _U.eq(n,
+      0) ? {ctor: "_Tuple2"
+           ,_0: state
+           ,_1: _L.fromArray([])} : function () {
+         var $ = A3(dsums,
+         n - 1,
+         carry,
+         A2($RNG.rngStep,carry,state)),
+         finalState = $._0,
+         sums = $._1;
+         return {ctor: "_Tuple2"
+                ,_0: finalState
+                ,_1: A2($List._op["::"],
+                $RNG.getDSum(state),
+                sums)};
+      }();
+   });
+   var sampleEncounterDSums = function (state) {
+      return function () {
+         var $ = A3(dsums,
+         594,
+         1,
+         state),
+         state$ = $._0,
+         sums = $._1;
+         var $ = A3(dsums,44,0,state$),
+         state$$ = $._0,
+         sums$ = $._1;
+         var _ = A3(dsums,
+         1000,
+         0,
+         state$$);
+         var sums$$ = function () {
+            switch (_.ctor)
+            {case "_Tuple2": return _._1;}
+            _U.badCase($moduleName,
+            "on line 90, column 23 to 43");
+         }();
+         return $List.concat(_L.fromArray([sums
+                                          ,sums$
+                                          ,sums$$]));
+      }();
+   };
+   var toPath$ = F2(function (n,
+   l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return A2($List._op["::"],
+              {ctor: "_Tuple2"
+              ,_0: n
+              ,_1: l._0},
+              A2(toPath$,n + 1,l._1));
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 79 and 81");
+      }();
+   });
+   var toPath = toPath$(0);
+   var dsumPath = F3(function (n,
+   carry,
+   state) {
+      return toPath($List.map($Basics.toFloat)($Basics.snd(A3(dsums,
+      n,
+      carry,
+      state))));
+   });
+   var approxProbability = F3(function (rate,
+   slots,
+   state) {
+      return $Dist.probability(function (s) {
+         return A2($List.member,
+         s,
+         slots);
+      })($Dist.collapseMap($DSum.dsumSlotDist(rate))($DApprox.dapproxDist(state)));
+   });
+   var successProbability = F3(function (rate,
+   slots,
+   state) {
+      return $Dist.probability(function (s) {
+         return A2($List.member,
+         s,
+         slots);
+      })($Dist.collapseMap($DSum.dsumSlotDist(rate))($DSum.dsumDist(state)));
+   });
+   var successProbabilities = F5(function (rate,
+   slots,
+   n,
+   carry,
+   state) {
+      return _U.cmp(n,
+      0) < 1 ? _L.fromArray([]) : A2($List._op["::"],
+      A3(successProbability,
+      rate,
+      slots,
+      state),
+      A5(successProbabilities,
+      rate,
+      slots,
+      n - 1,
+      carry,
+      A2($DSum.dsumStep,
+      carry,
+      state)));
+   });
+   var iterate$ = F3(function (n,
+   f,
+   x) {
+      return _U.eq(n,
+      0) ? $Trampoline.Done(x) : $Trampoline.Continue(function (_v6) {
+         return function () {
+            switch (_v6.ctor)
+            {case "_Tuple0":
+               return A3(iterate$,
+                 n - 1,
+                 f,
+                 f(x));}
+            _U.badCase($moduleName,
+            "on line 54, column 37 to 58");
+         }();
+      });
+   });
+   var iterate = F3(function (n,
+   f,
+   x) {
+      return $Trampoline.trampoline(A3(iterate$,
+      n,
+      f,
+      x));
+   });
+   var contentString = function (content) {
+      return content.string;
+   };
+   var encounteredSlots = $Signal.constant(_L.fromArray([3]));
+   var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
+   var calculateButton = A2($Graphics$Input.button,
+   A2($Signal.message,
+   calculateBox.address,
+   {ctor: "_Tuple0"}),
+   "Calculate");
+   var queryWorker = $Query.createQueryWorker(A2($Signal.sampleOn,
+   calculateBox.signal,
+   querySignal));
+   var queryProbabilitiesSignal = A2($Signal.map,
+   function (state) {
+      return function () {
+         var _v8 = $Basics.snd(state);
+         switch (_v8.ctor)
+         {case "Done": return _v8._0;
+            case "Unstarted":
+            return _L.fromArray([]);
+            case "Working":
+            switch (_v8._0.ctor)
+              {case "_Tuple4":
+                 return $List.reverse(_v8._0._3);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 122 and 126");
+      }();
+   },
+   queryWorker.state);
+   var queryGraph = A2($Signal._op["<~"],
+   function ($) {
+      return A2($Graph.graph,
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1000}),
+      $Maybe.Just({ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: 1}))(function (x) {
+         return _L.fromArray([x]);
+      }(toPath($)));
+   },
+   queryProbabilitiesSignal);
+   var thresholdBox = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var thresholdSignal = A2($Signal.map,
+   function ($) {
+      return $Maybe.withDefault(0.25)($Result.toMaybe($String.toFloat(function (_) {
+         return _.string;
+      }($))));
+   },
+   thresholdBox.signal);
+   var strategy = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   buildStrategy,
+   thresholdSignal),
+   A2($Signal.map,
+   $Maybe.withDefault(_L.fromArray([])),
+   queryWorker.signal));
+   var strategy2 = A2($Signal._op["<~"],
+   $Strategy.roundStrategy(17),
+   strategy);
+   var stepStrategy = A2($Signal._op["<~"],
+   $List.map(function (s) {
+      return {ctor: "_Tuple2"
+             ,_0: s.frames / 17 | 0
+             ,_1: s.inGrass};
+   }),
+   strategy2);
+   var thresholdInput = A2($Signal._op["<~"],
+   A3($Graphics$Input$Field.field,
+   $Graphics$Input$Field.defaultStyle,
+   $Signal.message(thresholdBox.address),
+   "Threshold (default 0.25)"),
+   thresholdBox.signal);
+   var main = A2($Signal._op["<~"],
+   $Graphics$Element.flow($Graphics$Element.down),
+   combine(_L.fromArray([$interface
+                        ,$Signal.constant(calculateButton)
+                        ,thresholdInput
+                        ,A2($Signal._op["<~"],
+                        A2($Graph.drawGraph,700,400),
+                        queryGraph)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        strategy)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        strategy2)
+                        ,A2($Signal.map,
+                        $Graphics$Element.show,
+                        stepStrategy)])));
+   _elm.Main.values = {_op: _op
+                      ,thresholdBox: thresholdBox
+                      ,thresholdSignal: thresholdSignal
+                      ,thresholdInput: thresholdInput
+                      ,calculateBox: calculateBox
+                      ,encounteredSlots: encounteredSlots
+                      ,calculateButton: calculateButton
+                      ,contentString: contentString
+                      ,iterate: iterate
+                      ,iterate$: iterate$
+                      ,successProbability: successProbability
+                      ,approxProbability: approxProbability
+                      ,successProbabilities: successProbabilities
+                      ,toPath: toPath
+                      ,toPath$: toPath$
+                      ,dsumPath: dsumPath
+                      ,sampleEncounterDSums: sampleEncounterDSums
+                      ,dsums: dsums
+                      ,combine: combine
+                      ,buildStrategy: buildStrategy
+                      ,exampleQuery: exampleQuery
+                      ,queryWorker: queryWorker
+                      ,queryProbabilitiesSignal: queryProbabilitiesSignal
+                      ,queryGraph: queryGraph
+                      ,strategy: strategy
+                      ,strategy2: strategy2
+                      ,stepStrategy: stepStrategy
+                      ,interfaceStateBox: interfaceStateBox
+                      ,$interface: $interface
+                      ,querySignal: querySignal
+                      ,main: main};
+   return _elm.Main.values;
 };
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
@@ -9183,6 +9796,38 @@ Elm.Native.Time.make = function(localRuntime)
 
 };
 
+Elm.Native.Trampoline = {};
+Elm.Native.Trampoline.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Trampoline = localRuntime.Native.Trampoline || {};
+	if (localRuntime.Native.Trampoline.values)
+	{
+		return localRuntime.Native.Trampoline.values;
+	}
+
+	// trampoline : Trampoline a -> a
+	function trampoline(t)
+	{
+		var tramp = t;
+		while(true)
+		{
+			switch(tramp.ctor)
+			{
+				case "Done":
+					return tramp._0;
+				case "Continue":
+					tramp = tramp._0({ ctor: "_Tuple0" });
+					continue;
+			}
+		}
+	}
+
+	return localRuntime.Native.Trampoline.values = {
+		trampoline: trampoline
+	};
+};
+
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -11087,6 +11732,138 @@ Elm.Signal.make = function (_elm) {
                         ,Mailbox: Mailbox};
    return _elm.Signal.values;
 };
+Elm.Strategy = Elm.Strategy || {};
+Elm.Strategy.make = function (_elm) {
+   "use strict";
+   _elm.Strategy = _elm.Strategy || {};
+   if (_elm.Strategy.values)
+   return _elm.Strategy.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Strategy",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var roundStrategy$ = F3(function (rounding,
+   extraFrames,
+   strat) {
+      return function () {
+         switch (strat.ctor)
+         {case "::": return function () {
+                 var idealFrameCount = strat._0.frames + extraFrames;
+                 var roundedFrameCount = rounding * $Basics.round($Basics.toFloat(idealFrameCount) / $Basics.toFloat(rounding));
+                 var extras = idealFrameCount - roundedFrameCount;
+                 return A2($List._op["::"],
+                 _U.replace([["frames"
+                             ,roundedFrameCount]],
+                 strat._0),
+                 A3(roundStrategy$,
+                 rounding,
+                 extras,
+                 strat._1));
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 46 and 54");
+      }();
+   });
+   var removeSmallSteps = F2(function (frameThreshold,
+   strat) {
+      return function () {
+         switch (strat.ctor)
+         {case "::":
+            switch (strat._1.ctor)
+              {case "::":
+                 return _U.cmp(strat._0.frames,
+                   frameThreshold) < 0 ? A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   {_: {}
+                   ,frames: strat._0.frames + strat._1._0.frames
+                   ,inGrass: strat._1._0.inGrass},
+                   strat._1._1)) : A2($List._op["::"],
+                   strat._0,
+                   A2(removeSmallSteps,
+                   frameThreshold,
+                   A2($List._op["::"],
+                   strat._1._0,
+                   strat._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   strat._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 21 and 26");
+      }();
+   });
+   var combineSteps = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::": switch (l._1.ctor)
+              {case "::":
+                 return _U.eq(l._0.inGrass,
+                   l._1._0.inGrass) ? combineSteps(A2($List._op["::"],
+                   {_: {}
+                   ,frames: l._0.frames + l._1._0.frames
+                   ,inGrass: l._0.inGrass},
+                   l._1._1)) : A2($List._op["::"],
+                   l._0,
+                   combineSteps(A2($List._op["::"],
+                   l._1._0,
+                   l._1._1)));
+                 case "[]":
+                 return A2($List._op["::"],
+                   l._0,
+                   _L.fromArray([]));}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 13 and 18");
+      }();
+   };
+   var simplify = F2(function (frameThreshold,
+   strat) {
+      return combineSteps(removeSmallSteps(frameThreshold)(combineSteps(strat)));
+   });
+   var frameStrategy = function (l) {
+      return combineSteps($List.map(function (b) {
+         return {_: {}
+                ,frames: 1
+                ,inGrass: b};
+      })(l));
+   };
+   var roundStrategy = F2(function (rounding,
+   strat) {
+      return combineSteps(A3(roundStrategy$,
+      rounding,
+      0,
+      strat));
+   });
+   var StrategyStep = F2(function (a,
+   b) {
+      return {_: {}
+             ,frames: b
+             ,inGrass: a};
+   });
+   _elm.Strategy.values = {_op: _op
+                          ,StrategyStep: StrategyStep
+                          ,combineSteps: combineSteps
+                          ,removeSmallSteps: removeSmallSteps
+                          ,simplify: simplify
+                          ,frameStrategy: frameStrategy
+                          ,roundStrategy: roundStrategy
+                          ,roundStrategy$: roundStrategy$};
+   return _elm.Strategy.values;
+};
 Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {
    "use strict";
@@ -11577,6 +12354,32 @@ Elm.Time.make = function (_elm) {
                       ,delay: delay
                       ,since: since};
    return _elm.Time.values;
+};
+Elm.Trampoline = Elm.Trampoline || {};
+Elm.Trampoline.make = function (_elm) {
+   "use strict";
+   _elm.Trampoline = _elm.Trampoline || {};
+   if (_elm.Trampoline.values)
+   return _elm.Trampoline.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Trampoline",
+   $Native$Trampoline = Elm.Native.Trampoline.make(_elm);
+   var trampoline = $Native$Trampoline.trampoline;
+   var Continue = function (a) {
+      return {ctor: "Continue"
+             ,_0: a};
+   };
+   var Done = function (a) {
+      return {ctor: "Done",_0: a};
+   };
+   _elm.Trampoline.values = {_op: _op
+                            ,trampoline: trampoline
+                            ,Done: Done
+                            ,Continue: Continue};
+   return _elm.Trampoline.values;
 };
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {

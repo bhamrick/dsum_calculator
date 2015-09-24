@@ -187,7 +187,7 @@ updateInterfaceState delta state =
             }
         RemoveStep n ->
             { state
-            | query <- List.filter (\(i, _) -> i == n) state.query
+            | query <- List.filter (\(i, _) -> i /= n) state.query
             }
 
 queryInterface : (InterfaceState -> Message) -> InterfaceState -> Element
@@ -201,7 +201,10 @@ queryInterface sendState state =
             [ button (sendDelta AddStep) "Add step"
             ]
         , flow down (List.map (\(i, step) ->
-            stepField (sendStep i) step
+            flow right
+                [ stepField (sendStep i) step
+                , button (sendDelta (RemoveStep i)) "Remove"
+                ]
           ) state.query)
         ]
 

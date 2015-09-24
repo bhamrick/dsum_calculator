@@ -49,5 +49,5 @@ createWorker inputSignal step =
     in
     { state = state
     , signal =
-        state |> Signal.map (getResult << snd) |> Signal.dropRepeats
+        state |> Signal.map (getResult << snd)
     }
