@@ -14,19 +14,18 @@ weightedProbability f dist = List.foldl (\(x, p) s -> s + f x * p) 0 dist
 always : a -> Dist a
 always x = [(x, 1)]
 
--- TODO: Figure out if this can be a fold, since those are compiled as pure loops
-combineProbs' : comp -> Float -> List (comp, Float) -> List (comp, Float)
-combineProbs' x0 p0 l = case l of
-    [] -> [(x0, p0)]
-    (x1, p1) :: rest ->
-        if x0 == x1
-        then combineProbs' x0 (p0 + p1) rest
-        else (x0, p0) :: combineProbs' x1 p1 rest
+combineProbsStep : (comp, Float) -> (comp, Float, List (comp, Float)) -> (comp, Float, List (comp, Float))
+combineProbsStep (x0, p0) (x1, p1, acc) =
+    if x0 == x1
+    then (x1, p0 + p1, acc)
+    else (x0, p0, (x1, p1) :: acc)
 
 combineProbs : List (comp, Float) -> List (comp, Float)
 combineProbs l = case l of
     [] -> []
-    (x0, p0) :: rest -> combineProbs' x0 p0 rest
+    (x0, p0) :: rest ->
+        let (y0, q0, yqs) = List.foldl combineProbsStep (x0, p0, []) rest
+        in (y0, q0) :: yqs
 
 map : (comparable1 -> comparable2) -> Dist comparable1 -> Dist comparable2
 map f dist = dist

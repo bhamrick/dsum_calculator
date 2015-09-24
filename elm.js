@@ -2032,12 +2032,12 @@ Elm.Dist.make = function (_elm) {
                                  ,_0: _v4._0
                                  ,_1: _v0._1 * _v4._1};}
                        _U.badCase($moduleName,
-                       "on line 87, column 74 to 80");
+                       "on line 95, column 74 to 80");
                     }();
                  },
                  _v0._0);}
             _U.badCase($moduleName,
-            "on line 87, column 52 to 84");
+            "on line 95, column 52 to 84");
          }();
       },
       vals));
@@ -2069,7 +2069,7 @@ Elm.Dist.make = function (_elm) {
                                       ,_0: A2(f,l1._0._0,_v13._0)
                                       ,_1: l1._0._1 * _v13._1};}
                             _U.badCase($moduleName,
-                            "on line 73, column 39 to 51");
+                            "on line 81, column 39 to 51");
                          }();
                       },
                       l2);
@@ -2081,7 +2081,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 69 and 74");
+         "between lines 77 and 82");
       }();
    });
    var product$ = F2(function (l1,
@@ -2102,7 +2102,7 @@ Elm.Dist.make = function (_elm) {
                                            ,_1: _v22._0}
                                       ,_1: l1._0._1 * _v22._1};}
                             _U.badCase($moduleName,
-                            "on line 60, column 39 to 50");
+                            "on line 68, column 39 to 50");
                          }();
                       },
                       l2);
@@ -2114,7 +2114,7 @@ Elm.Dist.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 56 and 62");
+         "between lines 64 and 70");
       }();
    });
    var product = product$;
@@ -2129,7 +2129,7 @@ Elm.Dist.make = function (_elm) {
                {case "_Tuple2":
                   return !_U.eq(_v30._1,0);}
                _U.badCase($moduleName,
-               "on line 43, column 32 to 38");
+               "on line 51, column 32 to 38");
             }();
          })($List.map(function (_v26) {
             return function () {
@@ -2139,7 +2139,7 @@ Elm.Dist.make = function (_elm) {
                          ,_0: _v26._0
                          ,_1: _v26._1 / total};}
                _U.badCase($moduleName,
-               "on line 42, column 30 to 42");
+               "on line 50, column 30 to 42");
             }();
          })(probs));
       }();
@@ -2152,7 +2152,7 @@ Elm.Dist.make = function (_elm) {
             {case "_Tuple2":
                return f(_v34._0);}
             _U.badCase($moduleName,
-            "on line 47, column 32 to 35");
+            "on line 55, column 32 to 35");
          }();
       })(dist));
    });
@@ -2166,9 +2166,104 @@ Elm.Dist.make = function (_elm) {
                       ,_0: _v38._0
                       ,_1: _v38._1 * f(_v38._0)};}
             _U.badCase($moduleName,
-            "on line 52, column 30 to 40");
+            "on line 60, column 30 to 40");
          }();
       })(dist));
+   });
+   var combineProbsStep = F2(function (_v42,
+   _v43) {
+      return function () {
+         switch (_v43.ctor)
+         {case "_Tuple3":
+            return function () {
+                 switch (_v42.ctor)
+                 {case "_Tuple2":
+                    return _U.eq(_v42._0,
+                      _v43._0) ? {ctor: "_Tuple3"
+                                 ,_0: _v43._0
+                                 ,_1: _v42._1 + _v43._1
+                                 ,_2: _v43._2} : {ctor: "_Tuple3"
+                                                 ,_0: _v42._0
+                                                 ,_1: _v42._1
+                                                 ,_2: A2($List._op["::"],
+                                                 {ctor: "_Tuple2"
+                                                 ,_0: _v43._0
+                                                 ,_1: _v43._1},
+                                                 _v43._2)};}
+                 _U.badCase($moduleName,
+                 "between lines 28 and 30");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 28 and 30");
+      }();
+   });
+   var combineProbs = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::": switch (l._0.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var $ = A3($List.foldl,
+                      combineProbsStep,
+                      {ctor: "_Tuple3"
+                      ,_0: l._0._0
+                      ,_1: l._0._1
+                      ,_2: _L.fromArray([])},
+                      l._1),
+                      y0 = $._0,
+                      q0 = $._1,
+                      yqs = $._2;
+                      return A2($List._op["::"],
+                      {ctor: "_Tuple2",_0: y0,_1: q0},
+                      yqs);
+                   }();}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 33 and 37");
+      }();
+   };
+   var map = F2(function (f,dist) {
+      return combineProbs($List.sort($List.map(function (_v56) {
+         return function () {
+            switch (_v56.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: f(_v56._0)
+                      ,_1: _v56._1};}
+            _U.badCase($moduleName,
+            "on line 41, column 30 to 36");
+         }();
+      })(dist)));
+   });
+   var lift2 = F3(function (f,
+   d1,
+   d2) {
+      return combineProbs($List.sort(A3(lift2$,
+      f,
+      d1,
+      d2)));
+   });
+   var collapseMap = F2(function (f,
+   dist) {
+      return function () {
+         var nestedProbs = A2($List.map,
+         function (_v60) {
+            return function () {
+               switch (_v60.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: f(_v60._0)
+                         ,_1: _v60._1};}
+               _U.badCase($moduleName,
+               "on line 100, column 41 to 47");
+            }();
+         },
+         dist);
+         var collapsedProbs = collapse$(nestedProbs);
+         return combineProbs($List.sort(collapsedProbs));
+      }();
    });
    var combineProbs$ = F3(function (x0,
    p0,
@@ -2196,63 +2291,6 @@ Elm.Dist.make = function (_elm) {
          "between lines 19 and 24");
       }();
    });
-   var combineProbs = function (l) {
-      return function () {
-         switch (l.ctor)
-         {case "::": switch (l._0.ctor)
-              {case "_Tuple2":
-                 return A3(combineProbs$,
-                   l._0._0,
-                   l._0._1,
-                   l._1);}
-              break;
-            case "[]":
-            return _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 27 and 29");
-      }();
-   };
-   var map = F2(function (f,dist) {
-      return combineProbs($List.sort($List.map(function (_v52) {
-         return function () {
-            switch (_v52.ctor)
-            {case "_Tuple2":
-               return {ctor: "_Tuple2"
-                      ,_0: f(_v52._0)
-                      ,_1: _v52._1};}
-            _U.badCase($moduleName,
-            "on line 33, column 30 to 36");
-         }();
-      })(dist)));
-   });
-   var lift2 = F3(function (f,
-   d1,
-   d2) {
-      return combineProbs($List.sort(A3(lift2$,
-      f,
-      d1,
-      d2)));
-   });
-   var collapseMap = F2(function (f,
-   dist) {
-      return function () {
-         var nestedProbs = A2($List.map,
-         function (_v56) {
-            return function () {
-               switch (_v56.ctor)
-               {case "_Tuple2":
-                  return {ctor: "_Tuple2"
-                         ,_0: f(_v56._0)
-                         ,_1: _v56._1};}
-               _U.badCase($moduleName,
-               "on line 92, column 41 to 47");
-            }();
-         },
-         dist);
-         var collapsedProbs = collapse$(nestedProbs);
-         return combineProbs($List.sort(collapsedProbs));
-      }();
-   });
    var always = function (x) {
       return _L.fromArray([{ctor: "_Tuple2"
                            ,_0: x
@@ -2261,11 +2299,11 @@ Elm.Dist.make = function (_elm) {
    var weightedProbability = F2(function (f,
    dist) {
       return A3($List.foldl,
-      F2(function (_v60,s) {
+      F2(function (_v69,s) {
          return function () {
-            switch (_v60.ctor)
+            switch (_v69.ctor)
             {case "_Tuple2":
-               return s + f(_v60._0) * _v60._1;}
+               return s + f(_v69._0) * _v69._1;}
             _U.badCase($moduleName,
             "on line 12, column 55 to 66");
          }();
@@ -2276,11 +2314,11 @@ Elm.Dist.make = function (_elm) {
    var probability = F2(function (f,
    dist) {
       return A3($List.foldl,
-      F2(function (_v64,s) {
+      F2(function (_v73,s) {
          return function () {
-            switch (_v64.ctor)
+            switch (_v73.ctor)
             {case "_Tuple2":
-               return f(_v64._0) ? s + _v64._1 : s;}
+               return f(_v73._0) ? s + _v73._1 : s;}
             _U.badCase($moduleName,
             "on line 9, column 47 to 71");
          }();
@@ -2293,6 +2331,7 @@ Elm.Dist.make = function (_elm) {
                       ,weightedProbability: weightedProbability
                       ,always: always
                       ,combineProbs$: combineProbs$
+                      ,combineProbsStep: combineProbsStep
                       ,combineProbs: combineProbs
                       ,map: map
                       ,normalize: normalize
