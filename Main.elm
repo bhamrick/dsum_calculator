@@ -4,6 +4,7 @@ import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Graphics.Input exposing (..)
 import Graphics.Input.Field exposing (..)
+import Html
 import List
 import Maybe exposing (..)
 import Result exposing (toMaybe)
@@ -140,15 +141,15 @@ stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 interfaceStateBox : Signal.Mailbox InterfaceState
 interfaceStateBox = Signal.mailbox defaultInterfaceState
 
-interface : Signal Element
+interface : Signal Html.Html
 interface = queryInterface (Signal.message interfaceStateBox.address) <~ interfaceStateBox.signal
 
 querySignal : Signal Query
-querySignal = buildQuery <~ Signal.dropRepeats interfaceStateBox.signal
+querySignal = buildQuery <~ interfaceStateBox.signal
 
 main : Signal Element
 main = flow down <~ combine
-    [ interface
+    [ Html.toElement 800 400 <~ interface
     , Signal.constant calculateButton
     , thresholdInput
     , drawGraph 700 400 <~ queryGraph

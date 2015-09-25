@@ -2,10 +2,11 @@ module Interface where
 
 import Debug
 import Dict
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Json.Decode as Json
 import List
-import Graphics.Element exposing (..)
-import Graphics.Input exposing (..)
-import Graphics.Input.Field exposing (..)
 import Signal exposing (Mailbox, Message, Signal)
 import String
 import Text exposing (..)
@@ -33,7 +34,6 @@ type InterfaceStep
         }
     | IWalk
         { frames : Int
-        , frameContent : Content
         }
 
 defaultIEncounter : InterfaceStep
@@ -58,7 +58,6 @@ defaultIWalk : InterfaceStep
 defaultIWalk =
     IWalk
         { frames = 0
-        , frameContent = noContent
         }
 
 type alias InterfaceQuery = List (Int, InterfaceStep)
@@ -77,7 +76,15 @@ defaultInterfaceState =
     , query = []
     }
 
-stepField : (InterfaceStep -> Message) -> InterfaceStep -> Element
+checkbox : (Bool -> Message) -> Bool -> Html
+checkbox f b = input
+    [ type' "checkbox"
+    , on "change" targetChecked f
+    , checked b
+    ]
+    []
+
+stepField : (InterfaceStep -> Message) -> InterfaceStep -> Html
 stepField sendStep step =
     let
     innerField = case step of
@@ -106,65 +113,88 @@ stepField sendStep step =
             sendSlot10 b =
                 sendStep (IEncounter { enc | slot10 <- b })
             in
-            flow down
-                [ dropDown sendTable (List.map (\t -> (t.name, t)) allTables)
-                , flow right
+            div []
+                [ select []
+                    (List.map (\t ->
+                        option
+                            []
+                            [ text t.name ]
+                    ) allTables)
+                , div []
                     [ checkbox sendSlot1 enc.slot1
-                    , leftAligned (fromString (displayName enc.table.slot1))
+                    , text (displayName enc.table.slot1)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot2 enc.slot2
-                    , leftAligned (fromString (displayName enc.table.slot2))
+                    , text (displayName enc.table.slot2)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot3 enc.slot3
-                    , leftAligned (fromString (displayName enc.table.slot3))
+                    , text (displayName enc.table.slot3)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot4 enc.slot4
-                    , leftAligned (fromString (displayName enc.table.slot4))
+                    , text (displayName enc.table.slot4)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot5 enc.slot5
-                    , leftAligned (fromString (displayName enc.table.slot5))
+                    , text (displayName enc.table.slot5)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot6 enc.slot6
-                    , leftAligned (fromString (displayName enc.table.slot6))
+                    , text (displayName enc.table.slot6)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot7 enc.slot7
-                    , leftAligned (fromString (displayName enc.table.slot7))
+                    , text (displayName enc.table.slot7)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot8 enc.slot8
-                    , leftAligned (fromString (displayName enc.table.slot8))
+                    , text (displayName enc.table.slot8)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot9 enc.slot9
-                    , leftAligned (fromString (displayName enc.table.slot9))
+                    , text (displayName enc.table.slot9)
                     ]
-                , flow right
+                , div []
                     [ checkbox sendSlot10 enc.slot10
-                    , leftAligned (fromString (displayName enc.table.slot10))
+                    , text (displayName enc.table.slot10)
                     ]
                 ]
         IWalk w ->
             let
             sendContent c =
-                case String.toInt (c.string) of
-                    Ok n -> sendStep (IWalk { w | frames <- n, frameContent <- c })
-                    Err _ -> sendStep (IWalk { w | frameContent <- c })
+                case String.toInt c of
+                    Ok n -> sendStep (IWalk { w | frames <- n })
+                    Err _ -> sendStep (IWalk w)
             in
-            flow right
-                [ field Graphics.Input.Field.defaultStyle sendContent "0" w.frameContent
-                , leftAligned (fromString "frames")
+            div []
+                [ input
+                    [ type' "text"
+                    , on "change" targetValue sendContent
+                    , placeholder "0"
+                    ]
+                    []
+                , text "frames"
                 ]
     in
-    flow right
-        [ dropDown sendStep
-            [ ("Encounter", defaultIEncounter)
-            , ("Walk/Wait", defaultIWalk)
+    div []
+        [ select
+            [ on "change" targetValue (\v -> if
+                | v == "Encounter" -> sendStep defaultIEncounter
+                | v == "Walk" -> sendStep defaultIWalk
+                | otherwise -> sendStep defaultIEncounter)
+            ]
+            [ option
+                [ on "click" Json.value (\_ -> sendStep defaultIEncounter)
+                , value "Encounter"
+                ]
+                [ text "Encounter" ]
+            , option
+                [ on "click" Json.value (\_ -> sendStep defaultIWalk)
+                , value "Walk"
+                ]
+                [ text "Walk/Wait" ]
             ]
         , innerField
         ]
@@ -190,20 +220,30 @@ updateInterfaceState delta state =
             | query <- List.filter (\(i, _) -> i /= n) state.query
             }
 
-queryInterface : (InterfaceState -> Message) -> InterfaceState -> Element
+queryInterface : (InterfaceState -> Message) -> InterfaceState -> Html
 queryInterface sendState state =
     let
     sendDelta delta = sendState (updateInterfaceState delta state)
     sendStep i step = sendDelta (EditStep i step)
     in
-    flow right
-        [ flow down
-            [ button (sendDelta AddStep) "Add step"
+    div []
+        [ div []
+            [ input
+                [ type' "button"
+                , on "click" Json.value (\_ -> sendDelta AddStep)
+                , value "Add step"
+                ]
+                []
             ]
-        , flow down (List.map (\(i, step) ->
-            flow right
+        , div [] (List.map (\(i, step) ->
+            div []
                 [ stepField (sendStep i) step
-                , button (sendDelta (RemoveStep i)) "Remove"
+                , input
+                    [ type' "button"
+                    , on "click" Json.value (\_ -> sendDelta (RemoveStep i))
+                    , value "Remove"
+                    ]
+                    []
                 ]
           ) state.query)
         ]

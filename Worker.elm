@@ -38,14 +38,16 @@ createWorker : Signal s -> (s -> WorkerState s r) -> Worker s r
 createWorker inputSignal step =
     let state = 
         Signal.foldp
-            (\inp (initial, state) -> if Just inp == initial
-                then case state of
+            (\inp (initial, state) -> case inp of
+                Nothing -> case state of
                     Working s -> (initial, step s)
                     Done r -> (initial, Done r)
-                else (Just inp, Working inp)
+                    Unstarted -> (initial, Unstarted)
+                Just inp' -> (inp, Working inp')
             )
             (Nothing, Unstarted)
-            (inputSignal |> Signal.sampleOn workerClock)
+            (Signal.map Just inputSignal
+            |> Signal.merge (Signal.map (\_ -> Nothing) workerClock))
     in
     { state = state
     , signal =
