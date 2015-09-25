@@ -144,7 +144,7 @@ interface : Signal Element
 interface = queryInterface (Signal.message interfaceStateBox.address) <~ interfaceStateBox.signal
 
 querySignal : Signal Query
-querySignal = buildQuery <~ interfaceStateBox.signal
+querySignal = buildQuery <~ Signal.dropRepeats interfaceStateBox.signal
 
 main : Signal Element
 main = flow down <~ combine

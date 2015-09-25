@@ -4683,7 +4683,7 @@ Elm.Main.make = function (_elm) {
    interfaceStateBox.signal);
    var querySignal = A2($Signal._op["<~"],
    $Interface.buildQuery,
-   interfaceStateBox.signal);
+   $Signal.dropRepeats(interfaceStateBox.signal));
    var exampleQuery = {_: {}
                       ,duration: 1000
                       ,initialSteps: _L.fromArray([$Query.QCondition(function ($) {
@@ -12556,9 +12556,9 @@ Elm.Worker.make = function (_elm) {
          ,_1: Unstarted},
          $Signal.sampleOn(workerClock)(inputSignal));
          return {_: {}
-                ,signal: $Signal.dropRepeats($Signal.map(function ($) {
+                ,signal: $Signal.map(function ($) {
                    return getResult($Basics.snd($));
-                })(state))
+                })(state)
                 ,state: state};
       }();
    });
