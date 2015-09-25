@@ -1,10 +1,10 @@
 import Color exposing (..)
 import Dict
-import Graphics.Collage exposing (..)
-import Graphics.Element exposing (..)
-import Graphics.Input exposing (..)
-import Graphics.Input.Field exposing (..)
-import Html
+import Graphics.Element exposing (show)
+import Html exposing (Html, div, input)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Json.Decode as Json
 import List
 import Maybe exposing (..)
 import Result exposing (toMaybe)
@@ -25,14 +25,26 @@ import Query exposing (..)
 import Strategy exposing (..)
 import Worker exposing (..)
 
-thresholdBox : Signal.Mailbox Content
-thresholdBox = Signal.mailbox noContent
+thresholdBox : Signal.Mailbox String
+thresholdBox = Signal.mailbox ""
 
 thresholdSignal : Signal Float
-thresholdSignal = Signal.map (Maybe.withDefault 0.25 << Result.toMaybe << String.toFloat << .string) thresholdBox.signal
+thresholdSignal = Signal.map (Maybe.withDefault 0.25 << Result.toMaybe << String.toFloat) thresholdBox.signal
 
-thresholdInput : Signal Element
-thresholdInput = field defaultStyle (Signal.message thresholdBox.address) "Threshold (default 0.25)" <~ thresholdBox.signal
+thresholdInput : Signal Html
+thresholdInput =
+    (\v ->
+        div []
+            [ Html.text "Threshold"
+            , input
+                [ type' "text"
+                , on "change" Json.string (Signal.message thresholdBox.address)
+                , placeholder "0.25"
+                , value v
+                ]
+                []
+            ]
+    ) <~ thresholdBox.signal
 
 calculateBox : Signal.Mailbox ()
 calculateBox = Signal.mailbox ()
@@ -40,11 +52,14 @@ calculateBox = Signal.mailbox ()
 encounteredSlots : Signal (List Int)
 encounteredSlots = Signal.constant [3]
 
-calculateButton : Element
-calculateButton = button (Signal.message calculateBox.address ()) "Calculate"
-
-contentString : Content -> String
-contentString content = content.string
+calculateButton : Html
+calculateButton =
+    input
+        [ type' "button"
+        , on "click" Json.value (\_ -> Signal.message calculateBox.address ())
+        , value "Calculate"
+        ]
+        []
 
 iterate : Int -> (a -> a) -> a -> a
 iterate n f x = trampoline (iterate' n f x)
@@ -141,19 +156,19 @@ stepStrategy = List.map (\s -> (s.frames // 17, s.inGrass)) <~ strategy2
 interfaceStateBox : Signal.Mailbox InterfaceState
 interfaceStateBox = Signal.mailbox defaultInterfaceState
 
-interface : Signal Html.Html
+interface : Signal Html
 interface = queryInterface (Signal.message interfaceStateBox.address) <~ interfaceStateBox.signal
 
 querySignal : Signal Query
 querySignal = buildQuery <~ interfaceStateBox.signal
 
-main : Signal Element
-main = flow down <~ combine
-    [ Html.toElement 800 400 <~ interface
+main : Signal Html
+main = div [] <~ combine
+    [ interface
     , Signal.constant calculateButton
     , thresholdInput
-    , drawGraph 700 400 <~ queryGraph
-    , Signal.map show strategy
-    , Signal.map show strategy2
-    , Signal.map show stepStrategy
+    , Html.fromElement << drawGraph 700 400 <~ queryGraph
+    , Signal.map (Html.fromElement << show) strategy
+    , Signal.map (Html.fromElement << show) strategy2
+    , Signal.map (Html.fromElement << show) stepStrategy
     ]

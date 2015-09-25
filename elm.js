@@ -3764,156 +3764,6 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
 };
-Elm.Graphics = Elm.Graphics || {};
-Elm.Graphics.Input = Elm.Graphics.Input || {};
-Elm.Graphics.Input.make = function (_elm) {
-   "use strict";
-   _elm.Graphics = _elm.Graphics || {};
-   _elm.Graphics.Input = _elm.Graphics.Input || {};
-   if (_elm.Graphics.Input.values)
-   return _elm.Graphics.Input.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Graphics.Input",
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var clickable = $Native$Graphics$Input.clickable;
-   var hoverable = $Native$Graphics$Input.hoverable;
-   var dropDown = $Native$Graphics$Input.dropDown;
-   var checkbox = $Native$Graphics$Input.checkbox;
-   var customButton = $Native$Graphics$Input.customButton;
-   var button = $Native$Graphics$Input.button;
-   _elm.Graphics.Input.values = {_op: _op
-                                ,button: button
-                                ,customButton: customButton
-                                ,checkbox: checkbox
-                                ,dropDown: dropDown
-                                ,hoverable: hoverable
-                                ,clickable: clickable};
-   return _elm.Graphics.Input.values;
-};
-Elm.Graphics = Elm.Graphics || {};
-Elm.Graphics.Input = Elm.Graphics.Input || {};
-Elm.Graphics.Input.Field = Elm.Graphics.Input.Field || {};
-Elm.Graphics.Input.Field.make = function (_elm) {
-   "use strict";
-   _elm.Graphics = _elm.Graphics || {};
-   _elm.Graphics.Input = _elm.Graphics.Input || {};
-   _elm.Graphics.Input.Field = _elm.Graphics.Input.Field || {};
-   if (_elm.Graphics.Input.Field.values)
-   return _elm.Graphics.Input.Field.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Graphics.Input.Field",
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm);
-   var email = $Native$Graphics$Input.email;
-   var password = $Native$Graphics$Input.password;
-   var field = $Native$Graphics$Input.field;
-   var Backward = {ctor: "Backward"};
-   var Forward = {ctor: "Forward"};
-   var Selection = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,direction: c
-             ,end: b
-             ,start: a};
-   });
-   var Content = F2(function (a,
-   b) {
-      return {_: {}
-             ,selection: b
-             ,string: a};
-   });
-   var noContent = A2(Content,
-   "",
-   A3(Selection,0,0,Forward));
-   var Style = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,highlight: c
-             ,outline: b
-             ,padding: a
-             ,style: d};
-   });
-   var Highlight = F2(function (a,
-   b) {
-      return {_: {}
-             ,color: a
-             ,width: b};
-   });
-   var noHighlight = A2(Highlight,
-   $Color.blue,
-   0);
-   var Outline = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,color: a
-             ,radius: c
-             ,width: b};
-   });
-   var Dimensions = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,bottom: d
-             ,left: a
-             ,right: b
-             ,top: c};
-   });
-   var uniformly = function (n) {
-      return A4(Dimensions,
-      n,
-      n,
-      n,
-      n);
-   };
-   var noOutline = A3(Outline,
-   $Color.grey,
-   uniformly(0),
-   0);
-   var defaultStyle = {_: {}
-                      ,highlight: A2(Highlight,
-                      $Color.blue,
-                      1)
-                      ,outline: A3(Outline,
-                      $Color.grey,
-                      uniformly(1),
-                      2)
-                      ,padding: uniformly(4)
-                      ,style: $Text.defaultStyle};
-   _elm.Graphics.Input.Field.values = {_op: _op
-                                      ,field: field
-                                      ,password: password
-                                      ,email: email
-                                      ,noContent: noContent
-                                      ,defaultStyle: defaultStyle
-                                      ,noOutline: noOutline
-                                      ,noHighlight: noHighlight
-                                      ,uniformly: uniformly
-                                      ,Content: Content
-                                      ,Selection: Selection
-                                      ,Style: Style
-                                      ,Outline: Outline
-                                      ,Highlight: Highlight
-                                      ,Dimensions: Dimensions
-                                      ,Forward: Forward
-                                      ,Backward: Backward};
-   return _elm.Graphics.Input.Field.values;
-};
 Elm.Html = Elm.Html || {};
 Elm.Html.make = function (_elm) {
    "use strict";
@@ -5919,10 +5769,11 @@ Elm.Main.make = function (_elm) {
    $Encounters = Elm.Encounters.make(_elm),
    $Graph = Elm.Graph.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Graphics$Input = Elm.Graphics.Input.make(_elm),
-   $Graphics$Input$Field = Elm.Graphics.Input.Field.make(_elm),
    $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $Interface = Elm.Interface.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Query = Elm.Query.make(_elm),
@@ -6012,7 +5863,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 91, column 23 to 43");
+            "on line 106, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -6032,7 +5883,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 80 and 82");
+         "between lines 95 and 97");
       }();
    });
    var toPath = toPath$(0);
@@ -6095,7 +5946,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 55, column 37 to 58");
+            "on line 70, column 37 to 58");
          }();
       });
    });
@@ -6107,34 +5958,40 @@ Elm.Main.make = function (_elm) {
       f,
       x));
    });
-   var contentString = function (content) {
-      return content.string;
-   };
    var encounteredSlots = $Signal.constant(_L.fromArray([3]));
    var calculateBox = $Signal.mailbox({ctor: "_Tuple0"});
-   var calculateButton = A2($Graphics$Input.button,
-   A2($Signal.message,
-   calculateBox.address,
-   {ctor: "_Tuple0"}),
-   "Calculate");
+   var calculateButton = A2($Html.input,
+   _L.fromArray([$Html$Attributes.type$("button")
+                ,A3($Html$Events.on,
+                "click",
+                $Json$Decode.value,
+                function (_v8) {
+                   return function () {
+                      return A2($Signal.message,
+                      calculateBox.address,
+                      {ctor: "_Tuple0"});
+                   }();
+                })
+                ,$Html$Attributes.value("Calculate")]),
+   _L.fromArray([]));
    var queryWorker = $Query.createQueryWorker(A2($Signal.sampleOn,
    calculateBox.signal,
    querySignal));
    var queryProbabilitiesSignal = A2($Signal.map,
    function (state) {
       return function () {
-         var _v8 = $Basics.snd(state);
-         switch (_v8.ctor)
-         {case "Done": return _v8._0;
+         var _v10 = $Basics.snd(state);
+         switch (_v10.ctor)
+         {case "Done": return _v10._0;
             case "Unstarted":
             return _L.fromArray([]);
             case "Working":
-            switch (_v8._0.ctor)
+            switch (_v10._0.ctor)
               {case "_Tuple4":
-                 return $List.reverse(_v8._0._3);}
+                 return $List.reverse(_v10._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 123 and 127");
+         "between lines 138 and 142");
       }();
    },
    queryWorker.state);
@@ -6151,12 +6008,10 @@ Elm.Main.make = function (_elm) {
       }(toPath($)));
    },
    queryProbabilitiesSignal);
-   var thresholdBox = $Signal.mailbox($Graphics$Input$Field.noContent);
+   var thresholdBox = $Signal.mailbox("");
    var thresholdSignal = A2($Signal.map,
    function ($) {
-      return $Maybe.withDefault(0.25)($Result.toMaybe($String.toFloat(function (_) {
-         return _.string;
-      }($))));
+      return $Maybe.withDefault(0.25)($Result.toMaybe($String.toFloat($)));
    },
    thresholdBox.signal);
    var strategy = A2($Signal._op["~"],
@@ -6177,29 +6032,47 @@ Elm.Main.make = function (_elm) {
    }),
    strategy2);
    var thresholdInput = A2($Signal._op["<~"],
-   A3($Graphics$Input$Field.field,
-   $Graphics$Input$Field.defaultStyle,
-   $Signal.message(thresholdBox.address),
-   "Threshold (default 0.25)"),
+   function (v) {
+      return A2($Html.div,
+      _L.fromArray([]),
+      _L.fromArray([$Html.text("Threshold")
+                   ,A2($Html.input,
+                   _L.fromArray([$Html$Attributes.type$("text")
+                                ,A3($Html$Events.on,
+                                "change",
+                                $Json$Decode.string,
+                                $Signal.message(thresholdBox.address))
+                                ,$Html$Attributes.placeholder("0.25")
+                                ,$Html$Attributes.value(v)]),
+                   _L.fromArray([]))]));
+   },
    thresholdBox.signal);
    var main = A2($Signal._op["<~"],
-   $Graphics$Element.flow($Graphics$Element.down),
-   combine(_L.fromArray([A2($Signal._op["<~"],
-                        A2($Html.toElement,800,400),
-                        $interface)
+   $Html.div(_L.fromArray([])),
+   combine(_L.fromArray([$interface
                         ,$Signal.constant(calculateButton)
                         ,thresholdInput
                         ,A2($Signal._op["<~"],
-                        A2($Graph.drawGraph,700,400),
+                        function ($) {
+                           return $Html.fromElement(A2($Graph.drawGraph,
+                           700,
+                           400)($));
+                        },
                         queryGraph)
                         ,A2($Signal.map,
-                        $Graphics$Element.show,
+                        function ($) {
+                           return $Html.fromElement($Graphics$Element.show($));
+                        },
                         strategy)
                         ,A2($Signal.map,
-                        $Graphics$Element.show,
+                        function ($) {
+                           return $Html.fromElement($Graphics$Element.show($));
+                        },
                         strategy2)
                         ,A2($Signal.map,
-                        $Graphics$Element.show,
+                        function ($) {
+                           return $Html.fromElement($Graphics$Element.show($));
+                        },
                         stepStrategy)])));
    _elm.Main.values = {_op: _op
                       ,thresholdBox: thresholdBox
@@ -6208,7 +6081,6 @@ Elm.Main.make = function (_elm) {
                       ,calculateBox: calculateBox
                       ,encounteredSlots: encounteredSlots
                       ,calculateButton: calculateButton
-                      ,contentString: contentString
                       ,iterate: iterate
                       ,iterate$: iterate$
                       ,successProbability: successProbability
@@ -8929,479 +8801,6 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 		block: block,
 		markdown: markdown
-	};
-
-};
-
-// setup
-Elm.Native = Elm.Native || {};
-Elm.Native.Graphics = Elm.Native.Graphics || {};
-Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
-
-// definition
-Elm.Native.Graphics.Input.make = function(localRuntime) {
-	'use strict';
-
-	// attempt to short-circuit
-	if ('values' in Elm.Native.Graphics.Input) {
-		return Elm.Native.Graphics.Input.values;
-	}
-
-	var Color = Elm.Native.Color.make(localRuntime);
-	var List = Elm.Native.List.make(localRuntime);
-	var Signal = Elm.Native.Signal.make(localRuntime);
-	var Text = Elm.Native.Text.make(localRuntime);
-	var Utils = Elm.Native.Utils.make(localRuntime);
-
-	var Element = Elm.Native.Graphics.Element.make(localRuntime);
-
-
-	function renderDropDown(model)
-	{
-		var drop = Element.createNode('select');
-		drop.style.border = '0 solid';
-		drop.style.pointerEvents = 'auto';
-		drop.style.display = 'block';
-
-		drop.elm_values = List.toArray(model.values);
-		drop.elm_handler = model.handler;
-		var values = drop.elm_values;
-
-		for (var i = 0; i < values.length; ++i)
-		{
-			var option = Element.createNode('option');
-			var name = values[i]._0;
-			option.value = name;
-			option.innerHTML = name;
-			drop.appendChild(option);
-		}
-		drop.addEventListener('change', function() {
-			Signal.sendMessage(drop.elm_handler(drop.elm_values[drop.selectedIndex]._1));
-		});
-
-		return drop;
-	}
-
-	function updateDropDown(node, oldModel, newModel)
-	{
-		node.elm_values = List.toArray(newModel.values);
-		node.elm_handler = newModel.handler;
-
-		var values = node.elm_values;
-		var kids = node.childNodes;
-		var kidsLength = kids.length;
-
-		var i = 0;
-		for (; i < kidsLength && i < values.length; ++i)
-		{
-			var option = kids[i];
-			var name = values[i]._0;
-			option.value = name;
-			option.innerHTML = name;
-		}
-		for (; i < kidsLength; ++i)
-		{
-			node.removeChild(node.lastChild);
-		}
-		for (; i < values.length; ++i)
-		{
-			var option = Element.createNode('option');
-			var name = values[i]._0;
-			option.value = name;
-			option.innerHTML = name;
-			node.appendChild(option);
-		}
-		return node;
-	}
-
-	function dropDown(handler, values)
-	{
-		return A3(Element.newElement, 100, 24, {
-			ctor: 'Custom',
-			type: 'DropDown',
-			render: renderDropDown,
-			update: updateDropDown,
-			model: {
-				values: values,
-				handler: handler
-			}
-		});
-	}
-
-	function renderButton(model)
-	{
-		var node = Element.createNode('button');
-		node.style.display = 'block';
-		node.style.pointerEvents = 'auto';
-		node.elm_message = model.message;
-		function click()
-		{
-			Signal.sendMessage(node.elm_message);
-		}
-		node.addEventListener('click', click);
-		node.innerHTML = model.text;
-		return node;
-	}
-
-	function updateButton(node, oldModel, newModel)
-	{
-		node.elm_message = newModel.message;
-		var txt = newModel.text;
-		if (oldModel.text !== txt)
-		{
-			node.innerHTML = txt;
-		}
-		return node;
-	}
-
-	function button(message, text)
-	{
-		return A3(Element.newElement, 100, 40, {
-			ctor: 'Custom',
-			type: 'Button',
-			render: renderButton,
-			update: updateButton,
-			model: {
-				message: message,
-				text:text
-			}
-		});
-	}
-
-	function renderCustomButton(model)
-	{
-		var btn = Element.createNode('div');
-		btn.style.pointerEvents = 'auto';
-		btn.elm_message = model.message;
-
-		btn.elm_up    = Element.render(model.up);
-		btn.elm_hover = Element.render(model.hover);
-		btn.elm_down  = Element.render(model.down);
-
-		btn.elm_up.style.display = 'block';
-		btn.elm_hover.style.display = 'none';
-		btn.elm_down.style.display = 'none';
-
-		btn.appendChild(btn.elm_up);
-		btn.appendChild(btn.elm_hover);
-		btn.appendChild(btn.elm_down);
-
-		function swap(visibleNode, hiddenNode1, hiddenNode2)
-		{
-			visibleNode.style.display = 'block';
-			hiddenNode1.style.display = 'none';
-			hiddenNode2.style.display = 'none';
-		}
-
-		var overCount = 0;
-		function over(e)
-		{
-			if (overCount++ > 0) return;
-			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
-		}
-		function out(e)
-		{
-			if (btn.contains(e.toElement || e.relatedTarget)) return;
-			overCount = 0;
-			swap(btn.elm_up, btn.elm_down, btn.elm_hover);
-		}
-		function up()
-		{
-			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
-			Signal.sendMessage(btn.elm_message);
-		}
-		function down()
-		{
-			swap(btn.elm_down, btn.elm_hover, btn.elm_up);
-		}
-
-		btn.addEventListener('mouseover', over);
-		btn.addEventListener('mouseout' , out);
-		btn.addEventListener('mousedown', down);
-		btn.addEventListener('mouseup'  , up);
-
-		return btn;
-	}
-
-	function updateCustomButton(node, oldModel, newModel)
-	{
-		node.elm_message = newModel.message;
-
-		var kids = node.childNodes;
-		var styleUp    = kids[0].style.display;
-		var styleHover = kids[1].style.display;
-		var styleDown  = kids[2].style.display;
-
-		Element.updateAndReplace(kids[0], oldModel.up, newModel.up);
-		Element.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
-		Element.updateAndReplace(kids[2], oldModel.down, newModel.down);
-
-		var kids = node.childNodes;
-		kids[0].style.display = styleUp;
-		kids[1].style.display = styleHover;
-		kids[2].style.display = styleDown;
-
-		return node;
-	}
-
-	function max3(a,b,c)
-	{
-		var ab = a > b ? a : b;
-		return ab > c ? ab : c;
-	}
-
-	function customButton(message, up, hover, down)
-	{
-		return A3(Element.newElement,
-				  max3(up.props.width, hover.props.width, down.props.width),
-				  max3(up.props.height, hover.props.height, down.props.height),
-				  { ctor: 'Custom',
-					type: 'CustomButton',
-					render: renderCustomButton,
-					update: updateCustomButton,
-					model: {
-						message: message,
-						up: up,
-						hover: hover,
-						down: down
-					}
-				  });
-	}
-
-	function renderCheckbox(model)
-	{
-		var node = Element.createNode('input');
-		node.type = 'checkbox';
-		node.checked = model.checked;
-		node.style.display = 'block';
-		node.style.pointerEvents = 'auto';
-		node.elm_handler = model.handler;
-		function change()
-		{
-			Signal.sendMessage(node.elm_handler(node.checked));
-		}
-		node.addEventListener('change', change);
-		return node;
-	}
-
-	function updateCheckbox(node, oldModel, newModel)
-	{
-		node.elm_handler = newModel.handler;
-		node.checked = newModel.checked;
-		return node;
-	}
-
-	function checkbox(handler, checked)
-	{
-		return A3(Element.newElement, 13, 13, {
-			ctor: 'Custom',
-			type: 'CheckBox',
-			render: renderCheckbox,
-			update: updateCheckbox,
-			model: { handler:handler, checked:checked }
-		});
-	}
-
-	function setRange(node, start, end, dir)
-	{
-		if (node.parentNode)
-		{
-			node.setSelectionRange(start, end, dir);
-		}
-		else
-		{
-			setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
-		}
-	}
-
-	function updateIfNeeded(css, attribute, latestAttribute)
-	{
-		if (css[attribute] !== latestAttribute)
-		{
-			css[attribute] = latestAttribute;
-		}
-	}
-	function cssDimensions(dimensions)
-	{
-		return dimensions.top    + 'px ' +
-			   dimensions.right  + 'px ' +
-			   dimensions.bottom + 'px ' +
-			   dimensions.left   + 'px';
-	}
-	function updateFieldStyle(css, style)
-	{
-		updateIfNeeded(css, 'padding', cssDimensions(style.padding));
-
-		var outline = style.outline;
-		updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
-		updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
-		updateIfNeeded(css, 'border-radius', outline.radius + 'px');
-
-		var highlight = style.highlight;
-		if (highlight.width === 0)
-		{
-			css.outline = 'none';
-		}
-		else
-		{
-			updateIfNeeded(css, 'outline-width', highlight.width + 'px');
-			updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
-		}
-
-		var textStyle = style.style;
-		updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
-		if (textStyle.typeface.ctor !== '[]')
-		{
-			updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
-		}
-		if (textStyle.height.ctor !== "Nothing")
-		{
-			updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
-		}
-		updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
-		updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
-		if (textStyle.line.ctor !== 'Nothing')
-		{
-			updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
-		}
-	}
-
-	function renderField(model)
-	{
-		var field = Element.createNode('input');
-		updateFieldStyle(field.style, model.style);
-		field.style.borderStyle = 'solid';
-		field.style.pointerEvents = 'auto';
-
-		field.type = model.type;
-		field.placeholder = model.placeHolder;
-		field.value = model.content.string;
-
-		field.elm_handler = model.handler;
-		field.elm_old_value = field.value;
-
-		function inputUpdate(event)
-		{
-			var curr = field.elm_old_value;
-			var next = field.value;
-			if (curr === next)
-			{
-				return;
-			}
-
-			var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
-			var start = field.selectionStart;
-			var end = field.selectionEnd;
-			field.value = field.elm_old_value;
-
-			Signal.sendMessage(field.elm_handler({
-				_:{},
-				string: next,
-				selection: {
-					_:{},
-					start: start,
-					end: end,
-					direction: { ctor: direction }
-				}
-			}));
-		}
-
-		field.addEventListener('input', inputUpdate);
-		field.addEventListener('focus', function() {
-			field.elm_hasFocus = true;
-		});
-		field.addEventListener('blur', function() {
-			field.elm_hasFocus = false;
-		});
-
-		return field;
-	}
-
-	function updateField(field, oldModel, newModel)
-	{
-		if (oldModel.style !== newModel.style)
-		{
-			updateFieldStyle(field.style, newModel.style);
-		}
-		field.elm_handler = newModel.handler;
-
-		field.type = newModel.type;
-		field.placeholder = newModel.placeHolder;
-		var value = newModel.content.string;
-		field.value = value;
-		field.elm_old_value = value;
-		if (field.elm_hasFocus)
-		{
-			var selection = newModel.content.selection;
-			var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
-			setRange(field, selection.start, selection.end, direction);
-		}
-		return field;
-	}
-
-	function mkField(type)
-	{
-		function field(style, handler, placeHolder, content)
-		{
-			var padding = style.padding;
-			var outline = style.outline.width;
-			var adjustWidth = padding.left + padding.right + outline.left + outline.right;
-			var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
-			return A3(Element.newElement, 200, 30, {
-				ctor: 'Custom',
-				type: type + 'Field',
-				adjustWidth: adjustWidth,
-				adjustHeight: adjustHeight,
-				render: renderField,
-				update: updateField,
-				model: {
-					handler:handler,
-					placeHolder:placeHolder,
-					content:content,
-					style:style,
-					type:type
-				}
-			});
-		}
-		return F4(field);
-	}
-
-	function hoverable(handler, elem)
-	{
-		function onHover(bool)
-		{
-			Signal.sendMessage(handler(bool));
-		}
-		var props = Utils.replace([['hover',onHover]], elem.props);
-		return {
-			props: props,
-			element: elem.element
-		};
-	}
-
-	function clickable(message, elem)
-	{
-		function onClick()
-		{
-			Signal.sendMessage(message);
-		}
-		var props = Utils.replace([['click',onClick]], elem.props);
-		return {
-			props: props,
-			element: elem.element
-		};
-	}
-
-	return Elm.Native.Graphics.Input.values = {
-		button: F2(button),
-		customButton: F4(customButton),
-		checkbox: F2(checkbox),
-		dropDown: F2(dropDown),
-		field: mkField('text'),
-		email: mkField('email'),
-		password: mkField('password'),
-		hoverable: F2(hoverable),
-		clickable: F2(clickable)
 	};
 
 };
