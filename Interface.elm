@@ -9,7 +9,6 @@ import Json.Decode as Json
 import List
 import Signal exposing (Mailbox, Message, Signal)
 import String
-import Text exposing (..)
 
 import DApprox exposing (..)
 import Dist
@@ -18,41 +17,44 @@ import Encounters exposing (..)
 import Pokemon exposing (..)
 import Query exposing (..)
 
+type alias EncounterSlots =
+    { table : EncounterTable
+    , slot1 : Bool
+    , slot2 : Bool
+    , slot3 : Bool
+    , slot4 : Bool
+    , slot5 : Bool
+    , slot6 : Bool
+    , slot7 : Bool
+    , slot8 : Bool
+    , slot9 : Bool
+    , slot10 : Bool
+    }
 type InterfaceStep
-    = IEncounter
-        { table : EncounterTable
-        , slot1 : Bool
-        , slot2 : Bool
-        , slot3 : Bool
-        , slot4 : Bool
-        , slot5 : Bool
-        , slot6 : Bool
-        , slot7 : Bool
-        , slot8 : Bool
-        , slot9 : Bool
-        , slot10 : Bool
-        }
+    = IEncounter EncounterSlots
     | IWalk
         { frames : Int
         }
 
+defaultEncounterSlots =
+    { table = case (List.head allTables) of
+        Just t -> t
+        Nothing -> Debug.crash "No encounter tables!"
+    , slot1 = False
+    , slot2 = False
+    , slot3 = False
+    , slot4 = False
+    , slot5 = False
+    , slot6 = False
+    , slot7 = False
+    , slot8 = False
+    , slot9 = False
+    , slot10 = False
+    }
+
 defaultIEncounter : InterfaceStep
 defaultIEncounter =
-    IEncounter
-        { table = case (List.head allTables) of
-            Just t -> t
-            Nothing -> Debug.crash "No encounter tables!"
-        , slot1 = False
-        , slot2 = False
-        , slot3 = False
-        , slot4 = False
-        , slot5 = False
-        , slot6 = False
-        , slot7 = False
-        , slot8 = False
-        , slot9 = False
-        , slot10 = False
-        }
+    IEncounter defaultEncounterSlots
 
 defaultIWalk : InterfaceStep
 defaultIWalk =
@@ -64,16 +66,19 @@ type alias InterfaceQuery = List (Int, InterfaceStep)
 type alias InterfaceState =
     { nextId : Int
     , query : InterfaceQuery
+    , desire : EncounterSlots
     }
 type InterfaceStateDelta
     = EditStep Int InterfaceStep
     | AddStep
     | RemoveStep Int
+    | EditDesire EncounterSlots
 
 defaultInterfaceState : InterfaceState
 defaultInterfaceState =
     { nextId = 0
     , query = []
+    , desire = defaultEncounterSlots
     }
 
 checkbox : (Bool -> Message) -> Bool -> Html
@@ -84,83 +89,121 @@ checkbox f b = input
     ]
     []
 
+unsafeFromJust : String -> Maybe a -> a
+unsafeFromJust s x =
+    case x of
+        Nothing -> Debug.crash s
+        Just x' -> x'
+
+dropdown : (a -> Message) -> List (String, a) -> Html
+dropdown send options =
+    let
+    valueDict =
+        options
+        |> List.map snd
+        |> List.map2 (,) [0 .. List.length options - 1]
+        |> Dict.fromList
+    in
+    select
+        [ on "change" (Json.at ["target", "selectedIndex"] Json.int)
+            (\i ->
+                valueDict
+                |> Dict.get i
+                |> unsafeFromJust ("Unexpected index from dropdown: " ++ toString i)
+                |> send
+            )
+        , style [("display", "inline-block")]
+        ]
+        (List.map (\(s, _) ->
+            option
+                []
+                [ text s ]
+        ) options)
+
+encounterSlotsField : (EncounterSlots -> Message) -> EncounterSlots -> Html
+encounterSlotsField send enc =
+    let
+    sendTable table =
+        send { enc | table <- table }
+    sendSlot1 b =
+        send { enc | slot1 <- b }
+    sendSlot2 b =
+        send { enc | slot2 <- b }
+    sendSlot3 b =
+        send { enc | slot3 <- b }
+    sendSlot4 b =
+        send { enc | slot4 <- b }
+    sendSlot5 b =
+        send { enc | slot5 <- b }
+    sendSlot6 b =
+        send { enc | slot6 <- b }
+    sendSlot7 b =
+        send { enc | slot7 <- b }
+    sendSlot8 b =
+        send { enc | slot8 <- b }
+    sendSlot9 b =
+        send { enc | slot9 <- b }
+    sendSlot10 b =
+        send { enc | slot10 <- b }
+    in
+    div [ style [("display", "inline-block")] ]
+        [ table []
+            [ tr []
+                [ td []
+                    [ dropdown sendTable (List.map (\t -> (t.name, t)) allTables) ]
+                , td []
+                    [ checkbox sendSlot1 enc.slot1
+                    , text (displayName enc.table.slot1)
+                    ]
+                , td []
+                    [ checkbox sendSlot2 enc.slot2
+                    , text (displayName enc.table.slot2)
+                    ]
+                , td []
+                    [ checkbox sendSlot3 enc.slot3
+                    , text (displayName enc.table.slot3)
+                    ]
+                , td []
+                    [ checkbox sendSlot4 enc.slot4
+                    , text (displayName enc.table.slot4)
+                    ]
+                , td []
+                    [ checkbox sendSlot5 enc.slot5
+                    , text (displayName enc.table.slot5)
+                    ]
+                ]
+            , tr []
+                [ td [] []
+                , td []
+                    [ checkbox sendSlot6 enc.slot6
+                    , text (displayName enc.table.slot6)
+                    ]
+                , td []
+                    [ checkbox sendSlot7 enc.slot7
+                    , text (displayName enc.table.slot7)
+                    ]
+                , td []
+                    [ checkbox sendSlot8 enc.slot8
+                    , text (displayName enc.table.slot8)
+                    ]
+                , td []
+                    [ checkbox sendSlot9 enc.slot9
+                    , text (displayName enc.table.slot9)
+                    ]
+                , td []
+                    [ checkbox sendSlot10 enc.slot10
+                    , text (displayName enc.table.slot10)
+                    ]
+                ]
+            ]
+        ]
+
 stepField : (InterfaceStep -> Message) -> InterfaceStep -> Html
 stepField sendStep step =
     let
     innerField = case step of
         IEncounter enc ->
-            let
-            sendTable table =
-                sendStep (IEncounter { enc | table <- table })
-            sendSlot1 b =
-                sendStep (IEncounter { enc | slot1 <- b })
-            sendSlot2 b =
-                sendStep (IEncounter { enc | slot2 <- b })
-            sendSlot3 b =
-                sendStep (IEncounter { enc | slot3 <- b })
-            sendSlot4 b =
-                sendStep (IEncounter { enc | slot4 <- b })
-            sendSlot5 b =
-                sendStep (IEncounter { enc | slot5 <- b })
-            sendSlot6 b =
-                sendStep (IEncounter { enc | slot6 <- b })
-            sendSlot7 b =
-                sendStep (IEncounter { enc | slot7 <- b })
-            sendSlot8 b =
-                sendStep (IEncounter { enc | slot8 <- b })
-            sendSlot9 b =
-                sendStep (IEncounter { enc | slot9 <- b })
-            sendSlot10 b =
-                sendStep (IEncounter { enc | slot10 <- b })
-            in
-            div []
-                [ select []
-                    (List.map (\t ->
-                        option
-                            []
-                            [ text t.name ]
-                    ) allTables)
-                , div []
-                    [ checkbox sendSlot1 enc.slot1
-                    , text (displayName enc.table.slot1)
-                    ]
-                , div []
-                    [ checkbox sendSlot2 enc.slot2
-                    , text (displayName enc.table.slot2)
-                    ]
-                , div []
-                    [ checkbox sendSlot3 enc.slot3
-                    , text (displayName enc.table.slot3)
-                    ]
-                , div []
-                    [ checkbox sendSlot4 enc.slot4
-                    , text (displayName enc.table.slot4)
-                    ]
-                , div []
-                    [ checkbox sendSlot5 enc.slot5
-                    , text (displayName enc.table.slot5)
-                    ]
-                , div []
-                    [ checkbox sendSlot6 enc.slot6
-                    , text (displayName enc.table.slot6)
-                    ]
-                , div []
-                    [ checkbox sendSlot7 enc.slot7
-                    , text (displayName enc.table.slot7)
-                    ]
-                , div []
-                    [ checkbox sendSlot8 enc.slot8
-                    , text (displayName enc.table.slot8)
-                    ]
-                , div []
-                    [ checkbox sendSlot9 enc.slot9
-                    , text (displayName enc.table.slot9)
-                    ]
-                , div []
-                    [ checkbox sendSlot10 enc.slot10
-                    , text (displayName enc.table.slot10)
-                    ]
-                ]
+            encounterSlotsField (sendStep << IEncounter) enc
         IWalk w ->
             let
             sendContent c =
@@ -168,7 +211,7 @@ stepField sendStep step =
                     Ok n -> sendStep (IWalk { w | frames <- n })
                     Err _ -> sendStep (IWalk w)
             in
-            div []
+            div [ style [("display", "inline-block"), ("margin", "2px")] ]
                 [ input
                     [ type' "text"
                     , on "change" targetValue sendContent
@@ -178,24 +221,11 @@ stepField sendStep step =
                 , text "frames"
                 ]
     in
-    div []
-        [ select
-            [ on "change" targetValue (\v -> if
-                | v == "Encounter" -> sendStep defaultIEncounter
-                | v == "Walk" -> sendStep defaultIWalk
-                | otherwise -> sendStep defaultIEncounter)
-            ]
-            [ option
-                [ on "click" Json.value (\_ -> sendStep defaultIEncounter)
-                , value "Encounter"
-                ]
-                [ text "Encounter" ]
-            , option
-                [ on "click" Json.value (\_ -> sendStep defaultIWalk)
-                , value "Walk"
-                ]
-                [ text "Walk/Wait" ]
-            ]
+    div
+        [ style [("display", "inline-block")] ]
+        [ div 
+            [ style [("display", "inline-block"), ("margin", "3px"), ("vertical-align", "top")] ]
+            [ dropdown sendStep [("Encounter", defaultIEncounter), ("Walk/Wait", defaultIWalk)] ]
         , innerField
         ]
 
@@ -219,6 +249,10 @@ updateInterfaceState delta state =
             { state
             | query <- List.filter (\(i, _) -> i /= n) state.query
             }
+        EditDesire enc ->
+            { state
+            | desire <- enc
+            }
 
 queryInterface : (InterfaceState -> Message) -> InterfaceState -> Html
 queryInterface sendState state =
@@ -228,39 +262,35 @@ queryInterface sendState state =
     in
     div []
         [ div []
-            [ input
-                [ type' "button"
-                , on "click" Json.value (\_ -> sendDelta AddStep)
-                , value "Add step"
-                ]
-                []
-            ]
-        , div [] (List.map (\(i, step) ->
-            div []
-                [ stepField (sendStep i) step
-                , input
+            [ div [] (List.map (\(i, step) ->
+                div []
+                    [ stepField (sendStep i) step
+                    , input
+                        [ type' "button"
+                        , on "click" Json.value (\_ -> sendDelta (RemoveStep i))
+                        , value "Remove"
+                        , style 
+                            [ ("display", "inline-block")
+                            , ("vertical-align", "top")
+                            , ("margin", "3px")
+                            ]
+                        ]
+                        []
+                    ]
+              ) state.query)
+            , div []
+                [ input
                     [ type' "button"
-                    , on "click" Json.value (\_ -> sendDelta (RemoveStep i))
-                    , value "Remove"
+                    , on "click" Json.value (\_ -> sendDelta AddStep)
+                    , value "Add step"
                     ]
                     []
                 ]
-          ) state.query)
+            ]
+        , encounterSlotsField (sendDelta << EditDesire) state.desire
         ]
 
-successFunc :
-    { table : EncounterTable
-    , slot1 : Bool
-    , slot2 : Bool
-    , slot3 : Bool
-    , slot4 : Bool
-    , slot5 : Bool
-    , slot6 : Bool
-    , slot7 : Bool
-    , slot8 : Bool
-    , slot9 : Bool
-    , slot10 : Bool
-    } -> Int -> Float
+successFunc : EncounterSlots -> Int -> Float
 successFunc enc =
     let
         desiredSlots =
@@ -281,19 +311,7 @@ successFunc enc =
     in
     Dist.probability (\x -> List.member x desiredSlots) << dsumSlotDist enc.table.rate
 
-encSpecies : 
-    { table : EncounterTable
-    , slot1 : Bool
-    , slot2 : Bool
-    , slot3 : Bool
-    , slot4 : Bool
-    , slot5 : Bool
-    , slot6 : Bool
-    , slot7 : Bool
-    , slot8 : Bool
-    , slot9 : Bool
-    , slot10 : Bool
-    } -> Species
+encSpecies : EncounterSlots -> Species
 encSpecies enc = if
     | enc.slot1 -> enc.table.slot1.species
     | enc.slot2 -> enc.table.slot2.species

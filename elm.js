@@ -2448,6 +2448,32 @@ Elm.Encounters.make = function (_elm) {
              ,level: level
              ,species: $Maybe.withDefault($Pokemon.noSpecies)($Dict.get(name)($Pokemon.speciesByName))};
    });
+   var route1table = {_: {}
+                     ,name: "Route 1"
+                     ,rate: 25
+                     ,slot1: A2(encounter,"Pidgey",3)
+                     ,slot10: A2(encounter,
+                     "Pidgey",
+                     5)
+                     ,slot2: A2(encounter,
+                     "Rattata",
+                     3)
+                     ,slot3: A2(encounter,
+                     "Rattata",
+                     3)
+                     ,slot4: A2(encounter,
+                     "Rattata",
+                     2)
+                     ,slot5: A2(encounter,"Pidgey",2)
+                     ,slot6: A2(encounter,"Pidgey",3)
+                     ,slot7: A2(encounter,"Pidgey",3)
+                     ,slot8: A2(encounter,
+                     "Rattata",
+                     4)
+                     ,slot9: A2(encounter,
+                     "Pidgey",
+                     4)};
+   var defaultTable = route1table;
    var route22table = {_: {}
                       ,name: "Route 22"
                       ,rate: 25
@@ -2481,7 +2507,8 @@ Elm.Encounters.make = function (_elm) {
                       ,slot9: A2(encounter,
                       "Nidoran F",
                       3)};
-   var allTables = _L.fromArray([route22table]);
+   var allTables = _L.fromArray([route1table
+                                ,route22table]);
    var EncounterTable = function (a) {
       return function (b) {
          return function (c) {
@@ -2596,6 +2623,8 @@ Elm.Encounters.make = function (_elm) {
                             ,displayName: displayName
                             ,noEncounter: noEncounter
                             ,allTables: allTables
+                            ,defaultTable: defaultTable
+                            ,route1table: route1table
                             ,route22table: route22table};
    return _elm.Encounters.values;
 };
@@ -4822,10 +4851,10 @@ Elm.Interface.make = function (_elm) {
                            ,_0: step._0.frames + _v0._0
                            ,_1: _v0._1};}
                  _U.badCase($moduleName,
-                 "between lines 315 and 328");
+                 "between lines 333 and 346");
               }();}
          _U.badCase($moduleName,
-         "between lines 315 and 328");
+         "between lines 333 and 346");
       }();
    });
    var buildQuery = function (s) {
@@ -4853,6 +4882,58 @@ Elm.Interface.make = function (_elm) {
                 }};
       }();
    };
+   var unsafeFromJust = F2(function (s,
+   x) {
+      return function () {
+         switch (x.ctor)
+         {case "Just": return x._0;
+            case "Nothing":
+            return $Debug.crash(s);}
+         _U.badCase($moduleName,
+         "between lines 94 and 96");
+      }();
+   });
+   var dropdown = F2(function (send,
+   options) {
+      return function () {
+         var valueDict = $Dict.fromList(A2($List.map2,
+         F2(function (v0,v1) {
+            return {ctor: "_Tuple2"
+                   ,_0: v0
+                   ,_1: v1};
+         }),
+         _L.range(0,
+         $List.length(options) - 1))($List.map($Basics.snd)(options)));
+         return A2($Html.select,
+         _L.fromArray([A3($Html$Events.on,
+                      "change",
+                      A2($Json$Decode.at,
+                      _L.fromArray(["target"
+                                   ,"selectedIndex"]),
+                      $Json$Decode.$int),
+                      function (i) {
+                         return send(unsafeFromJust(A2($Basics._op["++"],
+                         "Unexpected index from dropdown: ",
+                         $Basics.toString(i)))($Dict.get(i)(valueDict)));
+                      })
+                      ,$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                            ,_0: "display"
+                                                            ,_1: "inline-block"}]))]),
+         A2($List.map,
+         function (_v9) {
+            return function () {
+               switch (_v9.ctor)
+               {case "_Tuple2":
+                  return A2($Html.option,
+                    _L.fromArray([]),
+                    _L.fromArray([$Html.text(_v9._0)]));}
+               _U.badCase($moduleName,
+               "between lines 118 and 120");
+            }();
+         },
+         options));
+      }();
+   });
    var checkbox = F2(function (f,
    b) {
       return A2($Html.input,
@@ -4864,9 +4945,154 @@ Elm.Interface.make = function (_elm) {
                    ,$Html$Attributes.checked(b)]),
       _L.fromArray([]));
    });
-   var defaultInterfaceState = {_: {}
-                               ,nextId: 0
-                               ,query: _L.fromArray([])};
+   var encounterSlotsField = F2(function (send,
+   enc) {
+      return function () {
+         var sendSlot10 = function (b) {
+            return send(_U.replace([["slot10"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot9 = function (b) {
+            return send(_U.replace([["slot9"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot8 = function (b) {
+            return send(_U.replace([["slot8"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot7 = function (b) {
+            return send(_U.replace([["slot7"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot6 = function (b) {
+            return send(_U.replace([["slot6"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot5 = function (b) {
+            return send(_U.replace([["slot5"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot4 = function (b) {
+            return send(_U.replace([["slot4"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot3 = function (b) {
+            return send(_U.replace([["slot3"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot2 = function (b) {
+            return send(_U.replace([["slot2"
+                                    ,b]],
+            enc));
+         };
+         var sendSlot1 = function (b) {
+            return send(_U.replace([["slot1"
+                                    ,b]],
+            enc));
+         };
+         var sendTable = function (table) {
+            return send(_U.replace([["table"
+                                    ,table]],
+            enc));
+         };
+         return A2($Html.div,
+         _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                            ,_0: "display"
+                                                            ,_1: "inline-block"}]))]),
+         _L.fromArray([A2($Html.table,
+         _L.fromArray([]),
+         _L.fromArray([A2($Html.tr,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(dropdown,
+                                   sendTable,
+                                   A2($List.map,
+                                   function (t) {
+                                      return {ctor: "_Tuple2"
+                                             ,_0: t.name
+                                             ,_1: t};
+                                   },
+                                   $Encounters.allTables))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot1,
+                                                enc.slot1)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot1))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot2,
+                                                enc.slot2)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot2))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot3,
+                                                enc.slot3)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot3))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot4,
+                                                enc.slot4)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot4))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot5,
+                                                enc.slot5)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot5))]))]))
+                      ,A2($Html.tr,
+                      _L.fromArray([]),
+                      _L.fromArray([A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot6,
+                                                enc.slot6)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot6))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot7,
+                                                enc.slot7)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot7))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot8,
+                                                enc.slot8)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot8))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot9,
+                                                enc.slot9)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot9))]))
+                                   ,A2($Html.td,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2(checkbox,
+                                                sendSlot10,
+                                                enc.slot10)
+                                                ,$Html.text($Encounters.displayName(enc.table.slot10))]))]))]))]));
+      }();
+   });
+   var EditDesire = function (a) {
+      return {ctor: "EditDesire"
+             ,_0: a};
+   };
    var RemoveStep = function (a) {
       return {ctor: "RemoveStep"
              ,_0: a};
@@ -4878,12 +5104,38 @@ Elm.Interface.make = function (_elm) {
              ,_0: a
              ,_1: b};
    });
-   var InterfaceState = F2(function (a,
-   b) {
+   var InterfaceState = F3(function (a,
+   b,
+   c) {
       return {_: {}
+             ,desire: c
              ,nextId: a
              ,query: b};
    });
+   var defaultEncounterSlots = {_: {}
+                               ,slot1: false
+                               ,slot10: false
+                               ,slot2: false
+                               ,slot3: false
+                               ,slot4: false
+                               ,slot5: false
+                               ,slot6: false
+                               ,slot7: false
+                               ,slot8: false
+                               ,slot9: false
+                               ,table: function () {
+                                  var _v13 = $List.head($Encounters.allTables);
+                                  switch (_v13.ctor)
+                                  {case "Just": return _v13._0;
+                                     case "Nothing":
+                                     return $Debug.crash("No encounter tables!");}
+                                  _U.badCase($moduleName,
+                                  "between lines 40 and 43");
+                               }()};
+   var defaultInterfaceState = {_: {}
+                               ,desire: defaultEncounterSlots
+                               ,nextId: 0
+                               ,query: _L.fromArray([])};
    var IWalk = function (a) {
       return {ctor: "IWalk",_0: a};
    };
@@ -4893,26 +5145,7 @@ Elm.Interface.make = function (_elm) {
       return {ctor: "IEncounter"
              ,_0: a};
    };
-   var defaultIEncounter = IEncounter({_: {}
-                                      ,slot1: false
-                                      ,slot10: false
-                                      ,slot2: false
-                                      ,slot3: false
-                                      ,slot4: false
-                                      ,slot5: false
-                                      ,slot6: false
-                                      ,slot7: false
-                                      ,slot8: false
-                                      ,slot9: false
-                                      ,table: function () {
-                                         var _v7 = $List.head($Encounters.allTables);
-                                         switch (_v7.ctor)
-                                         {case "Just": return _v7._0;
-                                            case "Nothing":
-                                            return $Debug.crash("No encounter tables!");}
-                                         _U.badCase($moduleName,
-                                         "between lines 42 and 45");
-                                      }()});
+   var defaultIEncounter = IEncounter(defaultEncounterSlots);
    var updateInterfaceState = F2(function (delta,
    state) {
       return function () {
@@ -4927,21 +5160,25 @@ Elm.Interface.make = function (_elm) {
                                              ,_0: state.nextId
                                              ,_1: defaultIEncounter}]))]],
               state);
+            case "EditDesire":
+            return _U.replace([["desire"
+                               ,delta._0]],
+              state);
             case "EditStep":
             return _U.replace([["query"
                                ,A2($List.map,
-                               function (_v13) {
+                               function (_v20) {
                                   return function () {
-                                     switch (_v13.ctor)
+                                     switch (_v20.ctor)
                                      {case "_Tuple2":
-                                        return _U.eq(_v13._0,
+                                        return _U.eq(_v20._0,
                                           delta._0) ? {ctor: "_Tuple2"
-                                                      ,_0: _v13._0
+                                                      ,_0: _v20._0
                                                       ,_1: delta._1} : {ctor: "_Tuple2"
-                                                                       ,_0: _v13._0
-                                                                       ,_1: _v13._1};}
+                                                                       ,_0: _v20._0
+                                                                       ,_1: _v20._1};}
                                      _U.badCase($moduleName,
-                                     "between lines 208 and 210");
+                                     "between lines 238 and 240");
                                   }();
                                },
                                state.query)]],
@@ -4949,20 +5186,20 @@ Elm.Interface.make = function (_elm) {
             case "RemoveStep":
             return _U.replace([["query"
                                ,A2($List.filter,
-                               function (_v17) {
+                               function (_v24) {
                                   return function () {
-                                     switch (_v17.ctor)
+                                     switch (_v24.ctor)
                                      {case "_Tuple2":
-                                        return !_U.eq(_v17._0,
+                                        return !_U.eq(_v24._0,
                                           delta._0);}
                                      _U.badCase($moduleName,
-                                     "on line 220, column 48 to 54");
+                                     "on line 250, column 48 to 54");
                                   }();
                                },
                                state.query)]],
               state);}
          _U.badCase($moduleName,
-         "between lines 204 and 221");
+         "between lines 234 and 255");
       }();
    });
    var stepField = F2(function (sendStep,
@@ -4971,152 +5208,34 @@ Elm.Interface.make = function (_elm) {
          var innerField = function () {
             switch (step.ctor)
             {case "IEncounter":
-               return function () {
-                    var sendSlot10 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot10"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot9 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot9"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot8 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot8"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot7 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot7"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot6 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot6"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot5 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot5"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot4 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot4"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot3 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot3"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot2 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot2"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendSlot1 = function (b) {
-                       return sendStep(IEncounter(_U.replace([["slot1"
-                                                              ,b]],
-                       step._0)));
-                    };
-                    var sendTable = function (table) {
-                       return sendStep(IEncounter(_U.replace([["table"
-                                                              ,table]],
-                       step._0)));
-                    };
-                    return A2($Html.div,
-                    _L.fromArray([]),
-                    _L.fromArray([A2($Html.select,
-                                 _L.fromArray([]),
-                                 A2($List.map,
-                                 function (t) {
-                                    return A2($Html.option,
-                                    _L.fromArray([]),
-                                    _L.fromArray([$Html.text(t.name)]));
-                                 },
-                                 $Encounters.allTables))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot1,
-                                              step._0.slot1)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot1))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot2,
-                                              step._0.slot2)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot2))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot3,
-                                              step._0.slot3)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot3))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot4,
-                                              step._0.slot4)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot4))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot5,
-                                              step._0.slot5)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot5))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot6,
-                                              step._0.slot6)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot6))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot7,
-                                              step._0.slot7)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot7))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot8,
-                                              step._0.slot8)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot8))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot9,
-                                              step._0.slot9)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot9))]))
-                                 ,A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(checkbox,
-                                              sendSlot10,
-                                              step._0.slot10)
-                                              ,$Html.text($Encounters.displayName(step._0.table.slot10))]))]));
-                 }();
+               return A2(encounterSlotsField,
+                 function ($) {
+                    return sendStep(IEncounter($));
+                 },
+                 step._0);
                case "IWalk":
                return function () {
                     var sendContent = function (c) {
                        return function () {
-                          var _v24 = $String.toInt(c);
-                          switch (_v24.ctor)
+                          var _v31 = $String.toInt(c);
+                          switch (_v31.ctor)
                           {case "Err":
                              return sendStep(IWalk(step._0));
                              case "Ok":
                              return sendStep(IWalk(_U.replace([["frames"
-                                                               ,_v24._0]],
+                                                               ,_v31._0]],
                                step._0)));}
                           _U.badCase($moduleName,
-                          "between lines 167 and 170");
+                          "between lines 210 and 213");
                        }();
                     };
                     return A2($Html.div,
-                    _L.fromArray([]),
+                    _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                       ,_0: "display"
+                                                                       ,_1: "inline-block"}
+                                                                      ,{ctor: "_Tuple2"
+                                                                       ,_0: "margin"
+                                                                       ,_1: "2px"}]))]),
                     _L.fromArray([A2($Html.input,
                                  _L.fromArray([$Html$Attributes.type$("text")
                                               ,A3($Html$Events.on,
@@ -5128,41 +5247,30 @@ Elm.Interface.make = function (_elm) {
                                  ,$Html.text("frames")]));
                  }();}
             _U.badCase($moduleName,
-            "between lines 90 and 180");
+            "between lines 204 and 223");
          }();
          return A2($Html.div,
-         _L.fromArray([]),
-         _L.fromArray([A2($Html.select,
-                      _L.fromArray([A3($Html$Events.on,
-                      "change",
-                      $Html$Events.targetValue,
-                      function (v) {
-                         return _U.eq(v,
-                         "Encounter") ? sendStep(defaultIEncounter) : _U.eq(v,
-                         "Walk") ? sendStep(defaultIWalk) : sendStep(defaultIEncounter);
-                      })]),
-                      _L.fromArray([A2($Html.option,
-                                   _L.fromArray([A3($Html$Events.on,
-                                                "click",
-                                                $Json$Decode.value,
-                                                function (_v27) {
-                                                   return function () {
-                                                      return sendStep(defaultIEncounter);
-                                                   }();
-                                                })
-                                                ,$Html$Attributes.value("Encounter")]),
-                                   _L.fromArray([$Html.text("Encounter")]))
-                                   ,A2($Html.option,
-                                   _L.fromArray([A3($Html$Events.on,
-                                                "click",
-                                                $Json$Decode.value,
-                                                function (_v29) {
-                                                   return function () {
-                                                      return sendStep(defaultIWalk);
-                                                   }();
-                                                })
-                                                ,$Html$Attributes.value("Walk")]),
-                                   _L.fromArray([$Html.text("Walk/Wait")]))]))
+         _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                            ,_0: "display"
+                                                            ,_1: "inline-block"}]))]),
+         _L.fromArray([A2($Html.div,
+                      _L.fromArray([$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                         ,_0: "display"
+                                                                         ,_1: "inline-block"}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "margin"
+                                                                         ,_1: "3px"}
+                                                                        ,{ctor: "_Tuple2"
+                                                                         ,_0: "vertical-align"
+                                                                         ,_1: "top"}]))]),
+                      _L.fromArray([A2(dropdown,
+                      sendStep,
+                      _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: "Encounter"
+                                    ,_1: defaultIEncounter}
+                                   ,{ctor: "_Tuple2"
+                                    ,_0: "Walk/Wait"
+                                    ,_1: defaultIWalk}]))]))
                       ,innerField]));
       }();
    });
@@ -5184,60 +5292,116 @@ Elm.Interface.make = function (_elm) {
          _L.fromArray([]),
          _L.fromArray([A2($Html.div,
                       _L.fromArray([]),
-                      _L.fromArray([A2($Html.input,
-                      _L.fromArray([$Html$Attributes.type$("button")
-                                   ,A3($Html$Events.on,
-                                   "click",
-                                   $Json$Decode.value,
-                                   function (_v31) {
+                      _L.fromArray([A2($Html.div,
+                                   _L.fromArray([]),
+                                   A2($List.map,
+                                   function (_v34) {
                                       return function () {
-                                         return sendDelta(AddStep);
+                                         switch (_v34.ctor)
+                                         {case "_Tuple2":
+                                            return A2($Html.div,
+                                              _L.fromArray([]),
+                                              _L.fromArray([A2(stepField,
+                                                           sendStep(_v34._0),
+                                                           _v34._1)
+                                                           ,A2($Html.input,
+                                                           _L.fromArray([$Html$Attributes.type$("button")
+                                                                        ,A3($Html$Events.on,
+                                                                        "click",
+                                                                        $Json$Decode.value,
+                                                                        function (_v38) {
+                                                                           return function () {
+                                                                              return sendDelta(RemoveStep(_v34._0));
+                                                                           }();
+                                                                        })
+                                                                        ,$Html$Attributes.value("Remove")
+                                                                        ,$Html$Attributes.style(_L.fromArray([{ctor: "_Tuple2"
+                                                                                                              ,_0: "display"
+                                                                                                              ,_1: "inline-block"}
+                                                                                                             ,{ctor: "_Tuple2"
+                                                                                                              ,_0: "vertical-align"
+                                                                                                              ,_1: "top"}
+                                                                                                             ,{ctor: "_Tuple2"
+                                                                                                              ,_0: "margin"
+                                                                                                              ,_1: "3px"}]))]),
+                                                           _L.fromArray([]))]));}
+                                         _U.badCase($moduleName,
+                                         "between lines 266 and 279");
                                       }();
-                                   })
-                                   ,$Html$Attributes.value("Add step")]),
-                      _L.fromArray([]))]))
-                      ,A2($Html.div,
-                      _L.fromArray([]),
-                      A2($List.map,
-                      function (_v33) {
-                         return function () {
-                            switch (_v33.ctor)
-                            {case "_Tuple2":
-                               return A2($Html.div,
-                                 _L.fromArray([]),
-                                 _L.fromArray([A2(stepField,
-                                              sendStep(_v33._0),
-                                              _v33._1)
-                                              ,A2($Html.input,
-                                              _L.fromArray([$Html$Attributes.type$("button")
-                                                           ,A3($Html$Events.on,
-                                                           "click",
-                                                           $Json$Decode.value,
-                                                           function (_v37) {
-                                                              return function () {
-                                                                 return sendDelta(RemoveStep(_v33._0));
-                                                              }();
-                                                           })
-                                                           ,$Html$Attributes.value("Remove")]),
-                                              _L.fromArray([]))]));}
-                            _U.badCase($moduleName,
-                            "between lines 239 and 247");
-                         }();
+                                   },
+                                   state.query))
+                                   ,A2($Html.div,
+                                   _L.fromArray([]),
+                                   _L.fromArray([A2($Html.input,
+                                   _L.fromArray([$Html$Attributes.type$("button")
+                                                ,A3($Html$Events.on,
+                                                "click",
+                                                $Json$Decode.value,
+                                                function (_v40) {
+                                                   return function () {
+                                                      return sendDelta(AddStep);
+                                                   }();
+                                                })
+                                                ,$Html$Attributes.value("Add step")]),
+                                   _L.fromArray([]))]))]))
+                      ,A2(encounterSlotsField,
+                      function ($) {
+                         return sendDelta(EditDesire($));
                       },
-                      state.query))]));
+                      state.desire)]));
       }();
    });
+   var EncounterSlots = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return function (k) {
+                                    return {_: {}
+                                           ,slot1: b
+                                           ,slot10: k
+                                           ,slot2: c
+                                           ,slot3: d
+                                           ,slot4: e
+                                           ,slot5: f
+                                           ,slot6: g
+                                           ,slot7: h
+                                           ,slot8: i
+                                           ,slot9: j
+                                           ,table: a};
+                                 };
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
    _elm.Interface.values = {_op: _op
+                           ,EncounterSlots: EncounterSlots
                            ,IEncounter: IEncounter
                            ,IWalk: IWalk
+                           ,defaultEncounterSlots: defaultEncounterSlots
                            ,defaultIEncounter: defaultIEncounter
                            ,defaultIWalk: defaultIWalk
                            ,InterfaceState: InterfaceState
                            ,EditStep: EditStep
                            ,AddStep: AddStep
                            ,RemoveStep: RemoveStep
+                           ,EditDesire: EditDesire
                            ,defaultInterfaceState: defaultInterfaceState
                            ,checkbox: checkbox
+                           ,unsafeFromJust: unsafeFromJust
+                           ,dropdown: dropdown
+                           ,encounterSlotsField: encounterSlotsField
                            ,stepField: stepField
                            ,updateInterfaceState: updateInterfaceState
                            ,queryInterface: queryInterface
@@ -16175,6 +16339,50 @@ Elm.Worker.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm);
+   var filterFoldp = F3(function (f,
+   s0,
+   inp) {
+      return function () {
+         var f$ = F2(function (x,
+         _v0) {
+            return function () {
+               switch (_v0.ctor)
+               {case "_Tuple2":
+                  return function () {
+                       var _v4 = A2(f,x,_v0._1);
+                       switch (_v4.ctor)
+                       {case "Just":
+                          return {ctor: "_Tuple2"
+                                 ,_0: true
+                                 ,_1: _v4._0};
+                          case "Nothing":
+                          return {ctor: "_Tuple2"
+                                 ,_0: false
+                                 ,_1: _v0._1};}
+                       _U.badCase($moduleName,
+                       "between lines 42 and 45");
+                    }();}
+               _U.badCase($moduleName,
+               "between lines 42 and 45");
+            }();
+         });
+         return A2($Signal.filterMap,
+         function (_v6) {
+            return function () {
+               switch (_v6.ctor)
+               {case "_Tuple2":
+                  return _v6._0 ? $Maybe.Just(_v6._1) : $Maybe.Nothing;}
+               _U.badCase($moduleName,
+               "on line 48, column 37 to 66");
+            }();
+         },
+         s0)(A2($Signal.foldp,
+         f$,
+         {ctor: "_Tuple2"
+         ,_0: true
+         ,_1: s0})(inp));
+      }();
+   });
    var workerClock = A2($Signal._op["<~"],
    $Debug.watch("frame time"),
    $Time.fps(30));
@@ -16188,7 +16396,7 @@ Elm.Worker.make = function (_elm) {
             case "Working":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 20 and 23");
+         "between lines 21 and 24");
       }();
    };
    var isWorking = function (state) {
@@ -16198,7 +16406,7 @@ Elm.Worker.make = function (_elm) {
             case "Unstarted": return false;
             case "Working": return true;}
          _U.badCase($moduleName,
-         "between lines 14 and 17");
+         "between lines 15 and 18");
       }();
    };
    var Worker = F2(function (a,b) {
@@ -16219,65 +16427,61 @@ Elm.Worker.make = function (_elm) {
    s) {
       return _U.cmp(n,
       0) < 1 ? Working(s) : function () {
-         var _v6 = f(s);
-         switch (_v6.ctor)
+         var _v16 = f(s);
+         switch (_v16.ctor)
          {case "Done":
-            return Done(_v6._0);
+            return Done(_v16._0);
             case "Unstarted":
             return Unstarted;
             case "Working":
             return A3(iterateStateFunc,
               n - 1,
               f,
-              _v6._0);}
+              _v16._0);}
          _U.badCase($moduleName,
-         "between lines 32 and 35");
+         "between lines 33 and 36");
       }();
    });
    var createWorker = F2(function (inputSignal,
    step) {
       return function () {
-         var state = A3($Signal.foldp,
-         F2(function (inp,_v9) {
+         var state = A3(filterFoldp,
+         F2(function (inp,_v19) {
             return function () {
-               switch (_v9.ctor)
+               switch (_v19.ctor)
                {case "_Tuple2":
                   return function () {
                        switch (inp.ctor)
                        {case "Just":
-                          return {ctor: "_Tuple2"
-                                 ,_0: inp
-                                 ,_1: Working(inp._0)};
+                          return $Maybe.Just({ctor: "_Tuple2"
+                                             ,_0: inp
+                                             ,_1: Working(inp._0)});
                           case "Nothing":
                           return function () {
-                               switch (_v9._1.ctor)
+                               switch (_v19._1.ctor)
                                {case "Done":
-                                  return {ctor: "_Tuple2"
-                                         ,_0: _v9._0
-                                         ,_1: Done(_v9._1._0)};
+                                  return $Maybe.Nothing;
                                   case "Unstarted":
-                                  return {ctor: "_Tuple2"
-                                         ,_0: _v9._0
-                                         ,_1: Unstarted};
+                                  return $Maybe.Nothing;
                                   case "Working":
-                                  return {ctor: "_Tuple2"
-                                         ,_0: _v9._0
-                                         ,_1: step(_v9._1._0)};}
+                                  return $Maybe.Just({ctor: "_Tuple2"
+                                                     ,_0: _v19._0
+                                                     ,_1: step(_v19._1._0)});}
                                _U.badCase($moduleName,
-                               "between lines 42 and 46");
+                               "between lines 55 and 59");
                             }();}
                        _U.badCase($moduleName,
-                       "between lines 41 and 47");
+                       "between lines 54 and 60");
                     }();}
                _U.badCase($moduleName,
-               "between lines 41 and 47");
+               "between lines 54 and 60");
             }();
          }),
          {ctor: "_Tuple2"
          ,_0: $Maybe.Nothing
          ,_1: Unstarted},
          $Signal.merge(A2($Signal.map,
-         function (_v18) {
+         function (_v28) {
             return function () {
                return $Maybe.Nothing;
             }();
@@ -16301,6 +16505,7 @@ Elm.Worker.make = function (_elm) {
                         ,getResult: getResult
                         ,workerClock: workerClock
                         ,iterateStateFunc: iterateStateFunc
+                        ,filterFoldp: filterFoldp
                         ,createWorker: createWorker};
    return _elm.Worker.values;
 };

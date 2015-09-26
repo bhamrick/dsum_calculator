@@ -1,6 +1,7 @@
 module Worker where
 
 import Debug
+import Maybe
 import Signal exposing ((<~))
 import Time exposing (Time, fps)
 
@@ -34,16 +35,28 @@ iterateStateFunc n f s =
         Done r -> Done r
         Unstarted -> Unstarted
 
+filterFoldp : (a -> s -> Maybe s) -> s -> Signal a -> Signal s
+filterFoldp f s0 inp =
+    let
+    f' x (_, s) =
+        case f x s of
+            Nothing -> (False, s)
+            Just s' -> (True, s')
+    in
+    inp
+    |> Signal.foldp f' (True, s0)
+    |> Signal.filterMap (\(b, x) -> if b then Just x else Nothing) s0
+
 createWorker : Signal s -> (s -> WorkerState s r) -> Worker s r
 createWorker inputSignal step =
     let state = 
-        Signal.foldp
+        filterFoldp
             (\inp (initial, state) -> case inp of
                 Nothing -> case state of
-                    Working s -> (initial, step s)
-                    Done r -> (initial, Done r)
-                    Unstarted -> (initial, Unstarted)
-                Just inp' -> (inp, Working inp')
+                    Working s -> Just (initial, step s)
+                    Done r -> Nothing
+                    Unstarted -> Nothing
+                Just inp' -> Just (inp, Working inp')
             )
             (Nothing, Unstarted)
             (Signal.map Just inputSignal

@@ -1,6 +1,6 @@
 module Encounters where
 
-import Dict
+import Dict exposing (Dict)
 import Maybe
 
 import Dist exposing (Dist)
@@ -78,12 +78,32 @@ noEncounter = { species = noSpecies, level = 0 }
 
 allTables : List EncounterTable
 allTables =
-    [ route22table
+    [ route1table
+    , route22table
     ]
+
+defaultTable : EncounterTable
+defaultTable = route1table
 
 -- Encounter tables for red
 -- TODO: Add other tables
 -- TODO: Include blue tables
+route1table : EncounterTable
+route1table =
+    { name = "Route 1"
+    , rate = 25
+    , slot1 = encounter "Pidgey" 3
+    , slot2 = encounter "Rattata" 3
+    , slot3 = encounter "Rattata" 3
+    , slot4 = encounter "Rattata" 2
+    , slot5 = encounter "Pidgey" 2
+    , slot6 = encounter "Pidgey" 3
+    , slot7 = encounter "Pidgey" 3
+    , slot8 = encounter "Rattata" 4
+    , slot9 = encounter "Pidgey" 4
+    , slot10 = encounter "Pidgey" 5
+    }
+
 route22table : EncounterTable
 route22table =
     { name = "Route 22"
