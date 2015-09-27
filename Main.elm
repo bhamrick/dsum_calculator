@@ -41,6 +41,7 @@ thresholdInput =
                 , on "change" Json.string (Signal.message thresholdBox.address)
                 , placeholder "0.25"
                 , value v
+                , style [("margin", "2px")]
                 ]
                 []
             ]
@@ -142,7 +143,20 @@ queryProbabilitiesSignal = Signal.map (\state ->
     ) queryWorker.state
 
 queryGraph : Signal Graph
-queryGraph = graph (Just (0, 1000)) (Just (0, 1)) << (\x -> [x]) << toPath <~ queryProbabilitiesSignal
+queryGraph = (\probs dur ->
+    probs
+    |> toPath
+    |> (\x -> [x])
+    |> graph (Just (0, dur)) (Just (0, 1))
+    )
+    <~ queryProbabilitiesSignal
+    ~ Signal.map
+        (toFloat
+        << Maybe.withDefault 1000
+        << Maybe.map .duration
+        << Maybe.map (\(q, _, _, _) -> q)
+        << fst
+      ) queryWorker.state
 
 strategy : Signal Strategy
 strategy = buildStrategy <~ thresholdSignal ~ (Signal.map (Maybe.withDefault []) queryWorker.signal)

@@ -66,19 +66,27 @@ type alias InterfaceQuery = List (Int, InterfaceStep)
 type alias InterfaceState =
     { nextId : Int
     , query : InterfaceQuery
+    , lead : Species
     , desire : EncounterSlots
+    , duration : Int
     }
 type InterfaceStateDelta
     = EditStep Int InterfaceStep
     | AddStep
     | RemoveStep Int
     | EditDesire EncounterSlots
+    | EditLead Species
+    | EditDuration Int
 
 defaultInterfaceState : InterfaceState
 defaultInterfaceState =
     { nextId = 0
     , query = []
+    , lead = speciesByPokedex
+        |> Dict.get 1
+        |> Maybe.withDefault noSpecies
     , desire = defaultEncounterSlots
+    , duration = 1000
     }
 
 checkbox : (Bool -> Message) -> Bool -> Html
@@ -216,6 +224,7 @@ stepField sendStep step =
                     [ type' "text"
                     , on "change" targetValue sendContent
                     , placeholder "0"
+                    , value (toString w.frames)
                     ]
                     []
                 , text "frames"
@@ -253,41 +262,87 @@ updateInterfaceState delta state =
             { state
             | desire <- enc
             }
+        EditLead species ->
+            { state
+            | lead <- species
+            }
+        EditDuration dur ->
+            { state
+            | duration <- dur
+            }
 
 queryInterface : (InterfaceState -> Message) -> InterfaceState -> Html
 queryInterface sendState state =
     let
     sendDelta delta = sendState (updateInterfaceState delta state)
     sendStep i step = sendDelta (EditStep i step)
+    sendDuration durString =
+        case String.toInt durString of
+            Err _ -> sendDelta (EditDuration state.duration)
+            Ok dur -> sendDelta (EditDuration dur)
     in
-    div []
-        [ div []
-            [ div [] (List.map (\(i, step) ->
-                div []
-                    [ stepField (sendStep i) step
-                    , input
-                        [ type' "button"
-                        , on "click" Json.value (\_ -> sendDelta (RemoveStep i))
-                        , value "Remove"
-                        , style 
-                            [ ("display", "inline-block")
-                            , ("vertical-align", "top")
-                            , ("margin", "3px")
+    table []
+        [ tr []
+            [ td []
+                [ text "Previous Encounters" ]
+            , td []
+                [ div [] (List.map (\(i, step) ->
+                    div []
+                        [ stepField (sendStep i) step
+                        , input
+                            [ type' "button"
+                            , on "click" Json.value (\_ -> sendDelta (RemoveStep i))
+                            , value "Remove"
+                            , style 
+                                [ ("display", "inline-block")
+                                , ("vertical-align", "top")
+                                , ("margin", "3px")
+                                ]
                             ]
+                            []
+                        ]
+                  ) state.query)
+                , div []
+                    [ input
+                        [ type' "button"
+                        , on "click" Json.value (\_ -> sendDelta AddStep)
+                        , value "Add step"
+                        , style [("margin", "1px")]
                         ]
                         []
                     ]
-              ) state.query)
-            , div []
-                [ input
-                    [ type' "button"
-                    , on "click" Json.value (\_ -> sendDelta AddStep)
-                    , value "Add step"
-                    ]
-                    []
                 ]
             ]
-        , encounterSlotsField (sendDelta << EditDesire) state.desire
+        , tr []
+            [ td []
+                [ text "Lead Pokemon" ]
+            , td
+                [ style [("padding", "3px")] ]
+                [ speciesList
+                    |> List.sortBy .pokedexNumber
+                    |> List.map (\s -> (s.name, s))
+                    |> dropdown (sendDelta << EditLead)
+                ]
+            ]
+        , tr []
+            [ td []
+                [ text "Desired Encounters" ]
+            , td []
+                [ encounterSlotsField (sendDelta << EditDesire) state.desire ]
+            ]
+        , tr []
+            [ td []
+                [ text "Duration" ]
+            , td []
+                [ input
+                    [ type' "text"
+                    , on "change" targetValue sendDuration
+                    , value (toString state.duration)
+                    ]
+                    []
+                , text "frames"
+                ]
+            ]
         ]
 
 successFunc : EncounterSlots -> Int -> Float
@@ -305,7 +360,7 @@ successFunc enc =
             , enc.slot9
             , enc.slot10
             ]
-            |> List.map2 (,) [ 1 .. 10]
+            |> List.map2 (,) [1 .. 10]
             |> List.filter snd
             |> List.map fst
     in
@@ -350,8 +405,8 @@ buildQuery s =
     let
     (offset, revSteps) = List.foldl buildQueryStep (0, []) (List.map snd s.query)
     in
-    { duration = 1000
+    { duration = s.duration
     , offset = offset
-    , successFunc = Dist.probability (\x -> List.member x [2, 4]) << dsumSlotDist 25
+    , successFunc = successFunc s.desire
     , initialSteps = List.reverse revSteps
     }
