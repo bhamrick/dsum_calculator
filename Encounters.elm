@@ -290,6 +290,22 @@ route11table =
     , slot10 = encounter "Drowzee" 15
     }
 
+route12table : EncounterTable
+route12table =
+    { name = "Route 12"
+    , rate = 15
+    , slot1 = encounter "Oddish" 24
+    , slot2 = encounter "Pidgey" 25
+    , slot3 = encounter "Pidgey" 23
+    , slot4 = encounter "Venonat" 24
+    , slot5 = encounter "Oddish" 22
+    , slot6 = encounter "Venonat" 26
+    , slot7 = encounter "Oddish" 26
+    , slot8 = encounter "Pidgey" 27
+    , slot9 = encounter "Gloom" 28
+    , slot10 = encounter "Gloom" 30
+    }
+
 route22table : EncounterTable
 route22table =
     { name = "Route 22"

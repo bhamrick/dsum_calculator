@@ -380,11 +380,8 @@ encSpecies enc = if
     | enc.slot10 -> enc.table.slot10.species
     | otherwise -> noSpecies
 
-squirtle : Species
-squirtle = speciesByName |> Dict.get "Squirtle" |> Maybe.withDefault noSpecies
-
-buildQueryStep : InterfaceStep -> (Int, List QueryStep) -> (Int, List QueryStep)
-buildQueryStep step (n, acc) =
+buildQueryStep : Species -> InterfaceStep -> (Int, List QueryStep) -> (Int, List QueryStep)
+buildQueryStep lead step (n, acc) =
     case step of
         IEncounter enc ->
             let
@@ -395,7 +392,7 @@ buildQueryStep step (n, acc) =
             encStep =
                 QCondition (successFunc enc)
             battleStep =
-                QAdvance (battleLength squirtle (encSpecies enc)) insideSlopeDist
+                QAdvance (battleLength lead (encSpecies enc)) insideSlopeDist
             in
             (framesBeforeMove, battleStep :: encStep :: acc')
         IWalk w -> (w.frames + n, acc)
@@ -403,7 +400,7 @@ buildQueryStep step (n, acc) =
 buildQuery : InterfaceState -> Query
 buildQuery s =
     let
-    (offset, revSteps) = List.foldl buildQueryStep (0, []) (List.map snd s.query)
+    (offset, revSteps) = List.foldl (buildQueryStep s.lead) (0, []) (List.map snd s.query)
     in
     { duration = s.duration
     , offset = offset

@@ -2781,6 +2781,39 @@ Elm.Encounters.make = function (_elm) {
                       ,slot9: A2(encounter,
                       "Drowzee",
                       11)};
+   var route12table = {_: {}
+                      ,name: "Route 12"
+                      ,rate: 15
+                      ,slot1: A2(encounter,
+                      "Oddish",
+                      24)
+                      ,slot10: A2(encounter,
+                      "Gloom",
+                      30)
+                      ,slot2: A2(encounter,
+                      "Pidgey",
+                      25)
+                      ,slot3: A2(encounter,
+                      "Pidgey",
+                      23)
+                      ,slot4: A2(encounter,
+                      "Venonat",
+                      24)
+                      ,slot5: A2(encounter,
+                      "Oddish",
+                      22)
+                      ,slot6: A2(encounter,
+                      "Venonat",
+                      26)
+                      ,slot7: A2(encounter,
+                      "Oddish",
+                      26)
+                      ,slot8: A2(encounter,
+                      "Pidgey",
+                      27)
+                      ,slot9: A2(encounter,
+                      "Gloom",
+                      28)};
    var route22table = {_: {}
                       ,name: "Route 22"
                       ,rate: 25
@@ -2953,6 +2986,7 @@ Elm.Encounters.make = function (_elm) {
                             ,route9table: route9table
                             ,route10table: route10table
                             ,route11table: route11table
+                            ,route12table: route12table
                             ,route22table: route22table};
    return _elm.Encounters.values;
 };
@@ -5113,7 +5147,6 @@ Elm.Interface.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
-   var squirtle = $Maybe.withDefault($Pokemon.noSpecies)($Dict.get("Squirtle")($Pokemon.speciesByName));
    var encSpecies = function (enc) {
       return enc.slot1 ? enc.table.slot1.species : enc.slot2 ? enc.table.slot2.species : enc.slot3 ? enc.table.slot3.species : enc.slot4 ? enc.table.slot4.species : enc.slot5 ? enc.table.slot5.species : enc.slot6 ? enc.table.slot6.species : enc.slot7 ? enc.table.slot7.species : enc.slot8 ? enc.table.slot8.species : enc.slot9 ? enc.table.slot9.species : enc.slot10 ? enc.table.slot10.species : $Pokemon.noSpecies;
    };
@@ -5145,7 +5178,8 @@ Elm.Interface.make = function (_elm) {
          };
       }();
    };
-   var buildQueryStep = F2(function (step,
+   var buildQueryStep = F3(function (lead,
+   step,
    _v0) {
       return function () {
          switch (_v0.ctor)
@@ -5156,7 +5190,7 @@ Elm.Interface.make = function (_elm) {
                     return function () {
                          var battleStep = A2($Query.QAdvance,
                          A2($Encounters.battleLength,
-                         squirtle,
+                         lead,
                          encSpecies(step._0)),
                          $DApprox.insideSlopeDist);
                          var encStep = $Query.QCondition(successFunc(step._0));
@@ -5179,16 +5213,16 @@ Elm.Interface.make = function (_elm) {
                            ,_0: step._0.frames + _v0._0
                            ,_1: _v0._1};}
                  _U.badCase($moduleName,
-                 "between lines 388 and 401");
+                 "between lines 385 and 398");
               }();}
          _U.badCase($moduleName,
-         "between lines 388 and 401");
+         "between lines 385 and 398");
       }();
    });
    var buildQuery = function (s) {
       return function () {
          var $ = A3($List.foldl,
-         buildQueryStep,
+         buildQueryStep(s.lead),
          {ctor: "_Tuple2"
          ,_0: 0
          ,_1: _L.fromArray([])},
@@ -5815,7 +5849,6 @@ Elm.Interface.make = function (_elm) {
                            ,queryInterface: queryInterface
                            ,successFunc: successFunc
                            ,encSpecies: encSpecies
-                           ,squirtle: squirtle
                            ,buildQueryStep: buildQueryStep
                            ,buildQuery: buildQuery};
    return _elm.Interface.values;
