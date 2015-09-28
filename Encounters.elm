@@ -306,6 +306,102 @@ route12table =
     , slot10 = encounter "Gloom" 30
     }
 
+route13table : EncounterTable
+route13table =
+    { name = "Route 13"
+    , rate = 20
+    , slot1 = encounter "Oddish" 24
+    , slot2 = encounter "Pidgey" 25
+    , slot3 = encounter "Pidgey" 27
+    , slot4 = encounter "Venonat" 24
+    , slot5 = encounter "Oddish" 22
+    , slot6 = encounter "Venonat" 26
+    , slot7 = encounter "Oddish" 26
+    , slot8 = encounter "Ditto" 25
+    , slot9 = encounter "Gloom" 28
+    , slot10 = encounter "Gloom" 30
+    }
+
+route14table : EncounterTable
+route14table =
+    { name = "Route 14"
+    , rate = 15
+    , slot1 = encounter "Oddish" 24
+    , slot2 = encounter "Pidgey" 26
+    , slot3 = encounter "Ditto" 23
+    , slot4 = encounter "Venonat" 24
+    , slot5 = encounter "Oddish" 22
+    , slot6 = encounter "Venonat" 26
+    , slot7 = encounter "Oddish" 26
+    , slot8 = encounter "Gloom" 30
+    , slot9 = encounter "Pidgeotto" 28
+    , slot10 = encounter "Pidgeotto" 30
+    }
+
+route15table : EncounterTable
+route15table =
+    { name = "Route 15"
+    , rate = 15
+    , slot1 = encounter "Oddish" 24
+    , slot2 = encounter "Ditto" 26
+    , slot3 = encounter "Pidgey" 23
+    , slot4 = encounter "Venonat" 26
+    , slot5 = encounter "Oddish" 22
+    , slot6 = encounter "Venonat" 28
+    , slot7 = encounter "Oddish" 26
+    , slot8 = encounter "Gloom" 30
+    , slot9 = encounter "Pidgeotto" 28
+    , slot10 = encounter "Pidgeotto" 30
+    }
+
+route16table : EncounterTable
+route16table =
+    { name = "Route 16"
+    , rate = 25
+    , slot1 = encounter "Spearow" 20
+    , slot2 = encounter "Spearow" 22
+    , slot3 = encounter "Rattata" 18
+    , slot4 = encounter "Doduo" 20
+    , slot5 = encounter "Rattata" 20
+    , slot6 = encounter "Doduo" 18
+    , slot7 = encounter "Doduo" 22
+    , slot8 = encounter "Rattata" 22
+    , slot9 = encounter "Raticate" 23
+    , slot10 = encounter "Raticate" 25
+    }
+
+route17table : EncounterTable
+route17table =
+    { name = "Route 17"
+    , rate = 25
+    , slot1 = encounter "Spearow" 20
+    , slot2 = encounter "Spearow" 22
+    , slot3 = encounter "Raticate" 25
+    , slot4 = encounter "Doduo" 24
+    , slot5 = encounter "Raticate" 27
+    , slot6 = encounter "Doduo" 26
+    , slot7 = encounter "Doduo" 28
+    , slot8 = encounter "Raticate" 29
+    , slot9 = encounter "Fearow" 25
+    , slot10 = encounter "Fearow" 27
+    }
+
+route18table : EncounterTable
+route18table =
+    { name = "Route 18"
+    , rate = 25
+    , slot1 = encounter "Spearow" 20
+    , slot2 = encounter "Spearow" 22
+    , slot3 = encounter "Raticate" 25
+    , slot4 = encounter "Doduo" 24
+    , slot5 = encounter "Fearow" 25
+    , slot6 = encounter "Doduo" 26
+    , slot7 = encounter "Doduo" 28
+    , slot8 = encounter "Raticate" 29
+    , slot9 = encounter "Fearow" 27
+    , slot10 = encounter "Fearow" 29
+    }
+
 route22table : EncounterTable
 route22table =
     { name = "Route 22"
