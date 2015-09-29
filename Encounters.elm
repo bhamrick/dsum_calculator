@@ -402,6 +402,70 @@ route18table =
     , slot10 = encounter "Fearow" 29
     }
 
+seaRoute19waterTable : EncounterTable
+seaRoute19waterTable =
+    { name = "Sea Route 19 (water)"
+    , rate = 5
+    , slot1 = encounter "Tentacool" 5
+    , slot2 = encounter "Tentacool" 10
+    , slot3 = encounter "Tentacool" 15
+    , slot4 = encounter "Tentacool" 5
+    , slot5 = encounter "Tentacool" 10
+    , slot6 = encounter "Tentacool" 15
+    , slot7 = encounter "Tentacool" 20
+    , slot8 = encounter "Tentacool" 30
+    , slot9 = encounter "Tentacool" 35
+    , slot10 = encounter "Tentacool" 40
+    }
+
+seaRoute20waterTable : EncounterTable
+seaRoute20waterTable =
+    { name = "Sea Route 20 (water)"
+    , rate = 5
+    , slot1 = encounter "Tentacool" 5
+    , slot2 = encounter "Tentacool" 10
+    , slot3 = encounter "Tentacool" 15
+    , slot4 = encounter "Tentacool" 5
+    , slot5 = encounter "Tentacool" 10
+    , slot6 = encounter "Tentacool" 15
+    , slot7 = encounter "Tentacool" 20
+    , slot8 = encounter "Tentacool" 30
+    , slot9 = encounter "Tentacool" 35
+    , slot10 = encounter "Tentacool" 40
+    }
+
+seaRoute21table : EncounterTable
+seaRoute21table =
+    { name = "Sea Route 21"
+    , rate = 25
+    , slot1 = encounter "Rattata" 21
+    , slot2 = encounter "Pidgey" 23
+    , slot3 = encounter "Raticate" 30
+    , slot4 = encounter "Rattata" 23
+    , slot5 = encounter "Pidgey" 21
+    , slot6 = encounter "Pidgeotto" 30
+    , slot7 = encounter "Pidgeotto" 32
+    , slot8 = encounter "Tangela" 28
+    , slot9 = encounter "Tangela" 30
+    , slot10 = encounter "Tangela" 32
+    }
+
+seaRoute21waterTable : EncounterTable
+seaRoute21waterTable =
+    { name = "Sea Route 21 (water)"
+    , rate = 5
+    , slot1 = encounter "Tentacool" 5
+    , slot2 = encounter "Tentacool" 10
+    , slot3 = encounter "Tentacool" 15
+    , slot4 = encounter "Tentacool" 5
+    , slot5 = encounter "Tentacool" 10
+    , slot6 = encounter "Tentacool" 15
+    , slot7 = encounter "Tentacool" 20
+    , slot8 = encounter "Tentacool" 30
+    , slot9 = encounter "Tentacool" 35
+    , slot10 = encounter "Tentacool" 40
+    }
+
 route22table : EncounterTable
 route22table =
     { name = "Route 22"
@@ -416,4 +480,84 @@ route22table =
     , slot8 = encounter "Spearow" 5
     , slot9 = encounter "Nidoran F" 3
     , slot10 = encounter "Nidoran F" 4
+    }
+
+route23table : EncounterTable
+route23table =
+    { name = "Route 23"
+    , rate = 10
+    , slot1 = encounter "Ekans" 26
+    , slot2 = encounter "Ditto" 33
+    , slot3 = encounter "Spearow" 26
+    , slot4 = encounter "Fearow" 38
+    , slot5 = encounter "Ditto" 38
+    , slot6 = encounter "Fearow" 38
+    , slot7 = encounter "Arbok" 41
+    , slot8 = encounter "Ditto" 43
+    , slot9 = encounter "Fearow" 41
+    , slot10 = encounter "Fearow" 43
+    }
+
+route24table : EncounterTable
+route24table =
+    { name = "Route 24"
+    , rate = 25
+    , slot1 = encounter "Weedle" 7
+    , slot2 = encounter "Kakuna" 8
+    , slot3 = encounter "Pidgey" 12
+    , slot4 = encounter "Oddish" 12
+    , slot5 = encounter "Oddish" 13
+    , slot6 = encounter "Abra" 10
+    , slot7 = encounter "Oddish" 14
+    , slot8 = encounter "Pidgey" 13
+    , slot9 = encounter "Abra" 8
+    , slot10 = encounter "Abra" 12
+    }
+
+route25table : EncounterTable
+route25table =
+    { name = "Route 25"
+    , rate = 15
+    , slot1 = encounter "Weedle" 8
+    , slot2 = encounter "Kakuna" 9
+    , slot3 = encounter "Pidgey" 13
+    , slot4 = encounter "Oddish" 12
+    , slot5 = encounter "Oddish" 13
+    , slot6 = encounter "Abra" 12
+    , slot7 = encounter "Oddish" 14
+    , slot8 = encounter "Abra" 10
+    , slot9 = encounter "Metapod" 7
+    , slot10 = encounter "Caterpie" 8
+    }
+
+viridianForestTable : EncounterTable
+viridianForestTable =
+    { name = "Viridian Forest"
+    , rate = 8
+    , slot1 = encounter "Weedle" 4
+    , slot2 = encounter "Kakuna" 5
+    , slot3 = encounter "Weedle" 3
+    , slot4 = encounter "Weedle" 5
+    , slot5 = encounter "Kakuna" 4
+    , slot6 = encounter "Kakuna" 6
+    , slot7 = encounter "Metapod" 4
+    , slot8 = encounter "Caterpie" 3
+    , slot9 = encounter "Pikachu" 3
+    , slot10 = encounter "Pikachu" 5
+    }
+
+mtMoonTable1 : EncounterTable
+mtMoonTable1 =
+    { name = "Mt. Moon (1F)"
+    , rate = 10
+    , slot1 = encounter "Zubat" 8
+    , slot2 = encounter "Zubat" 7
+    , slot3 = encounter "Zubat" 9
+    , slot4 = encounter "Geodude" 8
+    , slot5 = encounter "Zubat" 6
+    , slot6 = encounter "Zubat" 10
+    , slot7 = encounter "Geodude" 10
+    , slot8 = encounter "Paras" 8
+    , slot9 = encounter "Zubat" 11
+    , slot10 = encounter "Clefairy" 8
     }
