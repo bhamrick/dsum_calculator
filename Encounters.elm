@@ -89,7 +89,53 @@ allTables =
     , route9table
     , route10table
     , route11table
+    , route12table
+    , route13table
+    , route14table
+    , route15table
+    , route16table
+    , route17table
+    , route18table
+    , seaRoute19waterTable
+    , seaRoute20waterTable
+    , seaRoute21table
+    , seaRoute21waterTable
     , route22table
+    , route23table
+    , route24table
+    , route25table
+    , viridianForestTable
+    , mtMoonTable1
+    , mtMoonTable2
+    , mtMoonTable3
+    , rockTunnelTable1
+    , rockTunnelTable2
+    , powerPlantTable
+    , victoryRoadTable1
+    , victoryRoadTable2
+    , victoryRoadTable3
+    , pokemonTowerTable1
+    , pokemonTowerTable2
+    , pokemonTowerTable3
+    , pokemonTowerTable4
+    , pokemonTowerTable5
+    , seafoamIslandsTable1
+    , seafoamIslandsTable2
+    , seafoamIslandsTable3
+    , seafoamIslandsTable4
+    , seafoamIslandsTable5
+    , pokemonMansionTable1
+    , pokemonMansionTable2
+    , pokemonMansionTable3
+    , pokemonMansionTable4
+    , diglettsCaveTable
+    , safariZoneTable1
+    , safariZoneTable2
+    , safariZoneTable3
+    , safariZoneTable4
+    , ceruleanCaveTable1
+    , ceruleanCaveTable2
+    , ceruleanCaveTable3
     ]
 
 defaultTable : EncounterTable
@@ -560,4 +606,484 @@ mtMoonTable1 =
     , slot8 = encounter "Paras" 8
     , slot9 = encounter "Zubat" 11
     , slot10 = encounter "Clefairy" 8
+    }
+
+mtMoonTable2 : EncounterTable
+mtMoonTable2 =
+    { name = "Mt. Moon (B1F)"
+    , rate = 10
+    , slot1 = encounter "Zubat" 8
+    , slot2 = encounter "Zubat" 7
+    , slot3 = encounter "Geodude" 7
+    , slot4 = encounter "Geodude" 8
+    , slot5 = encounter "Zubat" 9
+    , slot6 = encounter "Paras" 10
+    , slot7 = encounter "Zubat" 10
+    , slot8 = encounter "Zubat" 11
+    , slot9 = encounter "Clefairy" 9
+    , slot10 = encounter "Geodude" 9
+    }
+
+mtMoonTable3 : EncounterTable
+mtMoonTable3 =
+    { name = "Mt. Moon (B2F)"
+    , rate = 10
+    , slot1 = encounter "Zubat" 9
+    , slot2 = encounter "Geodude" 9
+    , slot3 = encounter "Zubat" 10
+    , slot4 = encounter "Geodude" 10
+    , slot5 = encounter "Zubat" 11
+    , slot6 = encounter "Paras" 10
+    , slot7 = encounter "Paras" 12
+    , slot8 = encounter "Clefairy" 10
+    , slot9 = encounter "Zubat" 12
+    , slot10 = encounter "Clefairy" 12
+    }
+
+rockTunnelTable1 : EncounterTable
+rockTunnelTable1 =
+    { name = "Rock Tunnel (1F)"
+    , rate = 15
+    , slot1 = encounter "Zubat" 16
+    , slot2 = encounter "Zubat" 17
+    , slot3 = encounter "Geodude" 17
+    , slot4 = encounter "Machop" 15
+    , slot5 = encounter "Geodude" 16
+    , slot6 = encounter "Zubat" 18
+    , slot7 = encounter "Zubat" 15
+    , slot8 = encounter "Machop" 17
+    , slot9 = encounter "Onix" 13
+    , slot10 = encounter "Onix" 15
+    }
+
+rockTunnelTable2 : EncounterTable
+rockTunnelTable2 =
+    { name = "Rock Tunnel (B1F)"
+    , rate = 15
+    , slot1 = encounter "Zubat" 16
+    , slot2 = encounter "Zubat" 17
+    , slot3 = encounter "Geodude" 17
+    , slot4 = encounter "Machop" 15
+    , slot5 = encounter "Geodude" 16
+    , slot6 = encounter "Zubat" 18
+    , slot7 = encounter "Machop" 17
+    , slot8 = encounter "Onix" 17
+    , slot9 = encounter "Onix" 13
+    , slot10 = encounter "Geodude" 18
+    }
+
+powerPlantTable : EncounterTable
+powerPlantTable =
+    { name = "Power Plant"
+    , rate = 10
+    , slot1 = encounter "Voltorb" 21
+    , slot2 = encounter "Magnemite" 21
+    , slot3 = encounter "Pikachu" 20
+    , slot4 = encounter "Pikachu" 24
+    , slot5 = encounter "Magnemite" 23
+    , slot6 = encounter "Voltorb" 23
+    , slot7 = encounter "Magneton" 32
+    , slot8 = encounter "Magneton" 35
+    , slot9 = encounter "Electabuzz" 33
+    , slot10 = encounter "Electabuzz" 36
+    }
+
+victoryRoadTable1 : EncounterTable
+victoryRoadTable1 =
+    { name = "Victory Road (1F)"
+    , rate = 15
+    , slot1 = encounter "Machop" 24
+    , slot2 = encounter "Geodude" 26
+    , slot3 = encounter "Zubat" 22
+    , slot4 = encounter "Onix" 36
+    , slot5 = encounter "Onix" 39
+    , slot6 = encounter "Onix" 42
+    , slot7 = encounter "Graveler" 41
+    , slot8 = encounter "Golbat" 41
+    , slot9 = encounter "Machoke" 42
+    , slot10 = encounter "Marowak" 43
+    }
+
+victoryRoadTable2 : EncounterTable
+victoryRoadTable2 =
+    { name = "VictoryRoad (2F)"
+    , rate = 10
+    , slot1 = encounter "Machop" 22
+    , slot2 = encounter "Geodude" 24
+    , slot3 = encounter "Zubat" 26
+    , slot4 = encounter "Onix" 36
+    , slot5 = encounter "Onix" 39
+    , slot6 = encounter "Onix" 42
+    , slot7 = encounter "Machoke" 41
+    , slot8 = encounter "Golbat" 40
+    , slot9 = encounter "Marowak" 40
+    , slot10 = encounter "Graveler" 43
+    }
+
+victoryRoadTable3 : EncounterTable
+victoryRoadTable3 =
+    { name = "Victory Road (3F)"
+    , rate = 15
+    , slot1 = encounter "Machop" 24
+    , slot2 = encounter "Geodude" 26
+    , slot3 = encounter "Zubat" 22
+    , slot4 = encounter "Onix" 42
+    , slot5 = encounter "Venomoth" 40
+    , slot6 = encounter "Onix" 45
+    , slot7 = encounter "Graveler" 43
+    , slot8 = encounter "Golbat" 41
+    , slot9 = encounter "Machoke" 42
+    , slot10 = encounter "Machoke" 45
+    }
+
+pokemonTowerTable1 : EncounterTable
+pokemonTowerTable1 =
+    { name = "Pokemon Tower (1F)"
+    , rate = 10
+    , slot1 = encounter "Gastly" 20
+    , slot2 = encounter "Gastly" 21
+    , slot3 = encounter "Gastly" 22
+    , slot4 = encounter "Gastly" 23
+    , slot5 = encounter "Gastly" 19
+    , slot6 = encounter "Gastly" 18
+    , slot7 = encounter "Gastly" 24
+    , slot8 = encounter "Cubone" 20
+    , slot9 = encounter "Cubone" 22
+    , slot10 = encounter "Haunter" 25
+    }
+
+pokemonTowerTable2 : EncounterTable
+pokemonTowerTable2 =
+    { name = "Pokemon Tower (2F)"
+    , rate = 10
+    , slot1 = encounter "Gastly" 20
+    , slot2 = encounter "Gastly" 21
+    , slot3 = encounter "Gastly" 22
+    , slot4 = encounter "Gastly" 23
+    , slot5 = encounter "Gastly" 19
+    , slot6 = encounter "Gastly" 18
+    , slot7 = encounter "Haunter" 25
+    , slot8 = encounter "Cubone" 20
+    , slot9 = encounter "Cubone" 22
+    , slot10 = encounter "Gastly" 24
+    }
+
+pokemonTowerTable3 : EncounterTable
+pokemonTowerTable3 =
+    { name = "Pokemon Tower (3F)"
+    , rate = 10
+    , slot1 = encounter "Gastly" 20
+    , slot2 = encounter "Gastly" 21
+    , slot3 = encounter "Gastly" 22
+    , slot4 = encounter "Gastly" 23
+    , slot5 = encounter "Gastly" 19
+    , slot6 = encounter "Gastly" 18
+    , slot7 = encounter "Haunter" 25
+    , slot8 = encounter "Cubone" 20
+    , slot9 = encounter "Cubone" 22
+    , slot10 = encounter "Gastly" 24
+    }
+
+pokemonTowerTable4 : EncounterTable
+pokemonTowerTable4 =
+    { name = "Pokemon Tower (4F)"
+    , rate = 15
+    , slot1 = encounter "Gastly" 21
+    , slot2 = encounter "Gastly" 22
+    , slot3 = encounter "Gastly" 23
+    , slot4 = encounter "Gastly" 24
+    , slot5 = encounter "Gastly" 20
+    , slot6 = encounter "Gastly" 19
+    , slot7 = encounter "Haunter" 26
+    , slot8 = encounter "Cubone" 22
+    , slot9 = encounter "Cubone" 24
+    , slot10 = encounter "Haunter" 28
+    }
+
+pokemonTowerTable5 : EncounterTable
+pokemonTowerTable5 =
+    { name = "Pokemon Tower (5F)"
+    , rate = 15
+    , slot1 = encounter "Gastly" 21
+    , slot2 = encounter "Gastly" 22
+    , slot3 = encounter "Gastly" 23
+    , slot4 = encounter "Gastly" 24
+    , slot5 = encounter "Gastly" 20
+    , slot6 = encounter "Haunter" 28
+    , slot7 = encounter "Cubone" 22
+    , slot8 = encounter "Cubone" 24
+    , slot9 = encounter "Haunter" 28
+    , slot10 = encounter "Haunter" 30
+    }
+
+seafoamIslandsTable1 : EncounterTable
+seafoamIslandsTable1 =
+    { name = "Seafoam Islands (1F)"
+    , rate = 15
+    , slot1 = encounter "Seel" 30
+    , slot2 = encounter "Slowpoke" 30
+    , slot3 = encounter "Shellder" 30
+    , slot4 = encounter "Horsea" 30
+    , slot5 = encounter "Horsea" 28
+    , slot6 = encounter "Zubat" 21
+    , slot7 = encounter "Golbat" 29
+    , slot8 = encounter "Psyduck" 28
+    , slot9 = encounter "Shellder" 28
+    , slot10 = encounter "Golduck" 38
+    }
+
+seafoamIslandsTable2 : EncounterTable
+seafoamIslandsTable2 =
+    { name = "Seafoam Islands (B1F)"
+    , rate = 10
+    , slot1 = encounter "Staryu" 30
+    , slot2 = encounter "Horsea" 30
+    , slot3 = encounter "Shellder" 32
+    , slot4 = encounter "Horsea" 32
+    , slot5 = encounter "Slowpoke" 28
+    , slot6 = encounter "Seel" 30
+    , slot7 = encounter "Slowpoke" 30
+    , slot8 = encounter "Seel" 28
+    , slot9 = encounter "Dewgong" 38
+    , slot10 = encounter "Seadra" 37
+    }
+
+seafoamIslandsTable3 : EncounterTable
+seafoamIslandsTable3 =
+    { name = "Seafoam Islands (B2F)"
+    , rate = 10
+    , slot1 = encounter "Seel" 30
+    , slot2 = encounter "Slowpoke" 30
+    , slot3 = encounter "Seel" 32
+    , slot4 = encounter "Slowpoke" 32
+    , slot5 = encounter "Horsea" 28
+    , slot6 = encounter "Staryu" 30
+    , slot7 = encounter "Horsea" 30
+    , slot8 = encounter "Shellder" 28
+    , slot9 = encounter "Golbat" 30
+    , slot10 = encounter "Slowbro" 37
+    }
+
+seafoamIslandsTable4 : EncounterTable
+seafoamIslandsTable4 =
+    { name = "Seafoam Islands (B3F)"
+    , rate = 10
+    , slot1 = encounter "Slowpoke" 31
+    , slot2 = encounter "Seel" 31
+    , slot3 = encounter "Slowpoke" 33
+    , slot4 = encounter "Seel" 33
+    , slot5 = encounter "Horsea" 29
+    , slot6 = encounter "Shellder" 31
+    , slot7 = encounter "Horsea" 31
+    , slot8 = encounter "Shellder" 29
+    , slot9 = encounter "Seadra" 39
+    , slot10 = encounter "Dewgong" 37
+    }
+
+seafoamIslandsTable5 : EncounterTable
+seafoamIslandsTable5 =
+    { name = "Seafoam Islands (B4F)"
+    , rate = 10
+    , slot1 = encounter "Horsea" 31
+    , slot2 = encounter "Shellder" 31
+    , slot3 = encounter "Horsea" 33
+    , slot4 = encounter "Shellder" 33
+    , slot5 = encounter "Slowpoke" 29
+    , slot6 = encounter "Seel" 31
+    , slot7 = encounter "Slowpoke" 31
+    , slot8 = encounter "Seel" 29
+    , slot9 = encounter "Slowbro" 39
+    , slot10 = encounter "Golbat" 32
+    }
+
+pokemonMansionTable1 : EncounterTable
+pokemonMansionTable1 =
+    { name = "Pokemon Mansion (1F)"
+    , rate = 10
+    , slot1 = encounter "Koffing" 32
+    , slot2 = encounter "Koffing" 30
+    , slot3 = encounter "Ponyta" 34
+    , slot4 = encounter "Ponyta" 30
+    , slot5 = encounter "Growlithe" 34
+    , slot6 = encounter "Ponyta" 32
+    , slot7 = encounter "Grimer" 30
+    , slot8 = encounter "Ponyta" 28
+    , slot9 = encounter "Weezing" 37
+    , slot10 = encounter "Muk" 39
+    }
+
+pokemonMansionTable2 : EncounterTable
+pokemonMansionTable2 =
+    { name = "Pokemon Mansion (2F)"
+    , rate = 10
+    , slot1 = encounter "Growlithe" 32
+    , slot2 = encounter "Koffing" 34
+    , slot3 = encounter "Koffing" 34
+    , slot4 = encounter "Ponyta" 30
+    , slot5 = encounter "Koffing" 30
+    , slot6 = encounter "Ponyta" 32
+    , slot7 = encounter "Grimer" 30
+    , slot8 = encounter "Ponyta" 28
+    , slot9 = encounter "Weezing" 39
+    , slot10 = encounter "Muk" 37
+    }
+
+pokemonMansionTable3 : EncounterTable
+pokemonMansionTable3 =
+    { name = "Pokemon Mansion (3F)"
+    , rate = 10
+    , slot1 = encounter "Koffing" 31
+    , slot2 = encounter "Growlithe" 33
+    , slot3 = encounter "Koffing" 35
+    , slot4 = encounter "Ponyta" 32
+    , slot5 = encounter "Ponyta" 34
+    , slot6 = encounter "Weezing" 40
+    , slot7 = encounter "Grimer" 34
+    , slot8 = encounter "Weezing" 38
+    , slot9 = encounter "Ponyta" 36
+    , slot10 = encounter "Muk" 42
+    }
+
+pokemonMansionTable4 : EncounterTable
+pokemonMansionTable4 =
+    { name = "Pokemon Mansion (B1F)"
+    , rate = 10
+    , slot1 = encounter "Koffing" 33
+    , slot2 = encounter "Koffing" 31
+    , slot3 = encounter "Growlithe" 35
+    , slot4 = encounter "Ponyta" 32
+    , slot5 = encounter "Koffing" 31
+    , slot6 = encounter "Weezing" 40
+    , slot7 = encounter "Ponyta" 34
+    , slot8 = encounter "Grimer" 35
+    , slot9 = encounter "Weezing" 42
+    , slot10 = encounter "Muk" 42
+    }
+
+diglettsCaveTable : EncounterTable
+diglettsCaveTable =
+    { name = "Diglett's Cave"
+    , rate = 20
+    , slot1 = encounter "Diglett" 18
+    , slot2 = encounter "Diglett" 19
+    , slot3 = encounter "Diglett" 17
+    , slot4 = encounter "Diglett" 20
+    , slot5 = encounter "Diglett" 16
+    , slot6 = encounter "Diglett" 15
+    , slot7 = encounter "Diglett" 21
+    , slot8 = encounter "Diglett" 22
+    , slot9 = encounter "Dugtrio" 29
+    , slot10 = encounter "Dugtrio" 31
+    }
+
+safariZoneTable1 : EncounterTable
+safariZoneTable1 =
+    { name = "Safari Zone 1"
+    , rate = 30
+    , slot1 = encounter "Nidoran M" 22
+    , slot2 = encounter "Rhyhorn" 25
+    , slot3 = encounter "Venonat" 22
+    , slot4 = encounter "Exeggcute" 24
+    , slot5 = encounter "Nidorino" 31
+    , slot6 = encounter "Exeggcute" 25
+    , slot7 = encounter "Nidorina" 31
+    , slot8 = encounter "Parasect" 30
+    , slot9 = encounter "Scyther" 23
+    , slot10 = encounter "Chansey" 23
+    }
+
+safariZoneTable2 : EncounterTable
+safariZoneTable2 =
+    { name = "Safari Zone 2"
+    , rate = 30
+    , slot1 = encounter "Nidoran M" 24
+    , slot2 = encounter "Doduo" 26
+    , slot3 = encounter "Paras" 22
+    , slot4 = encounter "Exeggcute" 25
+    , slot5 = encounter "Nidorino" 33
+    , slot6 = encounter "Exeggcute" 23
+    , slot7 = encounter "Nidoran F" 24
+    , slot8 = encounter "Parasect" 25
+    , slot9 = encounter "Kangaskhan" 25
+    , slot10 = encounter "Scyther" 28
+    }
+
+safariZoneTable3 : EncounterTable
+safariZoneTable3 =
+    { name = "Safari Zone 3"
+    , rate = 30
+    , slot1 = encounter "Nidoran M" 22
+    , slot2 = encounter "Rhyhorn" 26
+    , slot3 = encounter "Paras" 23
+    , slot4 = encounter "Exeggcute" 25
+    , slot5 = encounter "Nidorino" 30
+    , slot6 = encounter "Exeggcute" 27
+    , slot7 = encounter "Nidorina" 30
+    , slot8 = encounter "Venomoth" 32
+    , slot9 = encounter "Chansey" 26
+    , slot10 = encounter "Tauros" 28
+    }
+
+safariZoneTable4 : EncounterTable
+safariZoneTable4 =
+    { name = "Safari Zone 4"
+    , rate = 30
+    , slot1 = encounter "Nidoran M" 25
+    , slot2 = encounter "Doduo" 26
+    , slot3 = encounter "Venonat" 23
+    , slot4 = encounter "Exeggcute" 24
+    , slot5 = encounter "Nidorino" 33
+    , slot6 = encounter "Exeggcute" 26
+    , slot7 = encounter "Nidoran F" 25
+    , slot8 = encounter "Venomoth" 31
+    , slot9 = encounter "Tauros" 26
+    , slot10 = encounter "Kangaskhan" 28
+    }
+
+ceruleanCaveTable1 : EncounterTable
+ceruleanCaveTable1 =
+    { name = "Cerulean Cave (1F)"
+    , rate = 10
+    , slot1 = encounter "Golbat" 46
+    , slot2 = encounter "Hypno" 46
+    , slot3 = encounter "Magneton" 46
+    , slot4 = encounter "Dodrio" 49
+    , slot5 = encounter "Venomoth" 49
+    , slot6 = encounter "Arbok" 52
+    , slot7 = encounter "Kadabra" 49
+    , slot8 = encounter "Parasect" 52
+    , slot9 = encounter "Raichu" 53
+    , slot10 = encounter "Ditto" 53
+    }
+
+ceruleanCaveTable2 : EncounterTable
+ceruleanCaveTable2 =
+    { name = "Cerulean Cave (2F)"
+    , rate = 15
+    , slot1 = encounter "Dodrio" 51
+    , slot2 = encounter "Venomoth" 51
+    , slot3 = encounter "Kadabra" 51
+    , slot4 = encounter "Rhydon" 52
+    , slot5 = encounter "Marowak" 52
+    , slot6 = encounter "Electrode" 52
+    , slot7 = encounter "Chansey" 56
+    , slot8 = encounter "Wigglytuff" 54
+    , slot9 = encounter "Ditto" 55
+    , slot10 = encounter "Ditto" 60
+    }
+
+ceruleanCaveTable3 : EncounterTable
+ceruleanCaveTable3 =
+    { name = "Cerulean Cave (B1F)"
+    , rate = 25
+    , slot1 = encounter "Rhydon" 55
+    , slot2 = encounter "Marowak" 55
+    , slot3 = encounter "Electrode" 55
+    , slot4 = encounter "Chansey" 64
+    , slot5 = encounter "Parasect" 64
+    , slot6 = encounter "Raichu" 64
+    , slot7 = encounter "Arbok" 57
+    , slot8 = encounter "Ditto" 65
+    , slot9 = encounter "Ditto" 63
+    , slot10 = encounter "Ditto" 67
     }
