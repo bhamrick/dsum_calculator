@@ -24,7 +24,7 @@ getResult state = case state of
     Unstarted -> Nothing
 
 workerClock : Signal Time
-workerClock = Debug.watch "frame time" <~ fps 30
+workerClock = fps 30
 
 iterateStateFunc : Int -> (s -> WorkerState s r) -> s -> WorkerState s r
 iterateStateFunc n f s =

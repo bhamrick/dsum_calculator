@@ -7858,7 +7858,7 @@ Elm.Main.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._1;}
             _U.badCase($moduleName,
-            "on line 107, column 23 to 43");
+            "on line 108, column 23 to 43");
          }();
          return $List.concat(_L.fromArray([sums
                                           ,sums$
@@ -7878,7 +7878,7 @@ Elm.Main.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 96 and 98");
+         "between lines 97 and 99");
       }();
    });
    var toPath = toPath$(0);
@@ -7941,7 +7941,7 @@ Elm.Main.make = function (_elm) {
                  f,
                  f(x));}
             _U.badCase($moduleName,
-            "on line 71, column 37 to 58");
+            "on line 72, column 37 to 58");
          }();
       });
    });
@@ -7986,7 +7986,7 @@ Elm.Main.make = function (_elm) {
                  return $List.reverse(_v10._0._3);}
               break;}
          _U.badCase($moduleName,
-         "between lines 139 and 143");
+         "between lines 140 and 144");
       }();
    },
    queryWorker.state);
@@ -8014,7 +8014,7 @@ Elm.Main.make = function (_elm) {
             {case "_Tuple4":
                return _v17._0;}
             _U.badCase($moduleName,
-            "on line 157, column 40 to 41");
+            "on line 158, column 40 to 41");
          }();
       })($Basics.fst($)))));
    },
@@ -8050,8 +8050,8 @@ Elm.Main.make = function (_elm) {
                    ,A2($Html.input,
                    _L.fromArray([$Html$Attributes.type$("text")
                                 ,A3($Html$Events.on,
-                                "change",
-                                $Json$Decode.string,
+                                "keyup",
+                                $Html$Events.targetValue,
                                 $Signal.message(thresholdBox.address))
                                 ,$Html$Attributes.placeholder("0.25")
                                 ,$Html$Attributes.value(v)
@@ -18183,7 +18183,6 @@ Elm.Worker.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Worker",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -18233,9 +18232,7 @@ Elm.Worker.make = function (_elm) {
          ,_1: s0})(inp));
       }();
    });
-   var workerClock = A2($Signal._op["<~"],
-   $Debug.watch("frame time"),
-   $Time.fps(30));
+   var workerClock = $Time.fps(30);
    var getResult = function (state) {
       return function () {
          switch (state.ctor)

@@ -1,4 +1,5 @@
 import Color exposing (..)
+import Debug
 import Dict
 import Graphics.Element exposing (show)
 import Html exposing (Html, div, input)
@@ -38,7 +39,7 @@ thresholdInput =
             [ Html.text "Threshold"
             , input
                 [ type' "text"
-                , on "change" Json.string (Signal.message thresholdBox.address)
+                , on "keyup" targetValue (Signal.message thresholdBox.address)
                 , placeholder "0.25"
                 , value v
                 , style [("margin", "2px")]
