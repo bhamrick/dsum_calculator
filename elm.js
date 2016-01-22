@@ -5795,6 +5795,11 @@ Elm.Html.Attributes.make = function (_elm) {
    $String = Elm.String.make(_elm),
    $VirtualDom = Elm.VirtualDom.make(_elm);
    var attribute = $VirtualDom.attribute;
+   var contextmenu = function (value) {
+      return A2(attribute,
+      "contextmenu",
+      value);
+   };
    var property = $VirtualDom.property;
    var stringProperty = F2(function (name,
    string) {
@@ -5819,13 +5824,8 @@ Elm.Html.Attributes.make = function (_elm) {
    };
    var accesskey = function ($char) {
       return A2(stringProperty,
-      "accesskey",
-      $String.fromList(_L.fromArray([$char])));
-   };
-   var contextmenu = function (value) {
-      return A2(stringProperty,
-      "contextmenu",
-      value);
+      "accessKey",
+      $String.fromChar($char));
    };
    var dir = function (value) {
       return A2(stringProperty,
@@ -5974,7 +5974,7 @@ Elm.Html.Attributes.make = function (_elm) {
    };
    var formaction = function (value) {
       return A2(stringProperty,
-      "formaction",
+      "formAction",
       value);
    };
    var list = function (value) {
@@ -8063,7 +8063,10 @@ Elm.Main.make = function (_elm) {
    thresholdBox.signal);
    var main = A2($Signal._op["<~"],
    $Html.div(_L.fromArray([])),
-   combine(_L.fromArray([$interface
+   combine(_L.fromArray([$Signal.constant(A2($Html.a,
+                        _L.fromArray([$Html$Attributes.href("http://www.twitch.tv/extratricky/v/36891353")]),
+                        _L.fromArray([$Html.text("How to use this calculator")])))
+                        ,$interface
                         ,$Signal.constant(calculateButton)
                         ,thresholdInput
                         ,A2($Signal._op["<~"],
@@ -14444,12 +14447,9 @@ Elm.Native.Utils.make = function(localRuntime) {
 	};
 };
 
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var createElement = require("./vdom/create-element.js")
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
-module.exports = createElement
-
-},{"./vdom/create-element.js":6}],2:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 (function (global){
 var topLevel = typeof global !== 'undefined' ? global :
     typeof window !== 'undefined' ? window : {}
@@ -14467,8 +14467,8 @@ if (typeof document !== 'undefined') {
     module.exports = doccy;
 }
 
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":24}],3:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":1}],3:[function(require,module,exports){
 "use strict";
 
 module.exports = function isObject(x) {
@@ -15658,7 +15658,7 @@ var VNode = require('virtual-dom/vnode/vnode');
 var VText = require('virtual-dom/vnode/vtext');
 var diff = require('virtual-dom/vtree/diff');
 var patch = require('virtual-dom/vdom/patch');
-var createElement = require('virtual-dom/create-element');
+var createElement = require('virtual-dom/vdom/create-element');
 var isHook = require("virtual-dom/vnode/is-vhook");
 
 
@@ -15680,24 +15680,14 @@ Elm.Native.VirtualDom.make = function(elm)
 
 	var ATTRIBUTE_KEY = 'UniqueNameThatOthersAreVeryUnlikelyToUse';
 
-	function listToProperties(list)
+
+
+	// VIRTUAL DOM NODES
+
+
+	function text(string)
 	{
-		var object = {};
-		while (list.ctor !== '[]')
-		{
-			var entry = list._0;
-			if (entry.key === ATTRIBUTE_KEY)
-			{
-				object.attributes = object.attributes || {};
-				object.attributes[entry.value.attrKey] = entry.value.attrValue;
-			}
-			else
-			{
-				object[entry.key] = entry.value;
-			}
-			list = list._1;
-		}
-		return object;
+		return new VText(string);
 	}
 
 	function node(name)
@@ -15706,6 +15696,10 @@ Elm.Native.VirtualDom.make = function(elm)
 			return makeNode(name, propertyList, contents);
 		});
 	}
+
+
+	// BUILD VIRTUAL DOME NODES
+
 
 	function makeNode(name, propertyList, contents)
 	{
@@ -15728,7 +15722,7 @@ Elm.Native.VirtualDom.make = function(elm)
 
 		// ensure that setting text of an input does not move the cursor
 		var useSoftSet =
-			name === 'input'
+			(name === 'input' || name === 'textarea')
 			&& props.value !== undefined
 			&& !isHook(props.value);
 
@@ -15739,6 +15733,31 @@ Elm.Native.VirtualDom.make = function(elm)
 
 		return new VNode(name, props, List.toArray(contents), key, namespace);
 	}
+
+	function listToProperties(list)
+	{
+		var object = {};
+		while (list.ctor !== '[]')
+		{
+			var entry = list._0;
+			if (entry.key === ATTRIBUTE_KEY)
+			{
+				object.attributes = object.attributes || {};
+				object.attributes[entry.value.attrKey] = entry.value.attrValue;
+			}
+			else
+			{
+				object[entry.key] = entry.value;
+			}
+			list = list._1;
+		}
+		return object;
+	}
+
+
+
+	// PROPERTIES AND ATTRIBUTES
+
 
 	function property(key, value)
 	{
@@ -15758,6 +15777,63 @@ Elm.Native.VirtualDom.make = function(elm)
 			}
 		};
 	}
+
+
+
+	// NAMESPACED ATTRIBUTES
+
+
+	function attributeNS(namespace, key, value)
+	{
+		return {
+			key: key,
+			value: new AttributeHook(namespace, key, value)
+		};
+	}
+
+	function AttributeHook(namespace, key, value)
+	{
+		if (!(this instanceof AttributeHook))
+		{
+			return new AttributeHook(namespace, key, value);
+		}
+
+		this.namespace = namespace;
+		this.key = key;
+		this.value = value;
+	}
+
+	AttributeHook.prototype.hook = function (node, prop, prev)
+	{
+		if (prev
+			&& prev.type === 'AttributeHook'
+			&& prev.value === this.value
+			&& prev.namespace === this.namespace)
+		{
+			return;
+		}
+
+		node.setAttributeNS(this.namespace, prop, this.value);
+	};
+
+	AttributeHook.prototype.unhook = function (node, prop, next)
+	{
+		if (next
+			&& next.type === 'AttributeHook'
+			&& next.namespace === this.namespace)
+		{
+			return;
+		}
+
+		node.removeAttributeNS(this.namespace, this.key);
+	};
+
+	AttributeHook.prototype.type = 'AttributeHook';
+
+
+
+	// EVENTS
+
 
 	function on(name, options, decoder, createMessage)
 	{
@@ -15798,10 +15874,10 @@ Elm.Native.VirtualDom.make = function(elm)
 		}
 	};
 
-	function text(string)
-	{
-		return new VText(string);
-	}
+
+
+	// INTEGRATION WITH ELEMENTS
+
 
 	function ElementWidget(element)
 	{
@@ -15836,6 +15912,11 @@ Elm.Native.VirtualDom.make = function(elm)
 		});
 	}
 
+
+
+	// RENDER AND UPDATE
+
+
 	function render(model)
 	{
 		var element = Element.createNode('div');
@@ -15855,6 +15936,11 @@ Elm.Native.VirtualDom.make = function(elm)
 		var newNode = patch(node, patches);
 		return newNode;
 	}
+
+
+
+	// LAZINESS
+
 
 	function lazyRef(fn, a)
 	{
@@ -15885,15 +15971,17 @@ Elm.Native.VirtualDom.make = function(elm)
 
 	function Thunk(fn, args, thunk)
 	{
-		this.fn = fn;
-		this.args = args;
+		/* public (used by VirtualDom.js) */
 		this.vnode = null;
 		this.key = undefined;
+
+		/* private */
+		this.fn = fn;
+		this.args = args;
 		this.thunk = thunk;
 	}
 
 	Thunk.prototype.type = "Thunk";
-	Thunk.prototype.update = updateThunk;
 	Thunk.prototype.render = renderThunk;
 
 	function shouldUpdate(current, previous)
@@ -15918,35 +16006,27 @@ Elm.Native.VirtualDom.make = function(elm)
 		return false;
 	}
 
-	function updateThunk(previous, domNode)
+	function renderThunk(previous)
 	{
-		if (!shouldUpdate(this, previous))
+		if (previous == null || shouldUpdate(this, previous))
 		{
-			this.vnode = previous.vnode;
-			return;
+			return this.thunk();
 		}
-
-		if (!this.vnode)
+		else
 		{
-			this.vnode = this.thunk();
+			return previous.vnode;
 		}
-
-		var patches = diff(previous.vnode, this.vnode);
-		patch(domNode, patches);
 	}
 
-	function renderThunk()
-	{
-		return this.thunk();
-	}
 
-	return Elm.Native.VirtualDom.values = {
+	return elm.Native.VirtualDom.values = Elm.Native.VirtualDom.values = {
 		node: node,
 		text: text,
 		on: F4(on),
 
 		property: F2(property),
 		attribute: F2(attribute),
+		attributeNS: F3(attributeNS),
 
 		lazy: F2(lazyRef),
 		lazy2: F3(lazyRef2),
@@ -15960,9 +16040,7 @@ Elm.Native.VirtualDom.make = function(elm)
 	};
 };
 
-},{"virtual-dom/create-element":1,"virtual-dom/vdom/patch":9,"virtual-dom/vnode/is-vhook":13,"virtual-dom/vnode/vnode":18,"virtual-dom/vnode/vtext":20,"virtual-dom/vtree/diff":22}],24:[function(require,module,exports){
-
-},{}]},{},[23]);
+},{"virtual-dom/vdom/create-element":6,"virtual-dom/vdom/patch":9,"virtual-dom/vnode/is-vhook":13,"virtual-dom/vnode/vnode":18,"virtual-dom/vnode/vtext":20,"virtual-dom/vtree/diff":22}]},{},[23]);
 
 Elm.Pokemon = Elm.Pokemon || {};
 Elm.Pokemon.make = function (_elm) {
@@ -18147,6 +18225,7 @@ Elm.VirtualDom.make = function (_elm) {
       decoder,
       toMessage);
    });
+   var attributeNS = $Native$VirtualDom.attributeNS;
    var attribute = $Native$VirtualDom.attribute;
    var property = $Native$VirtualDom.property;
    var Property = {ctor: "Property"};
@@ -18162,6 +18241,7 @@ Elm.VirtualDom.make = function (_elm) {
                             ,fromElement: fromElement
                             ,property: property
                             ,attribute: attribute
+                            ,attributeNS: attributeNS
                             ,on: on
                             ,onWithOptions: onWithOptions
                             ,defaultOptions: defaultOptions

@@ -179,7 +179,8 @@ querySignal = buildQuery <~ interfaceStateBox.signal
 
 main : Signal Html
 main = div [] <~ combine
-    [ interface
+    [ Signal.constant (Html.a [href "http://www.twitch.tv/extratricky/v/36891353"] [Html.text "How to use this calculator"])
+    , interface
     , Signal.constant calculateButton
     , thresholdInput
     , Html.fromElement << drawGraph 700 400 <~ queryGraph
